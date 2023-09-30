@@ -73,7 +73,7 @@ repository:
   archived: false
   default_branch: "main"
   delete_branch_on_merge: true
-  description: ":octocat: + :ledger: Provides a GitHub repository template for a PHP package with GitHub Actions workflows using standard PHP development tools."
+  description: ":eyeglasses: Provides rules for rector/rector."
   enable_automated_security_fixes: true
   enable_vulnerability_alerts: true
   has_discussions: false
@@ -82,10 +82,10 @@ repository:
   has_pages: false
   has_projects: false
   has_wiki: false
-  is_template: true
+  is_template: false
   name: "rector-rules"
   private: false
 
   # https://docs.github.com/en/rest/reference/repos#replace-all-repository-topics
 
-  topics: "php, package, template"
+  topics: "rector, rules"

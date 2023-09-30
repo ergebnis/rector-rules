@@ -1,6 +1,6 @@
 {
   "name": "ergebnis/rector-rules",
-  "description": "Provides a GitHub repository template for a PHP package with GitHub Actions workflows using standard PHP development tools.",
+  "description": "Provides rules for rector/rector.",
   "license": "MIT",
   "type": "library",
   "authors": [

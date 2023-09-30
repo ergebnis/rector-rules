@@ -1,2 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="5.15.0@5c774aca4746caf3d239d9c8cadb9f882ca29352"/>
+<files psalm-version="5.15.0@5c774aca4746caf3d239d9c8cadb9f882ca29352">
+  <file src="src/Arrays/SortAssociativeArrayByKeyRector.php">
+    <PossiblyUnusedMethod>
+      <code>__construct</code>
+    </PossiblyUnusedMethod>
+    <PropertyNotSetInConstructor>
+      <code>SortAssociativeArrayByKeyRector</code>
+      <code>SortAssociativeArrayByKeyRector</code>
+      <code>SortAssociativeArrayByKeyRector</code>
+      <code>SortAssociativeArrayByKeyRector</code>
+      <code>SortAssociativeArrayByKeyRector</code>
+      <code>SortAssociativeArrayByKeyRector</code>
+    </PropertyNotSetInConstructor>
+  </file>
+  <file src="test/Unit/Arrays/SortAssociativeArrayByKeyRectorTest.php">
+    <PossiblyUnusedMethod>
+      <code>provideData</code>
+    </PossiblyUnusedMethod>
+  </file>
+</files>

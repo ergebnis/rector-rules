@@ -16,17 +16,43 @@ This package provides rules for [`rector/rector`](https://github.com/rectorphp/r
 
 ## Installation
 
-:bulb: This is a great place for showing how to install the package, see below:
-
 Run
 
 ```sh
-composer require ergebnis/rector-rules
+composer require --dev ergebnis/rector-rules
 ```
 
 ## Usage
 
-:bulb: This is a great place for showing a few usage examples!
+## Rules
+
+This packages provides the following rules for [`rector/rector`](https://github.com/rectorphp/rector):
+
+- [`Ergebnis\Rector\Rules\Arrays\SortAssociativeArrayByKeyRector`](https://github.com/ergebnis/rector-rules#arrayssortassociativearraybykeyrector)
+
+#### `Arrays\SortAssociativeArrayByKeyRector`
+
+This rule sorts associative arrays in ascending order by key unless they are declared in classes extending `PHPUnit\Framework\TestCase`.
+
+```diff
+ <?php
+
+ $data = [
++    'bar' => [
++        'quux' => 'quuz',
++        'quz' => 'qux',
++    ],
+     'foo' => [
+         'foo',
+         'bar',
+         'baz',
+     ],
+-    'bar' => [
+-        'quz' => 'qux',
+-        'quux' => 'quuz',
+-    ],
+ ];
+```
 
 ## Changelog
 

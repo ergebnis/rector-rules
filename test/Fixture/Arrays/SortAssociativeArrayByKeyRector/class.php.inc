@@ -1,6 +1,6 @@
 <?php
 
-namespace Ergebnis\Rector\Rules\Test\Fixture\Rector\SortAssociativeArrayByKey;
+namespace Ergebnis\Rector\Rules\Test\Fixture\Arrays\SortAssociativeArrayByKeyRector;
 
 class Example
 {
@@ -24,7 +24,7 @@ class Example
 -----
 <?php
 
-namespace Ergebnis\Rector\Rules\Test\Fixture\Rector\SortAssociativeArrayByKey;
+namespace Ergebnis\Rector\Rules\Test\Fixture\Arrays\SortAssociativeArrayByKeyRector;
 
 class Example
 {

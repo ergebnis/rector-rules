@@ -17,7 +17,7 @@
     "security": "https://github.com/ergebnis/rector-rules/blob/main/.github/SECURITY.md"
   },
   "require": {
-    "php": "~8.1.0 || ~8.2.0",
+    "php": "~8.1.0 || ~8.2.0 || ~8.3.0",
     "nikic/php-parser": "^4.17.1",
     "phpstan/phpstan": "^1.10.36",
     "rector/rector": "~0.18.5",

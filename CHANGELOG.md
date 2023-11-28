@@ -18,7 +18,7 @@ For a full diff see [`0.1.0...main`][0.1.0...main].
 
 ## [`0.1.0`][0.1.0]
 
-For a full diff see [`[fd198f0...0.1.0]`][[fd198f0...0.1.0]].
+For a full diff see [`fd198f0...0.1.0`][fd198f0...0.1.0].
 
 ### Added
 

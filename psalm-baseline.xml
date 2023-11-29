@@ -13,8 +13,8 @@
     </PropertyNotSetInConstructor>
   </file>
   <file src="test/Unit/Arrays/SortAssociativeArrayByKeyRectorTest.php">
-    <PossiblyUnusedMethod>
-      <code>provideData</code>
-    </PossiblyUnusedMethod>
+    <MixedInferredReturnType>
+      <code>\Iterator</code>
+    </MixedInferredReturnType>
   </file>
 </files>

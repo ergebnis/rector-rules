@@ -13,14 +13,16 @@ declare(strict_types=1);
 
 namespace Arrays;
 
-use Ergebnis\Rector\Rules;
-use PHPUnit\Framework;
 use Rector\Testing;
 
-#[Framework\Attributes\CoversClass(Rules\Arrays\SortAssociativeArrayByKeyRector::class)]
+/**
+ * @covers \Ergebnis\Rector\Rules\Arrays\SortAssociativeArrayByKeyRector
+ */
 final class SortAssociativeArrayByKeyRectorTest extends Testing\PHPUnit\AbstractRectorTestCase
 {
-    #[Framework\Attributes\DataProvider('provideData')]
+    /**
+     * @dataProvider provideData
+     */
     public function test(string $filePath): void
     {
         $this->doTestFile($filePath);

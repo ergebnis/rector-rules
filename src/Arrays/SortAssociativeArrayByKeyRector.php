@@ -20,8 +20,11 @@ use Symplify\RuleDocGenerator;
 
 final class SortAssociativeArrayByKeyRector extends Core\Rector\AbstractRector
 {
-    public function __construct(private Core\Reflection\ReflectionResolver $reflectionResolver)
+    private Core\Reflection\ReflectionResolver $reflectionResolver;
+
+    public function __construct(Core\Reflection\ReflectionResolver $reflectionResolver)
     {
+        $this->reflectionResolver = $reflectionResolver;
     }
 
     public function getRuleDefinition(): RuleDocGenerator\ValueObject\RuleDefinition

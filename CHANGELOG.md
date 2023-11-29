@@ -11,6 +11,7 @@ For a full diff see [`0.2.0...main`][0.2.0...main].
 ### Added
 
 - Added support for PHP 8.0 ([#36]), by [@localheinz]
+- Added support for PHP 7.4 ([#37]), by [@localheinz]
 
 ## [`0.2.0`][0.2.0]
 
@@ -43,5 +44,6 @@ For a full diff see [`fd198f0...0.1.0`][fd198f0...0.1.0].
 [#3]: https://github.com/ergebnis/rector-rules/pull/3
 [#34]: https://github.com/ergebnis/rector-rules/pull/34
 [#36]: https://github.com/ergebnis/rector-rules/pull/36
+[#37]: https://github.com/ergebnis/rector-rules/pull/37
 
 [@localheinz]: https://github.com/localheinz

@@ -1,7 +1,12 @@
 {
   "symbol-whitelist": [
+    "array",
+    "bool",
+    "false",
+    "null",
     "PHPStan\\Reflection\\ClassReflection",
     "Rector\\Core\\Rector\\AbstractRector",
-    "Rector\\Core\\Reflection\\ReflectionResolver"
+    "Rector\\Core\\Reflection\\ReflectionResolver",
+    "true"
   ]
 }

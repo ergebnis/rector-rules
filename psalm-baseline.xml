@@ -14,7 +14,7 @@
   </file>
   <file src="test/Unit/Arrays/SortAssociativeArrayByKeyRectorTest.php">
     <MixedInferredReturnType>
-      <code>\Iterator</code>
+      <code>iterable</code>
     </MixedInferredReturnType>
   </file>
 </files>

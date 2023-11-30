@@ -28,7 +28,7 @@ final class SortAssociativeArrayByKeyRectorTest extends Testing\PHPUnit\Abstract
         $this->doTestFile($filePath);
     }
 
-    public static function provideData(): \Iterator
+    public static function provideData(): iterable
     {
         return self::yieldFilesFromDirectory(__DIR__ . '/../../Fixture/Arrays/SortAssociativeArrayByKeyRector');
     }

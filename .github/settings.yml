@@ -82,7 +82,7 @@ repository:
   archived: false
   default_branch: "main"
   delete_branch_on_merge: true
-  description: ":eyeglasses: Provides rules for rector/rector."
+  description: "👓 Provides a composer package with rules for rector/rector."
   enable_automated_security_fixes: true
   enable_vulnerability_alerts: true
   has_discussions: false

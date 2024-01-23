@@ -11,6 +11,7 @@ For a full diff see [`0.3.0...main`][0.3.0...main].
 ### Changed
 
 - Required `rector/rector:~0.19.2` ([#64]), by [@localheinz]
+- Allowed installation of `nikic/php-parser:^5.0.0` ([#65]), by [@localheinz]
 
 ## [`0.3.0`][0.3.0]
 
@@ -56,5 +57,6 @@ For a full diff see [`fd198f0...0.1.0`][fd198f0...0.1.0].
 [#36]: https://github.com/ergebnis/rector-rules/pull/36
 [#37]: https://github.com/ergebnis/rector-rules/pull/37
 [#64]: https://github.com/ergebnis/rector-rules/pull/64
+[#65]: https://github.com/ergebnis/rector-rules/pull/65
 
 [@localheinz]: https://github.com/localheinz

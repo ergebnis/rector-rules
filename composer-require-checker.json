@@ -5,8 +5,8 @@
     "false",
     "null",
     "PHPStan\\Reflection\\ClassReflection",
-    "Rector\\Core\\Rector\\AbstractRector",
-    "Rector\\Core\\Reflection\\ReflectionResolver",
+    "Rector\\Rector\\AbstractRector",
+    "Rector\\Reflection\\ReflectionResolver",
     "true"
   ]
 }

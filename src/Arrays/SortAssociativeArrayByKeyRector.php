@@ -14,15 +14,16 @@ declare(strict_types=1);
 namespace Ergebnis\Rector\Rules\Arrays;
 
 use PhpParser\Node;
-use PHPStan\Reflection;
-use Rector\Core;
+use PHPStan\Reflection\ClassReflection;
+use Rector\Rector;
+use Rector\Reflection;
 use Symplify\RuleDocGenerator;
 
-final class SortAssociativeArrayByKeyRector extends Core\Rector\AbstractRector
+final class SortAssociativeArrayByKeyRector extends Rector\AbstractRector
 {
-    private Core\Reflection\ReflectionResolver $reflectionResolver;
+    private Reflection\ReflectionResolver $reflectionResolver;
 
-    public function __construct(Core\Reflection\ReflectionResolver $reflectionResolver)
+    public function __construct(Reflection\ReflectionResolver $reflectionResolver)
     {
         $this->reflectionResolver = $reflectionResolver;
     }
@@ -123,7 +124,7 @@ CODE_SAMPLE
     {
         $classReflection = $this->reflectionResolver->resolveClassReflection($node);
 
-        if (!$classReflection instanceof Reflection\ClassReflection) {
+        if (!$classReflection instanceof ClassReflection) {
             return false;
         }
 

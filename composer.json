@@ -24,7 +24,7 @@
     "symplify/rule-doc-generator-contracts": "^9.3.26"
   },
   "require-dev": {
-    "ergebnis/composer-normalize": "^2.28.3",
+    "ergebnis/composer-normalize": "^2.42.0",
     "ergebnis/data-provider": "^3.2.0",
     "ergebnis/license": "^2.4.0",
     "ergebnis/php-cs-fixer-config": "^6.20.0",

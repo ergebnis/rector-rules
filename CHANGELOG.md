@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 For a full diff see [`1.0.0...main`][1.0.0...main].
 
+### Changed
+
+- Allowed installation of `rector/rector:~0.19.2` ([#77]), by [@localheinz]
+
 ## [`1.0.0`][1.0.0]
 
 For a full diff see [`0.4.0...1.0.0`][0.4.0...1.0.0].
@@ -75,5 +79,6 @@ For a full diff see [`fd198f0...0.1.0`][fd198f0...0.1.0].
 [#64]: https://github.com/ergebnis/rector-rules/pull/64
 [#65]: https://github.com/ergebnis/rector-rules/pull/65
 [#76]: https://github.com/ergebnis/rector-rules/pull/76
+[#77]: https://github.com/ergebnis/rector-rules/pull/77
 
 [@localheinz]: https://github.com/localheinz

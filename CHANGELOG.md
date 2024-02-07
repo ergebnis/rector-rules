@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 For a full diff see [`1.0.0...main`][1.0.0...main].
 
-### Changed
+### Fixed
 
 - Allowed installation of `rector/rector:~0.19.2` ([#77]), by [@localheinz]
 

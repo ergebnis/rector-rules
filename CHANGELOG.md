@@ -6,9 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## Unreleased
 
-For a full diff see [`1.0.1...main`][1.0.1...main].
+For a full diff see [`1.1.0...main`][1.1.0...main].
 
-### Fixed
+## [`1.1.0`][1.1.0]
+
+For a full diff see [`1.0.1...1.1.0`][1.0.1...1.1.0].
+
+### Changed
 
 - Allowed installation on PHP 8.4 ([#139]), by [@localheinz]
 
@@ -72,6 +76,7 @@ For a full diff see [`fd198f0...0.1.0`][fd198f0...0.1.0].
 [0.4.0]: https://github.com/ergebnis/rector-rules/releases/tag/0.4.0
 [1.0.0]: https://github.com/ergebnis/rector-rules/releases/tag/1.0.0
 [1.0.1]: https://github.com/ergebnis/rector-rules/releases/tag/1.0.1
+[1.1.0]: https://github.com/ergebnis/rector-rules/releases/tag/1.1.0
 
 [fd198f0...0.1.0]: https://github.com/ergebnis/rector-rules/compare/fd198f0...0.1.0
 [0.1.0...0.2.0]: https://github.com/ergebnis/rector-rules/compare/0.1.0...0.2.0
@@ -79,7 +84,8 @@ For a full diff see [`fd198f0...0.1.0`][fd198f0...0.1.0].
 [0.3.0...0.4.0]: https://github.com/ergebnis/rector-rules/compare/0.3.0...0.4.0
 [0.4.0...1.0.0]: https://github.com/ergebnis/rector-rules/compare/0.4.0...1.0.0
 [1.0.0...1.0.1]: https://github.com/ergebnis/rector-rules/compare/1.0.0...1.0.1
-[1.0.1...main]: https://github.com/ergebnis/rector-rules/compare/1.0.1...main
+[1.0.1...1.1.0]: https://github.com/ergebnis/rector-rules/compare/1.0.1...1.1.0
+[1.1.0...main]: https://github.com/ergebnis/rector-rules/compare/1.1.0...main
 
 [#1]: https://github.com/ergebnis/rector-rules/pull/1
 [#3]: https://github.com/ergebnis/rector-rules/pull/3

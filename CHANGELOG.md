@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 For a full diff see [`1.0.1...main`][1.0.1...main].
 
+### Fixed
+
+- Allowed installation on PHP 8.4 ([#139]), by [@localheinz]
+
 ## [`1.0.1`][1.0.1]
 
 For a full diff see [`1.0.0...1.0.1`][1.0.0...1.0.1].
@@ -86,5 +90,6 @@ For a full diff see [`fd198f0...0.1.0`][fd198f0...0.1.0].
 [#65]: https://github.com/ergebnis/rector-rules/pull/65
 [#76]: https://github.com/ergebnis/rector-rules/pull/76
 [#77]: https://github.com/ergebnis/rector-rules/pull/77
+[#139]: https://github.com/ergebnis/rector-rules/pull/139
 
 [@localheinz]: https://github.com/localheinz

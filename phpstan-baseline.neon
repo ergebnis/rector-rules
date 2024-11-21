@@ -1,0 +1,7 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Method Arrays\\\\SortAssociativeArrayByKeyRectorTest\\:\\:provideData\\(\\) return type has no value type specified in iterable type iterable\\.$#"
+			count: 1
+			path: test/Unit/Arrays/SortAssociativeArrayByKeyRectorTest.php
+

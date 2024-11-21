@@ -6,7 +6,6 @@
 [![Renew](https://github.com/ergebnis/rector-rules/workflows/Renew/badge.svg)](https://github.com/ergebnis/rector-rules/actions)
 
 [![Code Coverage](https://codecov.io/gh/ergebnis/rector-rules/branch/main/graph/badge.svg)](https://codecov.io/gh/ergebnis/rector-rules)
-[![Type Coverage](https://shepherd.dev/github/ergebnis/rector-rules/coverage.svg)](https://shepherd.dev/github/ergebnis/rector-rules)
 
 [![Latest Stable Version](https://poser.pugx.org/ergebnis/rector-rules/v/stable)](https://packagist.org/packages/ergebnis/rector-rules)
 [![Total Downloads](https://poser.pugx.org/ergebnis/rector-rules/downloads)](https://packagist.org/packages/ergebnis/rector-rules)

@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 For a full diff see [`1.1.0...main`][1.1.0...main].
 
+### Added
+
+- Added support for PHP 8.4 ([#162]), by [@localheinz]
+
 ### Changed
 
 - Required `rector/rector:^1.0.0` ([#161]), by [@localheinz]
@@ -102,5 +106,6 @@ For a full diff see [`fd198f0...0.1.0`][fd198f0...0.1.0].
 [#77]: https://github.com/ergebnis/rector-rules/pull/77
 [#139]: https://github.com/ergebnis/rector-rules/pull/139
 [#161]: https://github.com/ergebnis/rector-rules/pull/161
+[#162]: https://github.com/ergebnis/rector-rules/pull/162
 
 [@localheinz]: https://github.com/localheinz

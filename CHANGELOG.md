@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 For a full diff see [`1.2.0...main`][1.2.0...main].
 
+### Added
+
+- Added support for `rector/rector:^2.0.0` ([#171]), by [@localheinz]
+
 ## [`1.2.0`][1.2.0]
 
 For a full diff see [`1.1.0...1.2.0`][1.1.0...1.2.0].
@@ -113,5 +117,6 @@ For a full diff see [`fd198f0...0.1.0`][fd198f0...0.1.0].
 [#139]: https://github.com/ergebnis/rector-rules/pull/139
 [#161]: https://github.com/ergebnis/rector-rules/pull/161
 [#162]: https://github.com/ergebnis/rector-rules/pull/162
+[#171]: https://github.com/ergebnis/rector-rules/pull/171
 
 [@localheinz]: https://github.com/localheinz

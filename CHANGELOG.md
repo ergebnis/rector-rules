@@ -102,7 +102,7 @@ For a full diff see [`fd198f0...0.1.0`][fd198f0...0.1.0].
 [0.4.0...1.0.0]: https://github.com/ergebnis/rector-rules/compare/0.4.0...1.0.0
 [1.0.0...1.0.1]: https://github.com/ergebnis/rector-rules/compare/1.0.0...1.0.1
 [1.0.1...1.1.0]: https://github.com/ergebnis/rector-rules/compare/1.0.1...1.1.0
-[1.1.0...main]: https://github.com/ergebnis/rector-rules/compare/1.1.0...1.2.0
+[1.1.0...1.2.0]: https://github.com/ergebnis/rector-rules/compare/1.1.0...1.2.0
 [1.2.0...main]: https://github.com/ergebnis/rector-rules/compare/1.2.0...main
 
 [#1]: https://github.com/ergebnis/rector-rules/pull/1

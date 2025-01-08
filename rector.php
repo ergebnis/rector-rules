@@ -24,7 +24,6 @@ return static function (Config\RectorConfig $rectorConfig): void {
     $rectorConfig->paths([
         __DIR__ . '/src/',
         __DIR__ . '/test/Unit/',
-        __DIR__ . '/test/Util/',
         __DIR__ . '/.php-cs-fixer.php',
         __DIR__ . '/rector.php',
     ]);

@@ -15,11 +15,12 @@ namespace Ergebnis\Rector\Rules\Arrays;
 
 use PhpParser\Node;
 use PHPStan\Reflection\ClassReflection;
+use Rector\Contract;
 use Rector\Rector;
 use Rector\Reflection;
 use Symplify\RuleDocGenerator;
 
-final class SortAssociativeArrayByKeyRector extends Rector\AbstractRector
+final class SortAssociativeArrayByKeyRector extends Rector\AbstractRector implements Contract\Rector\ConfigurableRectorInterface
 {
     private Reflection\ReflectionResolver $reflectionResolver;
 
@@ -133,5 +134,10 @@ CODE_SAMPLE
         }
 
         return true;
+    }
+
+    public function configure(array $configuration): void
+    {
+        // TODO: Implement configure() method.
     }
 }

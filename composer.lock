@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4f9ec7a1d8b138e80c9d568ba7c46be7",
+    "content-hash": "0b659d693cfc5b57f9632b10001e81a2",
     "packages": [
         {
             "name": "nikic/php-parser",
@@ -2490,16 +2490,16 @@
         },
         {
             "name": "phpstan/phpstan-strict-rules",
-            "version": "2.0.3",
+            "version": "2.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan-strict-rules.git",
-                "reference": "8b88b5f818bfa301e0c99154ab622dace071c3ba"
+                "reference": "3e139cbe67fafa3588e1dbe27ca50f31fdb6236a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan-strict-rules/zipball/8b88b5f818bfa301e0c99154ab622dace071c3ba",
-                "reference": "8b88b5f818bfa301e0c99154ab622dace071c3ba",
+                "url": "https://api.github.com/repos/phpstan/phpstan-strict-rules/zipball/3e139cbe67fafa3588e1dbe27ca50f31fdb6236a",
+                "reference": "3e139cbe67fafa3588e1dbe27ca50f31fdb6236a",
                 "shasum": ""
             },
             "require": {
@@ -2532,9 +2532,9 @@
             "description": "Extra strict and opinionated rules for PHPStan",
             "support": {
                 "issues": "https://github.com/phpstan/phpstan-strict-rules/issues",
-                "source": "https://github.com/phpstan/phpstan-strict-rules/tree/2.0.3"
+                "source": "https://github.com/phpstan/phpstan-strict-rules/tree/2.0.4"
             },
-            "time": "2025-01-21T10:52:14+00:00"
+            "time": "2025-03-18T11:42:40+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",
@@ -6444,15 +6444,15 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
         "php": "~7.4.0 || ~8.0.0 || ~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0"
     },
-    "platform-dev": {},
+    "platform-dev": [],
     "platform-overrides": {
         "php": "7.4.33"
     },
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.3.0"
 }

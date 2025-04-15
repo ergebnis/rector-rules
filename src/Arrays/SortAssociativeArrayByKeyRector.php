@@ -14,20 +14,11 @@ declare(strict_types=1);
 namespace Ergebnis\Rector\Rules\Arrays;
 
 use PhpParser\Node;
-use PHPStan\Reflection\ClassReflection;
 use Rector\Rector;
-use Rector\Reflection;
 use Symplify\RuleDocGenerator;
 
 final class SortAssociativeArrayByKeyRector extends Rector\AbstractRector
 {
-    private Reflection\ReflectionResolver $reflectionResolver;
-
-    public function __construct(Reflection\ReflectionResolver $reflectionResolver)
-    {
-        $this->reflectionResolver = $reflectionResolver;
-    }
-
     public function getRuleDefinition(): RuleDocGenerator\ValueObject\RuleDefinition
     {
         return new RuleDocGenerator\ValueObject\RuleDefinition(
@@ -79,10 +70,6 @@ CODE_SAMPLE
             return null;
         }
 
-        if ($this->isScopeInTest($node)) {
-            return null;
-        }
-
         /** @var array<int, Node\Expr\ArrayItem> $items */
         $items = \array_filter($node->items, static function ($item): bool {
             if (!$item instanceof Node\Expr\ArrayItem) {
@@ -118,26 +105,5 @@ CODE_SAMPLE
         $node->items = $items;
 
         return $node;
-    }
-
-    private function isScopeInTest(Node $node): bool
-    {
-        $classReflection = $this->reflectionResolver->resolveClassReflection($node);
-
-        if (!$classReflection instanceof ClassReflection) {
-            return false;
-        }
-
-        $parentClass = $classReflection->getParentClass();
-
-        while ($parentClass instanceof ClassReflection) {
-            if ($parentClass->getName() === 'PHPUnit\Framework\TestCase') {
-                return true;
-            }
-
-            $parentClass = $parentClass->getParentClass();
-        }
-
-        return false;
     }
 }

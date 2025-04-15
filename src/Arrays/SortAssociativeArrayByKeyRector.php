@@ -128,10 +128,16 @@ CODE_SAMPLE
             return false;
         }
 
-        if (!$classReflection->isSubclassOf('PHPUnit\Framework\TestCase')) {
-            return false;
+        $parentClass = $classReflection->getParentClass();
+
+        while ($parentClass instanceof ClassReflection) {
+            if ($parentClass->getName() === 'PHPUnit\Framework\TestCase') {
+                return true;
+            }
+
+            $parentClass = $parentClass->getParentClass();
         }
 
-        return true;
+        return false;
     }
 }

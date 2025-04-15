@@ -20,7 +20,7 @@
     "php": "~7.4.0 || ~8.0.0 || ~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0",
     "nikic/php-parser": "^4.17.1 || ^5.0.0",
     "phpstan/phpstan": "^2.0.0",
-    "rector/rector": "^2.0.0"
+    "rector/rector": "^2.0.11"
   },
   "require-dev": {
     "ergebnis/composer-normalize": "^2.46.0",

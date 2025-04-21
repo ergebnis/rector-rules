@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fea14afba6b722fb4be0b3b7a092693d",
+    "content-hash": "cb1f605fc57f334360902e303dfba0c4",
     "packages": [
         {
             "name": "nikic/php-parser",
@@ -543,16 +543,16 @@
         },
         {
             "name": "ergebnis/composer-normalize",
-            "version": "2.46.0",
+            "version": "2.47.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ergebnis/composer-normalize.git",
-                "reference": "6d4dc58cb098507397116c921ad3bd68f44c2849"
+                "reference": "ed24b9f8901f8fbafeca98f662eaca39427f0544"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ergebnis/composer-normalize/zipball/6d4dc58cb098507397116c921ad3bd68f44c2849",
-                "reference": "6d4dc58cb098507397116c921ad3bd68f44c2849",
+                "url": "https://api.github.com/repos/ergebnis/composer-normalize/zipball/ed24b9f8901f8fbafeca98f662eaca39427f0544",
+                "reference": "ed24b9f8901f8fbafeca98f662eaca39427f0544",
                 "shasum": ""
             },
             "require": {
@@ -569,7 +569,7 @@
                 "composer/composer": "^2.8.3",
                 "ergebnis/license": "^2.6.0",
                 "ergebnis/php-cs-fixer-config": "^6.46.0",
-                "ergebnis/phpunit-slow-test-detector": "^2.19.0",
+                "ergebnis/phpunit-slow-test-detector": "^2.19.1",
                 "fakerphp/faker": "^1.24.1",
                 "infection/infection": "~0.26.6",
                 "phpstan/extension-installer": "^1.4.3",
@@ -622,7 +622,7 @@
                 "security": "https://github.com/ergebnis/composer-normalize/blob/main/.github/SECURITY.md",
                 "source": "https://github.com/ergebnis/composer-normalize"
             },
-            "time": "2025-04-10T18:54:20+00:00"
+            "time": "2025-04-15T11:09:27+00:00"
         },
         {
             "name": "ergebnis/data-provider",

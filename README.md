@@ -21,13 +21,13 @@ Run
 composer require --dev ergebnis/rector-rules
 ```
 
-## Usage
-
-### Rules
+## Rules
 
 This project provides the following rules for [`rector/rector`](https://github.com/rectorphp/rector):
 
 - [`Ergebnis\Rector\Rules\Arrays\SortAssociativeArrayByKeyRector`](https://github.com/ergebnis/rector-rules#arrayssortassociativearraybykeyrector)
+
+### Arrays
 
 #### `Arrays\SortAssociativeArrayByKeyRector`
 

@@ -11,14 +11,18 @@ declare(strict_types=1);
  * @see https://github.com/ergebnis/rector-rules
  */
 
-namespace Arrays;
+namespace Ergebnis\Rector\Rules\Test\Unit\Arrays;
 
 use Rector\Testing;
 
 /**
  * @covers \Ergebnis\Rector\Rules\Arrays\SortAssociativeArrayByKeyRector
+ *
+ * @requires PHP 8.0
+ *
+ * @see https://www.php.net/manual/en/migration80.incompatible.php#migration80.incompatible.core.string-number-comparision
  */
-final class SortAssociativeArrayByKeyRectorTest extends Testing\PHPUnit\AbstractRectorTestCase
+final class SortAssociativeArrayByKeyRectorWithComparisonFunctionStrnatcasecmpOnPhp80Test extends Testing\PHPUnit\AbstractRectorTestCase
 {
     /**
      * @dataProvider provideData
@@ -30,11 +34,11 @@ final class SortAssociativeArrayByKeyRectorTest extends Testing\PHPUnit\Abstract
 
     public static function provideData(): iterable
     {
-        return self::yieldFilesFromDirectory(__DIR__ . '/../../Fixture/Arrays/SortAssociativeArrayByKeyRector');
+        return self::yieldFilesFromDirectory(__DIR__ . '/../../Fixture/Arrays/SortAssociativeArrayByKeyRector/WithComparisonFunctionStrnatcasecmpOnPhp80');
     }
 
     public function provideConfigFilePath(): string
     {
-        return __DIR__ . '/../../Fixture/Arrays/SortAssociativeArrayByKeyRector/config/configured_rule.php';
+        return __DIR__ . '/../../Fixture/Arrays/SortAssociativeArrayByKeyRector/WithComparisonFunctionStrnatcasecmpOnPhp80/config/configured_rule.php';
     }
 }

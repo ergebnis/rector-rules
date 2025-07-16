@@ -1,8 +1,61 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Method Arrays\\SortAssociativeArrayByKeyRectorTest\:\:provideData\(\) return type has no value type specified in iterable type iterable\.$#'
+			message: '#^Method Arrays\\SortAssociativeArrayByKeyRectorWithComparisonFunctionStrcasecmpOnPhp74Test\:\:provideData\(\) return type has no value type specified in iterable type iterable\.$#'
 			identifier: missingType.iterableValue
 			count: 1
-			path: test/Unit/Arrays/SortAssociativeArrayByKeyRectorTest.php
+			path: test/Unit/Arrays/SortAssociativeArrayByKeyRectorWithComparisonFunctionStrcasecmpOnPhp74Test.php
 
+		-
+			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Arrays\\SortAssociativeArrayByKeyRectorWithComparisonFunctionStrcasecmpOnPhp80Test\:\:provideData\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: test/Unit/Arrays/SortAssociativeArrayByKeyRectorWithComparisonFunctionStrcasecmpOnPhp80Test.php
+
+		-
+			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Arrays\\SortAssociativeArrayByKeyRectorWithComparisonFunctionStrcmpTest\:\:provideData\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: test/Unit/Arrays/SortAssociativeArrayByKeyRectorWithComparisonFunctionStrcmpTest.php
+
+		-
+			message: '#^Method Arrays\\SortAssociativeArrayByKeyRectorWithComparisonFunctionStrnatcasecmpOnPhp74Test\:\:provideData\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: test/Unit/Arrays/SortAssociativeArrayByKeyRectorWithComparisonFunctionStrnatcasecmpOnPhp74Test.php
+
+		-
+			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Arrays\\SortAssociativeArrayByKeyRectorWithComparisonFunctionStrnatcasecmpOnPhp80Test\:\:provideData\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: test/Unit/Arrays/SortAssociativeArrayByKeyRectorWithComparisonFunctionStrnatcasecmpOnPhp80Test.php
+
+		-
+			message: '#^Method Arrays\\SortAssociativeArrayByKeyRectorWithComparisonFunctionStrnatcmpTest\:\:provideData\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: test/Unit/Arrays/SortAssociativeArrayByKeyRectorWithComparisonFunctionStrnatcmpTest.php
+
+		-
+			message: '#^Method Arrays\\SortAssociativeArrayByKeyRectorWithDefaultConfigurationOnPhp74Test\:\:provideData\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: test/Unit/Arrays/SortAssociativeArrayByKeyRectorWithDefaultConfigurationOnPhp74Test.php
+
+		-
+			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Arrays\\SortAssociativeArrayByKeyRectorWithDefaultConfigurationOnPhp80Test\:\:provideData\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: test/Unit/Arrays/SortAssociativeArrayByKeyRectorWithDefaultConfigurationOnPhp80Test.php
+
+		-
+			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Arrays\\SortAssociativeArrayByKeyRectorWithDirectionAscTest\:\:provideData\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: test/Unit/Arrays/SortAssociativeArrayByKeyRectorWithDirectionAscTest.php
+
+		-
+			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Arrays\\SortAssociativeArrayByKeyRectorWithDirectionDescTest\:\:provideData\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: test/Unit/Arrays/SortAssociativeArrayByKeyRectorWithDirectionDescTest.php

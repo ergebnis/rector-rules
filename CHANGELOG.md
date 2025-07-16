@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 For a full diff see [`1.4.0...main`][1.4.0...main].
 
+### Changed
+
+- Allowed configuring `Rules\Arrays\SortAssociativeArrayByKeyRector` ([#210]), by [@localheinz]
+
 ## [`1.4.0`][1.4.0]
 
 For a full diff see [`1.3.0...1.4.0`][1.3.0...1.4.0].
@@ -137,5 +141,6 @@ For a full diff see [`fd198f0...0.1.0`][fd198f0...0.1.0].
 [#171]: https://github.com/ergebnis/rector-rules/pull/171
 [#199]: https://github.com/ergebnis/rector-rules/pull/199
 [#200]: https://github.com/ergebnis/rector-rules/pull/200
+[#210]: https://github.com/ergebnis/rector-rules/pull/210
 
 [@localheinz]: https://github.com/localheinz

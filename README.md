@@ -31,7 +31,7 @@ This project provides the following rules for [`rector/rector`](https://github.c
 
 #### `Arrays\SortAssociativeArrayByKeyRector`
 
-This rule sorts associative arrays in ascending order by key.
+This rule sorts associative arrays by key.
 
 ```diff
  <?php
@@ -52,6 +52,11 @@ This rule sorts associative arrays in ascending order by key.
 -    ],
  ];
 ```
+
+##### Configuration
+
+- `comparison_function`: the comparison function, one of ([`'strcasecmp'`](https://www.php.net/manual/en/function.strcasecmp.php), [`'strcmp'`](https://www.php.net/manual/en/function.strcmp.php), [`'strnatcasecmp'`](https://www.php.net/manual/en/function.strnatcasecmp.php), or [`'strnatcmp'`](https://www.php.net/manual/en/function.strnatcmp.php)), defaults to `'strcmp'`
+- `direction`: the sorting direction (one of `'asc'`, `'desc'`), defaults to `asc`
 
 ## Changelog
 

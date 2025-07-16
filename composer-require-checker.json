@@ -5,10 +5,14 @@
     "false",
     "null",
     "PHPStan\\Reflection\\ClassReflection",
+    "Rector\\Contract\\Rector\\ConfigurableRectorInterface",
     "Rector\\Rector\\AbstractRector",
     "Rector\\Reflection\\ReflectionResolver",
     "Symplify\\RuleDocGenerator\\ValueObject\\CodeSample\\CodeSample",
+    "Symplify\\RuleDocGenerator\\ValueObject\\CodeSample\\ConfiguredCodeSample",
     "Symplify\\RuleDocGenerator\\ValueObject\\RuleDefinition",
-    "true"
+    "self",
+    "true",
+    "void"
   ]
 }

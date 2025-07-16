@@ -1,6 +1,6 @@
 <?php
 
-namespace Ergebnis\Rector\Rules\Test\Fixture\Arrays\SortAssociativeArrayByKeyRector;
+namespace Ergebnis\Rector\Rules\Test\Fixture\Arrays\SortAssociativeArrayByKeyRector\WithComparisonFunctionStrcasecmpOnPhp74;
 
 class Example
 {
@@ -13,7 +13,12 @@ class Example
                 'baz',
             ],
             'bar' => [
+                'Quz10' => 'qux',
+                'Quz2' => 'qux',
+                'Quz' => 'qux',
+                'QuZ' => 'qux',
                 'quz' => 'qux',
+                'Quux' => 'quuz',
                 'quux' => 'quuz',
             ],
         ];
@@ -24,7 +29,7 @@ class Example
 -----
 <?php
 
-namespace Ergebnis\Rector\Rules\Test\Fixture\Arrays\SortAssociativeArrayByKeyRector;
+namespace Ergebnis\Rector\Rules\Test\Fixture\Arrays\SortAssociativeArrayByKeyRector\WithComparisonFunctionStrcasecmpOnPhp74;
 
 class Example
 {
@@ -33,7 +38,12 @@ class Example
         return [
             'bar' => [
                 'quux' => 'quuz',
+                'Quux' => 'quuz',
+                'Quz' => 'qux',
+                'QuZ' => 'qux',
                 'quz' => 'qux',
+                'Quz10' => 'qux',
+                'Quz2' => 'qux',
             ],
             'foo' => [
                 'foo',

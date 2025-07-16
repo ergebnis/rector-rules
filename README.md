@@ -31,7 +31,7 @@ This project provides the following rules for [`rector/rector`](https://github.c
 
 #### `Arrays\SortAssociativeArrayByKeyRector`
 
-This rule sorts associative arrays in ascending order by key unless they are declared in classes extending `PHPUnit\Framework\TestCase`.
+This rule sorts associative arrays in ascending order by key.
 
 ```diff
  <?php

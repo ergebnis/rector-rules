@@ -1,6 +1,6 @@
 <?php
 
-namespace Ergebnis\Rector\Rules\Test\Fixture\Arrays\SortAssociativeArrayByKeyRector\WithComparisonFunctionStrnatcasecmpOnPhp80;
+namespace Ergebnis\Rector\Rules\Test\Fixture\Arrays\SortAssociativeArrayByKeyRector\WithDefaultConfiguration\Php80;
 
 $data = [
     'foo' => [
@@ -23,7 +23,7 @@ $data = [
 -----
 <?php
 
-namespace Ergebnis\Rector\Rules\Test\Fixture\Arrays\SortAssociativeArrayByKeyRector\WithComparisonFunctionStrnatcasecmpOnPhp80;
+namespace Ergebnis\Rector\Rules\Test\Fixture\Arrays\SortAssociativeArrayByKeyRector\WithDefaultConfiguration\Php80;
 
 $data = [
     'bar' => [
@@ -32,8 +32,8 @@ $data = [
         'Quz' => 'qux',
         'QuZ' => 'qux',
         'quz' => 'qux',
-        'Quz2' => 'qux',
         'Quz10' => 'qux',
+        'Quz2' => 'qux',
     ],
     'foo' => [
         'foo',

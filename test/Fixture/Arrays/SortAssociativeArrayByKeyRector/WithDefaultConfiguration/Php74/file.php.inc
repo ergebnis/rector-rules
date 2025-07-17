@@ -1,6 +1,6 @@
 <?php
 
-namespace Ergebnis\Rector\Rules\Test\Fixture\Arrays\SortAssociativeArrayByKeyRector\WithDefaultConfigurationOnPhp80;
+namespace Ergebnis\Rector\Rules\Test\Fixture\Arrays\SortAssociativeArrayByKeyRector\WithDefaultConfiguration\Php74;
 
 $data = [
     'foo' => [
@@ -23,12 +23,12 @@ $data = [
 -----
 <?php
 
-namespace Ergebnis\Rector\Rules\Test\Fixture\Arrays\SortAssociativeArrayByKeyRector\WithDefaultConfigurationOnPhp80;
+namespace Ergebnis\Rector\Rules\Test\Fixture\Arrays\SortAssociativeArrayByKeyRector\WithDefaultConfiguration\Php74;
 
 $data = [
     'bar' => [
-        'Quux' => 'quuz',
         'quux' => 'quuz',
+        'Quux' => 'quuz',
         'Quz' => 'qux',
         'QuZ' => 'qux',
         'quz' => 'qux',

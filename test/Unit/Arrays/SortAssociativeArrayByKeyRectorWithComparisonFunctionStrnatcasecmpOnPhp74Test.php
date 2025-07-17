@@ -39,6 +39,6 @@ final class SortAssociativeArrayByKeyRectorWithComparisonFunctionStrnatcasecmpOn
 
     public function provideConfigFilePath(): string
     {
-        return __DIR__ . '/../../Fixture/Arrays/SortAssociativeArrayByKeyRector/WithComparisonFunctionStrnatcasecmpOnPhp74/config/configured_rule.php';
+        return __DIR__ . '/../../Fixture/Arrays/SortAssociativeArrayByKeyRector/WithComparisonFunctionStrnatcasecmpOnPhp74/config.php';
     }
 }

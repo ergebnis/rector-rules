@@ -39,6 +39,6 @@ final class SortAssociativeArrayByKeyRectorWithDefaultConfigurationOnPhp74Test e
 
     public function provideConfigFilePath(): string
     {
-        return __DIR__ . '/../../Fixture/Arrays/SortAssociativeArrayByKeyRector/WithDefaultConfigurationOnPhp74/config/configured_rule.php';
+        return __DIR__ . '/../../Fixture/Arrays/SortAssociativeArrayByKeyRector/WithDefaultConfigurationOnPhp74/config.php';
     }
 }

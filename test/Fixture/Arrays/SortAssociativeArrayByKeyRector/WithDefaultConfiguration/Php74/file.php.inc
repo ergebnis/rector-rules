@@ -27,13 +27,13 @@ namespace Ergebnis\Rector\Rules\Test\Fixture\Arrays\SortAssociativeArrayByKeyRec
 
 $data = [
     'bar' => [
-        'quux' => 'quuz',
+        'QuZ' => 'qux',
         'Quux' => 'quuz',
         'Quz' => 'qux',
-        'QuZ' => 'qux',
-        'quz' => 'qux',
         'Quz10' => 'qux',
         'Quz2' => 'qux',
+        'quux' => 'quuz',
+        'quz' => 'qux',
     ],
     'foo' => [
         'foo',

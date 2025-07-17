@@ -6,7 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## Unreleased
 
-For a full diff see [`1.5.0...main`][1.5.0...main].
+For a full diff see [`1.5.1...main`][1.5.1...main].
+
+## [`1.5.1`][1.5.1]
+
+For a full diff see [`1.5.0...1.5.1`][1.5.0...1.5.1].
 
 ### Fixed
 
@@ -123,6 +127,7 @@ For a full diff see [`fd198f0...0.1.0`][fd198f0...0.1.0].
 [1.3.0]: https://github.com/ergebnis/rector-rules/releases/tag/1.3.0
 [1.4.0]: https://github.com/ergebnis/rector-rules/releases/tag/1.4.0
 [1.5.0]: https://github.com/ergebnis/rector-rules/releases/tag/1.5.0
+[1.5.1]: https://github.com/ergebnis/rector-rules/releases/tag/1.5.1
 
 [fd198f0...0.1.0]: https://github.com/ergebnis/rector-rules/compare/fd198f0...0.1.0
 [0.1.0...0.2.0]: https://github.com/ergebnis/rector-rules/compare/0.1.0...0.2.0
@@ -135,7 +140,8 @@ For a full diff see [`fd198f0...0.1.0`][fd198f0...0.1.0].
 [1.2.0...1.3.0]: https://github.com/ergebnis/rector-rules/compare/1.2.0...1.3.0
 [1.3.0...1.4.0]: https://github.com/ergebnis/rector-rules/compare/1.3.0...1.4.0
 [1.4.0...1.5.0]: https://github.com/ergebnis/rector-rules/compare/1.4.0...1.5.0
-[1.5.0...main]: https://github.com/ergebnis/rector-rules/compare/1.5.0...main
+[1.5.0...1.5.1]: https://github.com/ergebnis/rector-rules/compare/1.5.0...1.5.1
+[1.5.1...main]: https://github.com/ergebnis/rector-rules/compare/1.5.1...main
 
 [#1]: https://github.com/ergebnis/rector-rules/pull/1
 [#3]: https://github.com/ergebnis/rector-rules/pull/3

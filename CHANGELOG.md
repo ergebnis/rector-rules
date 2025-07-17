@@ -11,6 +11,7 @@ For a full diff see [`1.5.0...main`][1.5.0...main].
 ### Fixed
 
 - Removed an unnecessary condition in `Rules\Arrays\SortAssociativeArrayByKeyRector` ([#210]), by [@localheinz]
+- Reverted back to using `strcmp` as default comparison function in `Rules\Arrays\SortAssociativeArrayByKeyRector` ([#216]), by [@localheinz]
 
 ## [`1.5.0`][1.5.0]
 
@@ -152,5 +153,6 @@ For a full diff see [`fd198f0...0.1.0`][fd198f0...0.1.0].
 [#199]: https://github.com/ergebnis/rector-rules/pull/199
 [#200]: https://github.com/ergebnis/rector-rules/pull/200
 [#210]: https://github.com/ergebnis/rector-rules/pull/210
+[#216]: https://github.com/ergebnis/rector-rules/pull/216
 
 [@localheinz]: https://github.com/localheinz

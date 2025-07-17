@@ -40,10 +40,7 @@ final class SortAssociativeArrayByKeyRector extends Rector\AbstractRector implem
 
     public function __construct()
     {
-        $this->configure([
-            self::CONFIGURATION_KEY_COMPARISON_FUNCTION => 'strcasecmp',
-            self::CONFIGURATION_KEY_DIRECTION => 'asc',
-        ]);
+        $this->configure([]);
     }
 
     public function getRuleDefinition(): RuleDocGenerator\ValueObject\RuleDefinition

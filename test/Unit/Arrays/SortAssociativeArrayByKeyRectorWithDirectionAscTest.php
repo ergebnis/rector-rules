@@ -35,6 +35,6 @@ final class SortAssociativeArrayByKeyRectorWithDirectionAscTest extends Testing\
 
     public function provideConfigFilePath(): string
     {
-        return __DIR__ . '/../../Fixture/Arrays/SortAssociativeArrayByKeyRector/WithDirectionAsc/config/configured_rule.php';
+        return __DIR__ . '/../../Fixture/Arrays/SortAssociativeArrayByKeyRector/WithDirectionAsc/config.php';
     }
 }

@@ -35,6 +35,6 @@ final class SortAssociativeArrayByKeyRectorWithComparisonFunctionStrnatcmpTest e
 
     public function provideConfigFilePath(): string
     {
-        return __DIR__ . '/../../Fixture/Arrays/SortAssociativeArrayByKeyRector/WithComparisonFunctionStrnatcmp/config/configured_rule.php';
+        return __DIR__ . '/../../Fixture/Arrays/SortAssociativeArrayByKeyRector/WithComparisonFunctionStrnatcmp/config.php';
     }
 }

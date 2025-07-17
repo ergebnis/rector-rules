@@ -193,7 +193,7 @@ CODE_SAMPLE,
             $comparisonFunction = $configuration[self::CONFIGURATION_KEY_COMPARISON_FUNCTION];
         }
 
-        $direction = 1;
+        $direction = 'asc';
 
         if (\array_key_exists(self::CONFIGURATION_KEY_DIRECTION, $configuration)) {
             if (!\is_string($configuration[self::CONFIGURATION_KEY_DIRECTION])) {

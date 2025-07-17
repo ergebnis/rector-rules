@@ -216,16 +216,10 @@ CODE_SAMPLE,
             $direction = $configuration[self::CONFIGURATION_KEY_DIRECTION];
         }
 
-        if ('desc' === $direction) {
-            $this->comparator = static function (string $a, string $b) use ($comparisonFunction): int {
-                return -1 * ($comparisonFunction)($a, $b);
-            };
+        $multiplier = self::DIRECTION_TO_MULTIPLIER[$direction];
 
-            return;
-        }
-
-        $this->comparator = static function (string $a, string $b) use ($comparisonFunction): int {
-            return ($comparisonFunction)($a, $b);
+        $this->comparator = static function (string $a, string $b) use ($comparisonFunction, $multiplier): int {
+            return $multiplier * ($comparisonFunction)($a, $b);
         };
     }
 }

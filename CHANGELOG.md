@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 For a full diff see [`1.5.0...main`][1.5.0...main].
 
+### Fixed
+
+- Removed an unnecessary condition in `Rules\Arrays\SortAssociativeArrayByKeyRector` ([#210]), by [@localheinz]
+
 ## [`1.5.0`][1.5.0]
 
 For a full diff see [`1.4.0...1.5.0`][1.4.0...1.5.0].

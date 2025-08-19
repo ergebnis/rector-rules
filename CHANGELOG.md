@@ -12,6 +12,10 @@ For a full diff see [`1.5.1...main`][1.5.1...main].
 
 - Allowed installation on PHP 8.5 ([#225]), by [@localheinz]
 
+### Fixed
+
+- Required `rector/rector:^2.1.4` ([#226]), by [@localheinz]
+
 ## [`1.5.1`][1.5.1]
 
 For a full diff see [`1.5.0...1.5.1`][1.5.0...1.5.1].
@@ -165,5 +169,6 @@ For a full diff see [`fd198f0...0.1.0`][fd198f0...0.1.0].
 [#210]: https://github.com/ergebnis/rector-rules/pull/210
 [#216]: https://github.com/ergebnis/rector-rules/pull/216
 [#225]: https://github.com/ergebnis/rector-rules/pull/225
+[#226]: https://github.com/ergebnis/rector-rules/pull/226
 
 [@localheinz]: https://github.com/localheinz

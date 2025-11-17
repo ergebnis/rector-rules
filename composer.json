@@ -28,7 +28,6 @@
     "ergebnis/license": "^2.7.0",
     "ergebnis/php-cs-fixer-config": "^6.56.0",
     "ergebnis/phpunit-slow-test-detector": "^2.20.0",
-    "infection/infection": "~0.26.6",
     "phpstan/extension-installer": "^1.4.3",
     "phpstan/phpstan-deprecation-rules": "^2.0.3",
     "phpstan/phpstan-phpunit": "^2.0.7",
@@ -49,7 +48,6 @@
     "allow-plugins": {
       "composer/package-versions-deprecated": true,
       "ergebnis/composer-normalize": true,
-      "infection/extension-installer": true,
       "phpstan/extension-installer": true
     },
     "audit": {

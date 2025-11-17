@@ -26,6 +26,7 @@ composer require --dev ergebnis/rector-rules
 This project provides the following rules for [`rector/rector`](https://github.com/rectorphp/rector):
 
 - [`Ergebnis\Rector\Rules\Arrays\SortAssociativeArrayByKeyRector`](https://github.com/ergebnis/rector-rules#arrayssortassociativearraybykeyrector)
+- [`Ergebnis\Rector\Rules\Faker\GeneratorPropertyFetchToMethodCallRector`](https://github.com/ergebnis/rector-rules#fakergeneratorpropertyfetchtomethodcallrector)
 
 ### Arrays
 
@@ -52,11 +53,27 @@ This rule sorts associative arrays by key.
 -    ],
  ];
 ```
-
 ##### Configuration
 
 - `comparison_function`: the comparison function, one of ([`'strcasecmp'`](https://www.php.net/manual/en/function.strcasecmp.php), [`'strcmp'`](https://www.php.net/manual/en/function.strcmp.php), [`'strnatcasecmp'`](https://www.php.net/manual/en/function.strnatcasecmp.php), or [`'strnatcmp'`](https://www.php.net/manual/en/function.strnatcmp.php)), defaults to `'strcmp'`
 - `direction`: the sorting direction (one of `'asc'`, `'desc'`), defaults to `asc`
+
+### Faker
+
+#### `Faker\GeneratorPropertyFetchToMethodCallRector`
+
+This rule replaces references to deprecated properties of `Faker\Generator` with method calls.
+
+```diff
+ <?php
+
+ use Faker\Factory;
+
+ $faker = Factory::create();
+
+- $faker->boolean;
+- $faker->boolean();
+```
 
 ## Changelog
 

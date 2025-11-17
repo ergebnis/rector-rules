@@ -72,7 +72,7 @@ This rule replaces references to deprecated properties of `Faker\Generator` with
  $faker = Factory::create();
 
 - $faker->boolean;
-- $faker->boolean();
++ $faker->boolean();
 ```
 
 ## Changelog

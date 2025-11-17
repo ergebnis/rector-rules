@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 For a full diff see [`1.6.0...main`][1.6.0...main].
 
+### Added
+
+- Added `Rules\Faker\GeneratorPropertyFetchToMethodCallRector` to allow replacing references to deprecated properties of `Faker\Generator` with method calls ([#249]), by [@localheinz]
+
 ### Changed
 
 - Required `rector/rector:^2.1.3` ([#248]), by [@localheinz]
@@ -176,5 +180,6 @@ For a full diff see [`fd198f0...0.1.0`][fd198f0...0.1.0].
 [#216]: https://github.com/ergebnis/rector-rules/pull/216
 [#225]: https://github.com/ergebnis/rector-rules/pull/225
 [#248]: https://github.com/ergebnis/rector-rules/pull/248
+[#249]: https://github.com/ergebnis/rector-rules/pull/249
 
 [@localheinz]: https://github.com/localheinz

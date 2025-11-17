@@ -1,6 +1,12 @@
 parameters:
 	ignoreErrors:
 		-
+			message: '#^Parameter \#1 \$node \(PhpParser\\Node\\Expr\\PropertyFetch\) of method Ergebnis\\Rector\\Rules\\Faker\\GeneratorPropertyFetchToMethodCallRector\:\:refactor\(\) should be contravariant with parameter \$node \(PhpParser\\Node\) of method Rector\\Contract\\Rector\\RectorInterface\:\:refactor\(\)$#'
+			identifier: method.childParameterType
+			count: 2
+			path: src/Faker/GeneratorPropertyFetchToMethodCallRector.php
+
+		-
 			message: '#^Method Arrays\\SortAssociativeArrayByKeyRectorWithComparisonFunctionStrcasecmpTest\:\:provideFilePathsPhp74\(\) return type has no value type specified in iterable type iterable\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -59,3 +65,9 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: test/Unit/Arrays/SortAssociativeArrayByKeyRectorWithDirectionDescTest.php
+
+		-
+			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Faker\\GeneratorPropertyFetchToMethodCallRectorTest\:\:provideData\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: test/Unit/Faker/GeneratorPropertyFetchToMethodCallRectorTest.php

@@ -2,18 +2,18 @@
   "symbol-whitelist": [
     "array",
     "bool",
+    "Faker\\Generator",
     "false",
     "null",
-    "Faker\\Generator",
     "PHPStan\\Reflection\\ClassReflection",
     "PHPStan\\Type\\ObjectType",
     "Rector\\Contract\\Rector\\ConfigurableRectorInterface",
     "Rector\\Rector\\AbstractRector",
     "Rector\\Reflection\\ReflectionResolver",
+    "self",
     "Symplify\\RuleDocGenerator\\ValueObject\\CodeSample\\CodeSample",
     "Symplify\\RuleDocGenerator\\ValueObject\\CodeSample\\ConfiguredCodeSample",
     "Symplify\\RuleDocGenerator\\ValueObject\\RuleDefinition",
-    "self",
     "true",
     "void"
   ]

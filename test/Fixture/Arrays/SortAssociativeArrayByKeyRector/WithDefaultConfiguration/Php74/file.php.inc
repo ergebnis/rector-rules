@@ -40,6 +40,31 @@ $rules = [
     ],
 ];
 
+$classNames = [
+    Zebra::class => 'zebra',
+    Apple::class => 'apple',
+    Mango::class => 'mango',
+];
+
+$fullyQualifiedClassNames = [
+    \Zebra::class => 'zebra',
+    \Apple::class => 'apple',
+    \Mango::class => 'mango',
+];
+
+$namespacedClassNames = [
+    Namespace\Zebra::class => 'zebra',
+    Namespace\Apple::class => 'apple',
+    Namespace\Mango::class => 'mango',
+];
+
+$mixed = [
+    Namespace\Zebra::class => 'zebra',
+    'apple' => 'apple',
+    Namespace\Mango::class => 'mango',
+    'banana' => 'banana',
+];
+
 ?>
 -----
 <?php
@@ -82,6 +107,31 @@ $rules = [
         'max_line_breaks' => 2,
         'min_line_breaks' => 2,
     ],
+];
+
+$classNames = [
+    Apple::class => 'apple',
+    Mango::class => 'mango',
+    Zebra::class => 'zebra',
+];
+
+$fullyQualifiedClassNames = [
+    \Apple::class => 'apple',
+    \Mango::class => 'mango',
+    \Zebra::class => 'zebra',
+];
+
+$namespacedClassNames = [
+    Namespace\Apple::class => 'apple',
+    Namespace\Mango::class => 'mango',
+    Namespace\Zebra::class => 'zebra',
+];
+
+$mixed = [
+    Namespace\Mango::class => 'mango',
+    Namespace\Zebra::class => 'zebra',
+    'apple' => 'apple',
+    'banana' => 'banana',
 ];
 
 ?>

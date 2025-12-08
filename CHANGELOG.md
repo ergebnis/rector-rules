@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 For a full diff see [`1.7.0...main`][1.7.0...main].
 
+### Changed
+
+- Adjusted `Rules\Arrays\SortAssociativeArrayByKeyRector` to resolve values for keys referring to `::class` pseudo constants ([#258]), by [@localheinz]
+
 ## [`1.7.0`][1.7.0]
 
 For a full diff see [`1.6.0...1.7.0`][1.6.0...1.7.0].
@@ -187,5 +191,6 @@ For a full diff see [`fd198f0...0.1.0`][fd198f0...0.1.0].
 [#225]: https://github.com/ergebnis/rector-rules/pull/225
 [#248]: https://github.com/ergebnis/rector-rules/pull/248
 [#249]: https://github.com/ergebnis/rector-rules/pull/249
+[#258]: https://github.com/ergebnis/rector-rules/pull/258
 
 [@localheinz]: https://github.com/localheinz

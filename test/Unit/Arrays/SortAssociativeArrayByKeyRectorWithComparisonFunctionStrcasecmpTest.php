@@ -11,7 +11,7 @@ declare(strict_types=1);
  * @see https://github.com/ergebnis/rector-rules
  */
 
-namespace Arrays;
+namespace Ergebnis\Rector\Rules\Test\Unit\Arrays;
 
 use Rector\Testing;
 

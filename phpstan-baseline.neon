@@ -7,13 +7,13 @@ parameters:
 			path: src/Faker/GeneratorPropertyFetchToMethodCallRector.php
 
 		-
-			message: '#^Method Arrays\\SortAssociativeArrayByKeyRectorWithComparisonFunctionStrcasecmpTest\:\:provideFilePathsPhp74\(\) return type has no value type specified in iterable type iterable\.$#'
+			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Arrays\\SortAssociativeArrayByKeyRectorWithComparisonFunctionStrcasecmpTest\:\:provideFilePathsPhp74\(\) return type has no value type specified in iterable type iterable\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: test/Unit/Arrays/SortAssociativeArrayByKeyRectorWithComparisonFunctionStrcasecmpTest.php
 
 		-
-			message: '#^Method Arrays\\SortAssociativeArrayByKeyRectorWithComparisonFunctionStrcasecmpTest\:\:provideFilePathsPhp80\(\) return type has no value type specified in iterable type iterable\.$#'
+			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Arrays\\SortAssociativeArrayByKeyRectorWithComparisonFunctionStrcasecmpTest\:\:provideFilePathsPhp80\(\) return type has no value type specified in iterable type iterable\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: test/Unit/Arrays/SortAssociativeArrayByKeyRectorWithComparisonFunctionStrcasecmpTest.php
@@ -25,31 +25,31 @@ parameters:
 			path: test/Unit/Arrays/SortAssociativeArrayByKeyRectorWithComparisonFunctionStrcmpTest.php
 
 		-
-			message: '#^Method Arrays\\SortAssociativeArrayByKeyRectorWithComparisonFunctionStrnatcasecmpTest\:\:provideFilePathsPhp74\(\) return type has no value type specified in iterable type iterable\.$#'
+			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Arrays\\SortAssociativeArrayByKeyRectorWithComparisonFunctionStrnatcasecmpTest\:\:provideFilePathsPhp74\(\) return type has no value type specified in iterable type iterable\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: test/Unit/Arrays/SortAssociativeArrayByKeyRectorWithComparisonFunctionStrnatcasecmpTest.php
 
 		-
-			message: '#^Method Arrays\\SortAssociativeArrayByKeyRectorWithComparisonFunctionStrnatcasecmpTest\:\:provideFilePathsPhp80\(\) return type has no value type specified in iterable type iterable\.$#'
+			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Arrays\\SortAssociativeArrayByKeyRectorWithComparisonFunctionStrnatcasecmpTest\:\:provideFilePathsPhp80\(\) return type has no value type specified in iterable type iterable\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: test/Unit/Arrays/SortAssociativeArrayByKeyRectorWithComparisonFunctionStrnatcasecmpTest.php
 
 		-
-			message: '#^Method Arrays\\SortAssociativeArrayByKeyRectorWithComparisonFunctionStrnatcmpTest\:\:provideData\(\) return type has no value type specified in iterable type iterable\.$#'
+			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Arrays\\SortAssociativeArrayByKeyRectorWithComparisonFunctionStrnatcmpTest\:\:provideData\(\) return type has no value type specified in iterable type iterable\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: test/Unit/Arrays/SortAssociativeArrayByKeyRectorWithComparisonFunctionStrnatcmpTest.php
 
 		-
-			message: '#^Method Arrays\\SortAssociativeArrayByKeyRectorWithDefaultConfigurationTest\:\:provideFilePathsPhp74\(\) return type has no value type specified in iterable type iterable\.$#'
+			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Arrays\\SortAssociativeArrayByKeyRectorWithDefaultConfigurationTest\:\:provideFilePathsPhp74\(\) return type has no value type specified in iterable type iterable\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: test/Unit/Arrays/SortAssociativeArrayByKeyRectorWithDefaultConfigurationTest.php
 
 		-
-			message: '#^Method Arrays\\SortAssociativeArrayByKeyRectorWithDefaultConfigurationTest\:\:provideFilePathsPhp80\(\) return type has no value type specified in iterable type iterable\.$#'
+			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Arrays\\SortAssociativeArrayByKeyRectorWithDefaultConfigurationTest\:\:provideFilePathsPhp80\(\) return type has no value type specified in iterable type iterable\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: test/Unit/Arrays/SortAssociativeArrayByKeyRectorWithDefaultConfigurationTest.php

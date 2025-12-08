@@ -34,7 +34,7 @@ final class SortAssociativeArrayByKeyRector extends Rector\AbstractRector implem
     private const CONFIGURATION_KEY_DIRECTION = 'direction';
 
     /**
-     * @var \Closure(string, string): int
+     * @var \Closure(Key, Key): int
      */
     private \Closure $comparator;
 
@@ -126,41 +126,43 @@ CODE_SAMPLE,
             return null;
         }
 
-        /** @var array<int, Node\Expr\ArrayItem> $items */
-        $items = \array_filter($node->items, static function ($item): bool {
-            if (!$item instanceof Node\Expr\ArrayItem) {
-                return false;
-            }
+        /** @var list<ArrayItemWithKey> $arrayItemsWithKeys */
+        $arrayItemsWithKeys = \array_reduce(
+            $node->items,
+            static function (array $arrayItemsWithKeys, $arrayItem): array {
+                if (!$arrayItem instanceof Node\Expr\ArrayItem) {
+                    return $arrayItemsWithKeys;
+                }
 
-            if (!$item->key instanceof Node\Scalar\String_) {
-                return false;
-            }
+                $arrayItemWithKey = self::arrayItemWithKeyFrom($arrayItem);
 
-            return true;
-        });
+                if (!$arrayItemWithKey instanceof ArrayItemWithKey) {
+                    return $arrayItemsWithKeys;
+                }
 
-        if ($items !== $node->items) {
+                $arrayItemsWithKeys[] = $arrayItemWithKey;
+
+                return $arrayItemsWithKeys;
+            },
+            [],
+        );
+
+        if (\count($node->items) !== \count($arrayItemsWithKeys)) {
             return null;
         }
 
         $comparator = $this->comparator;
 
-        \usort($items, static function (Node\Expr\ArrayItem $a, Node\Expr\ArrayItem $b) use ($comparator): int {
-            if (!$a->key instanceof Node\Scalar\String_) {
-                throw new \RuntimeException('This should not happen.');
-            }
-
-            if (!$b->key instanceof Node\Scalar\String_) {
-                throw new \RuntimeException('This should not happen.');
-            }
-
+        \usort($arrayItemsWithKeys, static function (ArrayItemWithKey $a, ArrayItemWithKey $b) use ($comparator): int {
             return $comparator(
-                $a->key->value,
-                $b->key->value,
+                $a->key(),
+                $b->key(),
             );
         });
 
-        $node->items = $items;
+        $node->items = \array_map(static function (ArrayItemWithKey $arrayItemWithKey): Node\Expr\ArrayItem {
+            return $arrayItemWithKey->arrayItem();
+        }, $arrayItemsWithKeys);
 
         return $node;
     }
@@ -215,8 +217,23 @@ CODE_SAMPLE,
 
         $multiplier = self::DIRECTION_TO_MULTIPLIER[$direction];
 
-        $this->comparator = static function (string $a, string $b) use ($comparisonFunction, $multiplier): int {
-            return $multiplier * ($comparisonFunction)($a, $b);
+        $this->comparator = static function (Key $a, Key $b) use ($comparisonFunction, $multiplier): int {
+            return $multiplier * ($comparisonFunction)(
+                $a->toString(),
+                $b->toString()
+            );
         };
+    }
+
+    private static function arrayItemWithKeyFrom(Node\Expr\ArrayItem $arrayItem): ?ArrayItemWithKey
+    {
+        if ($arrayItem->key instanceof Node\Scalar\String_) {
+            return ArrayItemWithKey::create(
+                $arrayItem,
+                Key::fromString($arrayItem->key->value),
+            );
+        }
+
+        return null;
     }
 }

@@ -11,6 +11,7 @@
     "Rector\\Rector\\AbstractRector",
     "Rector\\Reflection\\ReflectionResolver",
     "self",
+    "string",
     "Symplify\\RuleDocGenerator\\ValueObject\\CodeSample\\CodeSample",
     "Symplify\\RuleDocGenerator\\ValueObject\\CodeSample\\ConfiguredCodeSample",
     "Symplify\\RuleDocGenerator\\ValueObject\\RuleDefinition",

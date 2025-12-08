@@ -126,9 +126,9 @@ CODE_SAMPLE,
             return null;
         }
 
-        /** @var array<int, Node\Expr\ArrayItem> $items */
+        /** @var array<int, Node\ArrayItem> $items */
         $items = \array_filter($node->items, static function ($item): bool {
-            if (!$item instanceof Node\Expr\ArrayItem) {
+            if (!$item instanceof Node\ArrayItem) {
                 return false;
             }
 

@@ -235,9 +235,19 @@ CODE_SAMPLE,
             && $key->name->toString() === 'class'
             && $key->class instanceof Node\Name
         ) {
+            $name = $key->class;
+
+            if ($name->hasAttribute('originalName')) {
+                $originalName = $name->getAttribute('originalName');
+
+                if ($originalName instanceof Node\Name) {
+                    $name = $originalName;
+                }
+            }
+
             return ArrayItemWithKey::create(
                 $arrayItem,
-                Key::fromString($key->class->toString()),
+                Key::fromString($name->toString()),
             );
         }
 

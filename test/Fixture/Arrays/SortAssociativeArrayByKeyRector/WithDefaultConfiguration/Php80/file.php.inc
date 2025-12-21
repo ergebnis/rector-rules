@@ -132,8 +132,8 @@ $namespacedClassNames = [
 ];
 
 $mixed = [
-    Namespaced\Apple::class => 'apple',
     Bicycle::class => 'bicycle',
+    Namespaced\Apple::class => 'apple',
     Namespaced\Mango::class => 'mango',
     Namespaced\Zebra::class => 'zebra',
     'apple' => 'apple',

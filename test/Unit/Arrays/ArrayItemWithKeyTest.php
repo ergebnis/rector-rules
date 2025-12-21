@@ -19,6 +19,8 @@ use PHPUnit\Framework;
 
 /**
  * @covers \Ergebnis\Rector\Rules\Arrays\ArrayItemWithKey
+ *
+ * @uses \Ergebnis\Rector\Rules\Arrays\Key
  */
 final class ArrayItemWithKeyTest extends Framework\TestCase
 {

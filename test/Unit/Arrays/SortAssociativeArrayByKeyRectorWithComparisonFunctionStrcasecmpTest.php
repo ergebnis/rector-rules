@@ -17,6 +17,9 @@ use Rector\Testing;
 
 /**
  * @covers \Ergebnis\Rector\Rules\Arrays\SortAssociativeArrayByKeyRector
+ *
+ * @uses \Ergebnis\Rector\Rules\Arrays\ArrayItemWithKey
+ * @uses \Ergebnis\Rector\Rules\Arrays\Key
  */
 final class SortAssociativeArrayByKeyRectorWithComparisonFunctionStrcasecmpTest extends Testing\PHPUnit\AbstractRectorTestCase
 {

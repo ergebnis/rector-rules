@@ -10,7 +10,7 @@ The following versions of `ergebnis/rector-rules` have active support:
 
 The following versions of `ergebnis/rector-rules` have reached their end of life:
 
-- `<1.8.0`
+- `<1.9.0`
 
 ## Reporting a Vulnerability
 

@@ -1,7 +1,5 @@
 <?php
 
-namespace Ergebnis\Rector\Rules\Test\Fixture\Faker\GeneratorPropertyFetchToMethodCallRector;
-
 use Faker\Factory;
 
 $faker = Factory::create();
@@ -147,8 +145,6 @@ $faker->year;
 ?>
 -----
 <?php
-
-namespace Ergebnis\Rector\Rules\Test\Fixture\Faker\GeneratorPropertyFetchToMethodCallRector;
 
 use Faker\Factory;
 

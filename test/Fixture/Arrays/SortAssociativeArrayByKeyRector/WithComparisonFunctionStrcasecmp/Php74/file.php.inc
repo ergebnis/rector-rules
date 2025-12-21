@@ -1,7 +1,5 @@
 <?php
 
-namespace Ergebnis\Rector\Rules\Test\Fixture\Arrays\SortAssociativeArrayByKeyRector\WithComparisonFunctionStrcasecmp\Php74;
-
 $data = [
     'foo' => [
         'foo',
@@ -22,8 +20,6 @@ $data = [
 ?>
 -----
 <?php
-
-namespace Ergebnis\Rector\Rules\Test\Fixture\Arrays\SortAssociativeArrayByKeyRector\WithComparisonFunctionStrcasecmp\Php74;
 
 $data = [
     'bar' => [

@@ -1,7 +1,5 @@
 <?php
 
-namespace Ergebnis\Rector\Rules\Test\Fixture\Arrays\SortAssociativeArrayByKeyRector\WithDefaultConfiguration\Php80;
-
 $data = [
     'foo' => [
         'foo',
@@ -68,8 +66,6 @@ $mixed = [
 ?>
 -----
 <?php
-
-namespace Ergebnis\Rector\Rules\Test\Fixture\Arrays\SortAssociativeArrayByKeyRector\WithDefaultConfiguration\Php80;
 
 $data = [
     'bar' => [

@@ -1,5 +1,7 @@
 <?php
 
+use Namespaced\Bicycle;
+
 $data = [
     'foo' => [
         'foo',
@@ -51,22 +53,27 @@ $fullyQualifiedClassNames = [
 ];
 
 $namespacedClassNames = [
-    Namespace\Zebra::class => 'zebra',
-    Namespace\Apple::class => 'apple',
-    Namespace\Mango::class => 'mango',
+    Namespaced\Zebra::class => 'zebra',
+    Namespaced\Apple::class => 'apple',
+    Namespaced\Mango::class => 'mango',
+    Namespaced\Bicycle::class => 'biycle',
 ];
 
 $mixed = [
-    Namespace\Zebra::class => 'zebra',
+    Namespaced\Zebra::class => 'zebra',
     'apple' => 'apple',
-    Namespace\Mango::class => 'mango',
+    Namespaced\Mango::class => 'mango',
     'banana' => 'banana',
+    Namespaced\Apple::class => 'apple',
+    Bicycle::class => 'bicycle',
 ];
 
 ?>
 -----
 <?php
 
+use Namespaced\Bicycle;
+
 $data = [
     'bar' => [
         'QuZ' => 'qux',
@@ -118,14 +125,17 @@ $fullyQualifiedClassNames = [
 ];
 
 $namespacedClassNames = [
-    Namespace\Apple::class => 'apple',
-    Namespace\Mango::class => 'mango',
-    Namespace\Zebra::class => 'zebra',
+    Namespaced\Apple::class => 'apple',
+    Namespaced\Bicycle::class => 'biycle',
+    Namespaced\Mango::class => 'mango',
+    Namespaced\Zebra::class => 'zebra',
 ];
 
 $mixed = [
-    Namespace\Mango::class => 'mango',
-    Namespace\Zebra::class => 'zebra',
+    Namespaced\Apple::class => 'apple',
+    Bicycle::class => 'bicycle',
+    Namespaced\Mango::class => 'mango',
+    Namespaced\Zebra::class => 'zebra',
     'apple' => 'apple',
     'banana' => 'banana',
 ];

@@ -41,7 +41,8 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "Ergebnis\\Rector\\Rules\\Test\\": "test/"
+      "Ergebnis\\Rector\\Rules\\Test\\": "test/",
+      "\\": "test/Fixture/Miscellaneous/"
     }
   },
   "config": {

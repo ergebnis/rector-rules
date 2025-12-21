@@ -227,22 +227,24 @@ CODE_SAMPLE,
 
     private static function arrayItemWithKeyFrom(Node\Expr\ArrayItem $arrayItem): ?ArrayItemWithKey
     {
+        $key = $arrayItem->key;
+
         if (
-            $arrayItem->key instanceof Node\Expr\ClassConstFetch
-            && $arrayItem->key->name instanceof Node\Identifier
-            && $arrayItem->key->name->toString() === 'class'
-            && $arrayItem->key->class instanceof Node\Name
+            $key instanceof Node\Expr\ClassConstFetch
+            && $key->name instanceof Node\Identifier
+            && $key->name->toString() === 'class'
+            && $key->class instanceof Node\Name
         ) {
             return ArrayItemWithKey::create(
                 $arrayItem,
-                Key::fromString($arrayItem->key->class->toString()),
+                Key::fromString($key->class->toString()),
             );
         }
 
-        if ($arrayItem->key instanceof Node\Scalar\String_) {
+        if ($key instanceof Node\Scalar\String_) {
             return ArrayItemWithKey::create(
                 $arrayItem,
-                Key::fromString($arrayItem->key->value),
+                Key::fromString($key->value),
             );
         }
 

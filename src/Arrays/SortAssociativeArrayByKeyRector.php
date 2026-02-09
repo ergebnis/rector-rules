@@ -130,10 +130,6 @@ CODE_SAMPLE,
         $arrayItemsWithKeys = \array_reduce(
             $node->items,
             static function (array $arrayItemsWithKeys, $arrayItem): array {
-                if (!$arrayItem instanceof Node\Expr\ArrayItem) {
-                    return $arrayItemsWithKeys;
-                }
-
                 $arrayItemWithKey = self::arrayItemWithKeyFrom($arrayItem);
 
                 if (!$arrayItemWithKey instanceof ArrayItemWithKey) {

@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 For a full diff see [`1.9.0...main`][1.9.0...main].
 
+### Enhancement
+
+- Added support for PHP 8.5 ([#281]), by [@localheinz]
+
 ## [`1.9.0`][1.9.0]
 
 For a full diff see [`1.8.0...1.9.0`][1.8.0...1.9.0].
@@ -209,5 +213,6 @@ For a full diff see [`fd198f0...0.1.0`][fd198f0...0.1.0].
 [#249]: https://github.com/ergebnis/rector-rules/pull/249
 [#258]: https://github.com/ergebnis/rector-rules/pull/258
 [#265]: https://github.com/ergebnis/rector-rules/pull/265
+[#281]: https://github.com/ergebnis/rector-rules/pull/281
 
 [@localheinz]: https://github.com/localheinz

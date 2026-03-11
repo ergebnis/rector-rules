@@ -17,7 +17,7 @@ use Rector\Config;
 return static function (Config\RectorConfig $rectorConfig): void {
     $rectorConfig->ruleWithConfiguration(Rules\Files\UseImportRelativeToNamespacePrefixRector::class, [
         'namespacePrefixes' => [
-            'Example\Core',
+            'Example\Core\Routing',
             'Example\Domain',
             'Psr\Http',
         ],

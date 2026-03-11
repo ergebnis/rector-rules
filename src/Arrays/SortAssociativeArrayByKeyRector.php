@@ -43,6 +43,64 @@ final class SortAssociativeArrayByKeyRector extends Rector\AbstractRector implem
         $this->configure([]);
     }
 
+    public function configure(array $configuration): void
+    {
+        $comparisonFunction = 'strcmp';
+
+        if (\array_key_exists(self::CONFIGURATION_KEY_COMPARISON_FUNCTION, $configuration)) {
+            if (!\is_string($configuration[self::CONFIGURATION_KEY_COMPARISON_FUNCTION])) {
+                throw new \InvalidArgumentException(\sprintf(
+                    'Value for configuration option "%s" needs to be one of "%s".',
+                    self::CONFIGURATION_KEY_COMPARISON_FUNCTION,
+                    \implode('", "', \array_keys(self::COMPARISON_FUNCTIONS_TO_DOCUMENTATION_URL)),
+                ));
+            }
+
+            if (!\array_key_exists($configuration[self::CONFIGURATION_KEY_COMPARISON_FUNCTION], self::COMPARISON_FUNCTIONS_TO_DOCUMENTATION_URL)) {
+                throw new \InvalidArgumentException(\sprintf(
+                    'Value for configuration option "%s" needs to be one of "%s", got "%s" instead.',
+                    self::CONFIGURATION_KEY_COMPARISON_FUNCTION,
+                    \implode('", "', \array_keys(self::COMPARISON_FUNCTIONS_TO_DOCUMENTATION_URL)),
+                    $configuration[self::CONFIGURATION_KEY_COMPARISON_FUNCTION],
+                ));
+            }
+
+            $comparisonFunction = $configuration[self::CONFIGURATION_KEY_COMPARISON_FUNCTION];
+        }
+
+        $direction = 'asc';
+
+        if (\array_key_exists(self::CONFIGURATION_KEY_DIRECTION, $configuration)) {
+            if (!\is_string($configuration[self::CONFIGURATION_KEY_DIRECTION])) {
+                throw new \InvalidArgumentException(\sprintf(
+                    'Value for configuration option "%s" needs to be one of "%s".',
+                    self::CONFIGURATION_KEY_DIRECTION,
+                    \implode('", "', \array_keys(self::DIRECTION_TO_MULTIPLIER)),
+                ));
+            }
+
+            if (!\array_key_exists($configuration[self::CONFIGURATION_KEY_DIRECTION], self::DIRECTION_TO_MULTIPLIER)) {
+                throw new \InvalidArgumentException(\sprintf(
+                    'Value for configuration option "%s" needs to be one of "%s", got "%s" instead.',
+                    self::CONFIGURATION_KEY_DIRECTION,
+                    \implode('", "', \array_keys(self::DIRECTION_TO_MULTIPLIER)),
+                    $configuration[self::CONFIGURATION_KEY_DIRECTION],
+                ));
+            }
+
+            $direction = $configuration[self::CONFIGURATION_KEY_DIRECTION];
+        }
+
+        $multiplier = self::DIRECTION_TO_MULTIPLIER[$direction];
+
+        $this->comparator = static function (Key $a, Key $b) use ($comparisonFunction, $multiplier): int {
+            return $multiplier * ($comparisonFunction)(
+                $a->toString(),
+                $b->toString()
+            );
+        };
+    }
+
     public function getRuleDefinition(): RuleDocGenerator\ValueObject\RuleDefinition
     {
         return new RuleDocGenerator\ValueObject\RuleDefinition(
@@ -161,64 +219,6 @@ CODE_SAMPLE,
         }, $arrayItemsWithKeys);
 
         return $node;
-    }
-
-    public function configure(array $configuration): void
-    {
-        $comparisonFunction = 'strcmp';
-
-        if (\array_key_exists(self::CONFIGURATION_KEY_COMPARISON_FUNCTION, $configuration)) {
-            if (!\is_string($configuration[self::CONFIGURATION_KEY_COMPARISON_FUNCTION])) {
-                throw new \InvalidArgumentException(\sprintf(
-                    'Value for configuration option "%s" needs to be one of "%s".',
-                    self::CONFIGURATION_KEY_COMPARISON_FUNCTION,
-                    \implode('", "', \array_keys(self::COMPARISON_FUNCTIONS_TO_DOCUMENTATION_URL)),
-                ));
-            }
-
-            if (!\array_key_exists($configuration[self::CONFIGURATION_KEY_COMPARISON_FUNCTION], self::COMPARISON_FUNCTIONS_TO_DOCUMENTATION_URL)) {
-                throw new \InvalidArgumentException(\sprintf(
-                    'Value for configuration option "%s" needs to be one of "%s", got "%s" instead.',
-                    self::CONFIGURATION_KEY_COMPARISON_FUNCTION,
-                    \implode('", "', \array_keys(self::COMPARISON_FUNCTIONS_TO_DOCUMENTATION_URL)),
-                    $configuration[self::CONFIGURATION_KEY_COMPARISON_FUNCTION],
-                ));
-            }
-
-            $comparisonFunction = $configuration[self::CONFIGURATION_KEY_COMPARISON_FUNCTION];
-        }
-
-        $direction = 'asc';
-
-        if (\array_key_exists(self::CONFIGURATION_KEY_DIRECTION, $configuration)) {
-            if (!\is_string($configuration[self::CONFIGURATION_KEY_DIRECTION])) {
-                throw new \InvalidArgumentException(\sprintf(
-                    'Value for configuration option "%s" needs to be one of "%s".',
-                    self::CONFIGURATION_KEY_DIRECTION,
-                    \implode('", "', \array_keys(self::DIRECTION_TO_MULTIPLIER)),
-                ));
-            }
-
-            if (!\array_key_exists($configuration[self::CONFIGURATION_KEY_DIRECTION], self::DIRECTION_TO_MULTIPLIER)) {
-                throw new \InvalidArgumentException(\sprintf(
-                    'Value for configuration option "%s" needs to be one of "%s", got "%s" instead.',
-                    self::CONFIGURATION_KEY_DIRECTION,
-                    \implode('", "', \array_keys(self::DIRECTION_TO_MULTIPLIER)),
-                    $configuration[self::CONFIGURATION_KEY_DIRECTION],
-                ));
-            }
-
-            $direction = $configuration[self::CONFIGURATION_KEY_DIRECTION];
-        }
-
-        $multiplier = self::DIRECTION_TO_MULTIPLIER[$direction];
-
-        $this->comparator = static function (Key $a, Key $b) use ($comparisonFunction, $multiplier): int {
-            return $multiplier * ($comparisonFunction)(
-                $a->toString(),
-                $b->toString()
-            );
-        };
     }
 
     private static function arrayItemWithKeyFrom(Node\Expr\ArrayItem $arrayItem): ?ArrayItemWithKey

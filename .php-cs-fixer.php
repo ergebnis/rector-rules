@@ -27,7 +27,11 @@ $license = License\Type\MIT::markdown(
 
 $license->save();
 
-$ruleSet = PhpCsFixer\Config\RuleSet\Php74::create()->withHeader($license->header());
+$ruleSet = PhpCsFixer\Config\RuleSet\Php74::create()
+    ->withHeader($license->header())
+    ->withRules(PhpCsFixer\Config\Rules::fromArray([
+        'mb_str_functions' => false,
+    ]));
 
 $finder = Finder::create()
     ->exclude([

@@ -27,6 +27,7 @@ This project provides the following rules for [`rector/rector`](https://github.c
 
 - [`Ergebnis\Rector\Rules\Arrays\SortAssociativeArrayByKeyRector`](https://github.com/ergebnis/rector-rules#arrayssortassociativearraybykeyrector)
 - [`Ergebnis\Rector\Rules\Faker\GeneratorPropertyFetchToMethodCallRector`](https://github.com/ergebnis/rector-rules#fakergeneratorpropertyfetchtomethodcallrector)
+- [`Ergebnis\Rector\Rules\Files\UseImportRelativeToNamespacePrefixRector`](https://github.com/ergebnis/rector-rules#filesrelativenamespaceimportrector)
 
 ### Arrays
 
@@ -74,6 +75,37 @@ This rule replaces references to deprecated properties of `Faker\Generator` with
 - $faker->boolean;
 + $faker->boolean();
 ```
+
+### Files
+
+#### `Files\UseImportRelativeToNamespacePrefixRector`
+
+This rule replaces imports like `use Foo\Bar\Baz;` with parent namespace imports like `use Foo\Bar;` and updates all references to use relative names like `Bar\Baz`.
+
+```diff
+ <?php
+
+ namespace App;
+
+-use Example\Core\AbstractController;
+-use Example\Core\Routing\Attribute\Route;
++use Example\Core;
+ use Psr\Http\Message\ResponseInterface;
+
+-final class ExampleController extends AbstractController
++final class ExampleController extends Core\AbstractController
+ {
+-    #[Route(path: '/example', name: 'example')]
++    #[Core\Routing\Attribute\Route(path: '/example', name: 'example')]
+     public function dashboard(): ResponseInterface
+     {
+     }
+ }
+```
+
+##### Configuration
+
+- `namespacePrefixes`: a list of namespace prefixes to consolidate (e.g., `['Example\Core', 'Example\Domain']`)
 
 ## Changelog
 

@@ -7,6 +7,12 @@ parameters:
 			path: src/Faker/GeneratorPropertyFetchToMethodCallRector.php
 
 		-
+			message: '#^Parameter \#1 \$node \(PhpParser\\Node\\Stmt\\Namespace_\) of method Ergebnis\\Rector\\Rules\\Files\\UseImportRelativeToNamespacePrefixRector\:\:refactor\(\) should be contravariant with parameter \$node \(PhpParser\\Node\) of method Rector\\Contract\\Rector\\RectorInterface\:\:refactor\(\)$#'
+			identifier: method.childParameterType
+			count: 3
+			path: src/Files/UseImportRelativeToNamespacePrefixRector.php
+
+		-
 			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Arrays\\SortAssociativeArrayByKeyRectorWithComparisonFunctionStrcasecmpTest\:\:provideFilePathsPhp74\(\) return type has no value type specified in iterable type iterable\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -71,3 +77,27 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: test/Unit/Faker/GeneratorPropertyFetchToMethodCallRectorTest.php
+
+		-
+			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Files\\UseImportRelativeToNamespacePrefixRectorWithMultipleNamespacePrefixesTest\:\:provideDataOnPhp7\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: test/Unit/Files/UseImportRelativeToNamespacePrefixRectorWithMultipleNamespacePrefixesTest.php
+
+		-
+			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Files\\UseImportRelativeToNamespacePrefixRectorWithMultipleNamespacePrefixesTest\:\:provideDataOnPhp8\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: test/Unit/Files/UseImportRelativeToNamespacePrefixRectorWithMultipleNamespacePrefixesTest.php
+
+		-
+			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Files\\UseImportRelativeToNamespacePrefixRectorWithSingleNamespacePrefixTest\:\:provideDataOnPhp7\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: test/Unit/Files/UseImportRelativeToNamespacePrefixRectorWithSingleNamespacePrefixTest.php
+
+		-
+			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Files\\UseImportRelativeToNamespacePrefixRectorWithSingleNamespacePrefixTest\:\:provideDataOnPhp8\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: test/Unit/Files/UseImportRelativeToNamespacePrefixRectorWithSingleNamespacePrefixTest.php

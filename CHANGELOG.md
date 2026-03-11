@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 For a full diff see [`1.10.0...main`][1.10.0...main].
 
+### Added
+
+- Added `Rules\Files\UseImportRelativeToNamespacePrefixRector` to allow replacing sub-namespace imports with parent namespace imports and updating references to use relative names ([#291]), by [@localheinz]
+
 ## [`1.10.0`][1.10.0]
 
 For a full diff see [`1.9.0...1.10.0`][1.9.0...1.10.0].
@@ -225,5 +229,6 @@ For a full diff see [`fd198f0...0.1.0`][fd198f0...0.1.0].
 [#265]: https://github.com/ergebnis/rector-rules/pull/265
 [#281]: https://github.com/ergebnis/rector-rules/pull/281
 [#290]: https://github.com/ergebnis/rector-rules/pull/290
+[#291]: https://github.com/ergebnis/rector-rules/pull/291
 
 [@localheinz]: https://github.com/localheinz

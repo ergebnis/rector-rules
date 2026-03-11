@@ -10,6 +10,7 @@
     "Rector\\Contract\\Rector\\ConfigurableRectorInterface",
     "Rector\\Rector\\AbstractRector",
     "Rector\\Reflection\\ReflectionResolver",
+    "Rector\\PhpParser\\Node\\FileNode",
     "self",
     "string",
     "Symplify\\RuleDocGenerator\\ValueObject\\CodeSample\\CodeSample",

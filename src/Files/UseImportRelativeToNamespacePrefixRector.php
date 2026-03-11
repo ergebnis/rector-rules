@@ -15,6 +15,7 @@ namespace Ergebnis\Rector\Rules\Files;
 
 use PhpParser\Node;
 use Rector\Contract;
+use Rector\PhpParser;
 use Rector\Rector;
 use Symplify\RuleDocGenerator;
 
@@ -30,7 +31,7 @@ final class UseImportRelativeToNamespacePrefixRector extends Rector\AbstractRect
     public function getNodeTypes(): array
     {
         return [
-            Node\Stmt\Namespace_::class,
+            PhpParser\Node\FileNode::class,
         ];
     }
 
@@ -115,14 +116,25 @@ CODE_SAMPLE
     }
 
     /**
-     * @param Node\Stmt\Namespace_ $node
+     * @param PhpParser\Node\FileNode $node
      */
     public function refactor(Node $node): ?Node
     {
+        /** @var PhpParser\Node\FileNode $node */
+        if ($node->isNamespaced()) {
+            $containerNode = $node->getNamespace();
+
+            if (!$containerNode instanceof Node\Stmt\Namespace_) {
+                return null;
+            }
+        } else {
+            $containerNode = $node;
+        }
+
         $changed = false;
 
         foreach ($this->namespacePrefixes as $namespacePrefix) {
-            if ($this->processNamespacePrefix($node, $namespacePrefix)) {
+            if ($this->processNamespacePrefix($containerNode, $namespacePrefix)) {
                 $changed = true;
             }
         }
@@ -134,8 +146,11 @@ CODE_SAMPLE
         return $node;
     }
 
+    /**
+     * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
+     */
     private function processNamespacePrefix(
-        Node\Stmt\Namespace_ $namespace,
+        Node $containerNode,
         string $namespacePrefix
     ): bool {
         /** @var array<string, string> $aliasToRelativePath */
@@ -152,7 +167,7 @@ CODE_SAMPLE
 
         $parentAlias = $parts[\count($parts) - 1];
 
-        foreach ($namespace->stmts as $statement) {
+        foreach ($containerNode->stmts as $statement) {
             if (!$statement instanceof Node\Stmt\Use_) {
                 continue;
             }
@@ -191,19 +206,19 @@ CODE_SAMPLE
             return false;
         }
 
-        if (self::parentAliasCollidesWithExistingImport($namespace, $namespacePrefix, $parentAlias)) {
+        if (self::parentAliasCollidesWithExistingImport($containerNode, $namespacePrefix, $parentAlias)) {
             return false;
         }
 
-        $this->replaceNamesInNamespace(
-            $namespace,
+        $this->replaceNamesInStatements(
+            $containerNode,
             $aliasToRelativePath,
             $namespacePrefix,
             $parentAlias,
         );
 
         self::removeSubImportsAndAddParentImport(
-            $namespace,
+            $containerNode,
             $namespacePrefix,
             $hasParentImport,
         );
@@ -212,17 +227,18 @@ CODE_SAMPLE
     }
 
     /**
-     * @param array<string, string> $aliasToRelativePath
+     * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
+     * @param array<string, string>                        $aliasToRelativePath
      */
-    private function replaceNamesInNamespace(
-        Node\Stmt\Namespace_ $namespace,
+    private function replaceNamesInStatements(
+        Node $containerNode,
         array $aliasToRelativePath,
         string $prefix,
         string $parentAlias
     ): void {
         $prefixWithSeparator = $prefix . '\\';
 
-        $this->traverseNodesWithCallable($namespace->stmts, static function (Node $node) use ($aliasToRelativePath, $prefixWithSeparator, $parentAlias): ?Node {
+        $this->traverseNodesWithCallable($containerNode->stmts, static function (Node $node) use ($aliasToRelativePath, $prefixWithSeparator, $parentAlias): ?Node {
             if ($node instanceof Node\Stmt\Use_) {
                 return null;
             }
@@ -272,14 +288,17 @@ CODE_SAMPLE
         });
     }
 
+    /**
+     * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
+     */
     private static function parentAliasCollidesWithExistingImport(
-        Node\Stmt\Namespace_ $namespace,
+        Node $containerNode,
         string $prefix,
         string $parentAlias
     ): bool {
         $prefixWithSeparator = $prefix . '\\';
 
-        foreach ($namespace->stmts as $stmt) {
+        foreach ($containerNode->stmts as $stmt) {
             if (!$stmt instanceof Node\Stmt\Use_) {
                 continue;
             }
@@ -308,8 +327,11 @@ CODE_SAMPLE
         return false;
     }
 
+    /**
+     * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
+     */
     private static function removeSubImportsAndAddParentImport(
-        Node\Stmt\Namespace_ $namespace,
+        Node $containerNode,
         string $prefix,
         bool $hasParentImport
     ): void {
@@ -321,7 +343,7 @@ CODE_SAMPLE
         /** @var list<int> $indicesToRemove */
         $indicesToRemove = [];
 
-        foreach ($namespace->stmts as $index => $stmt) {
+        foreach ($containerNode->stmts as $index => $stmt) {
             if (!$stmt instanceof Node\Stmt\Use_) {
                 continue;
             }
@@ -365,7 +387,7 @@ CODE_SAMPLE
 
         if (!$hasParentImport && null !== $firstMatchIndex) {
             /** @var Node\Stmt\Use_ $firstMatchNode */
-            $firstMatchNode = $namespace->stmts[(int) $firstMatchIndex];
+            $firstMatchNode = $containerNode->stmts[(int) $firstMatchIndex];
 
             $firstMatchNode->uses = [
                 new Node\UseItem(new Node\Name($prefix)),
@@ -378,7 +400,7 @@ CODE_SAMPLE
 
         foreach (\array_reverse($indicesToRemove) as $index) {
             \array_splice(
-                $namespace->stmts,
+                $containerNode->stmts,
                 $index,
                 1,
             );

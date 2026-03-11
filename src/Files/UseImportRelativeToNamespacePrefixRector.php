@@ -233,12 +233,12 @@ CODE_SAMPLE
     private function replaceNamesInStatements(
         Node $containerNode,
         array $aliasToRelativePath,
-        string $prefix,
+        string $namespacePrefix,
         string $parentAlias
     ): void {
-        $prefixWithSeparator = $prefix . '\\';
+        $namespacePrefixWithSeparator = $namespacePrefix . '\\';
 
-        $this->traverseNodesWithCallable($containerNode->stmts, static function (Node $node) use ($aliasToRelativePath, $prefixWithSeparator, $parentAlias): ?Node {
+        $this->traverseNodesWithCallable($containerNode->stmts, static function (Node $node) use ($aliasToRelativePath, $namespacePrefixWithSeparator, $parentAlias): ?Node {
             if ($node instanceof Node\Stmt\Use_) {
                 return null;
             }
@@ -250,13 +250,13 @@ CODE_SAMPLE
             if ($node instanceof Node\Name\FullyQualified) {
                 $fullName = $node->toString();
 
-                if (\strpos($fullName, $prefixWithSeparator) !== 0) {
+                if (\strpos($fullName, $namespacePrefixWithSeparator) !== 0) {
                     return null;
                 }
 
                 $relativePath = \substr(
                     $fullName,
-                    \strlen($prefixWithSeparator),
+                    \strlen($namespacePrefixWithSeparator),
                 );
 
                 return new Node\Name($parentAlias . '\\' . $relativePath);
@@ -293,10 +293,10 @@ CODE_SAMPLE
      */
     private static function parentAliasCollidesWithExistingImport(
         Node $containerNode,
-        string $prefix,
+        string $namespacePrefix,
         string $parentAlias
     ): bool {
-        $prefixWithSeparator = $prefix . '\\';
+        $namespacePrefixWithSeparator = $namespacePrefix . '\\';
 
         foreach ($containerNode->stmts as $stmt) {
             if (!$stmt instanceof Node\Stmt\Use_) {
@@ -310,11 +310,11 @@ CODE_SAMPLE
             foreach ($stmt->uses as $use) {
                 $name = $use->name->toString();
 
-                if ($name === $prefix) {
+                if ($name === $namespacePrefix) {
                     continue;
                 }
 
-                if (\strpos($name, $prefixWithSeparator) === 0) {
+                if (\strpos($name, $namespacePrefixWithSeparator) === 0) {
                     continue;
                 }
 
@@ -332,10 +332,10 @@ CODE_SAMPLE
      */
     private static function removeSubImportsAndAddParentImport(
         Node $containerNode,
-        string $prefix,
+        string $namespacePrefix,
         bool $hasParentImport
     ): void {
-        $prefixWithSeparator = $prefix . '\\';
+        $namespacePrefixWithSeparator = $namespacePrefix . '\\';
 
         /** @var ?int $firstMatchIndex */
         $firstMatchIndex = null;
@@ -357,7 +357,7 @@ CODE_SAMPLE
             foreach ($stmt->uses as $use) {
                 $name = $use->name->toString();
 
-                if ($name === $prefix) {
+                if ($name === $namespacePrefix) {
                     if (null === $firstMatchIndex) {
                         $firstMatchIndex = $index;
                     }
@@ -367,7 +367,7 @@ CODE_SAMPLE
                     continue;
                 }
 
-                if (\strpos($name, $prefixWithSeparator) === 0) {
+                if (\strpos($name, $namespacePrefixWithSeparator) === 0) {
                     if (null === $firstMatchIndex) {
                         $firstMatchIndex = $index;
                     }
@@ -390,7 +390,7 @@ CODE_SAMPLE
             $firstMatchNode = $containerNode->stmts[(int) $firstMatchIndex];
 
             $firstMatchNode->uses = [
-                new Node\UseItem(new Node\Name($prefix)),
+                new Node\UseItem(new Node\Name($namespacePrefix)),
             ];
 
             $indicesToRemove = \array_filter($indicesToRemove, static function (int $index) use ($firstMatchIndex): bool {

@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 For a full diff see [`1.9.0...main`][1.9.0...main].
 
-### Enhancement
+### Added
 
 - Added support for PHP 8.5 ([#281]), by [@localheinz]
 

@@ -31,11 +31,12 @@ final class ExampleController extends AbstractController
 
 namespace Example\App;
 
-use Example\Core;
+use Example\Core\AbstractController;
+use Example\Core\Routing;
 use Example\Domain;
 use Psr\Http;
 
-final class ExampleController extends Core\AbstractController
+final class ExampleController extends AbstractController
 {
     /**
      * @var UserRepository
@@ -49,7 +50,7 @@ final class ExampleController extends Core\AbstractController
 
     public function dashboard(): Http\Message\ResponseInterface
     {
-        Core\Routing\Attribute\Route::create('/example');
+        Routing\Attribute\Route::create('/example');
     }
 }
 

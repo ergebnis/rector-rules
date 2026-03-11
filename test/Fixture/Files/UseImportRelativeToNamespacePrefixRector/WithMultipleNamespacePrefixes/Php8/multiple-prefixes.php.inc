@@ -31,11 +31,12 @@ final class ExampleController extends AbstractController
 
 namespace Example\App;
 
-use Example\Core;
+use Example\Core\AbstractController;
+use Example\Core\Routing;
 use Example\Domain;
 use Psr\Http;
 
-final class ExampleController extends Core\AbstractController
+final class ExampleController extends AbstractController
 {
     /**
      * @var UserRepository
@@ -47,7 +48,7 @@ final class ExampleController extends Core\AbstractController
         $this->userRepository = $userRepository;
     }
 
-    #[Core\Routing\Attribute\Route(path: '/example', name: 'example')]
+    #[Routing\Attribute\Route(path: '/example', name: 'example')]
     public function dashboard(): Http\Message\ResponseInterface
     {
     }

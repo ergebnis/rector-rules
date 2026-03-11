@@ -33,6 +33,12 @@ return static function (Config\RectorConfig $rectorConfig): void {
         Rules\Faker\GeneratorPropertyFetchToMethodCallRector::class,
     ]);
 
+    $rectorConfig->ruleWithConfiguration(Rules\Files\UseImportRelativeToNamespacePrefixRector::class, [
+        'namespacePrefixes' => [
+            'Ergebnis\Rector\Rules',
+        ],
+    ]);
+
     $rectorConfig->sets([
         PHPUnit\Set\PHPUnitSetList::PHPUNIT_90,
     ]);

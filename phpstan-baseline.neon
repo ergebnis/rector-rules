@@ -7,7 +7,7 @@ parameters:
 			path: src/Faker/GeneratorPropertyFetchToMethodCallRector.php
 
 		-
-			message: '#^Parameter \#1 \$node \(PhpParser\\Node\\Stmt\\Namespace_\) of method Ergebnis\\Rector\\Rules\\Files\\UseImportRelativeToNamespacePrefixRector\:\:refactor\(\) should be contravariant with parameter \$node \(PhpParser\\Node\) of method Rector\\Contract\\Rector\\RectorInterface\:\:refactor\(\)$#'
+			message: '#^Parameter \#1 \$node \(Rector\\PhpParser\\Node\\FileNode\) of method Ergebnis\\Rector\\Rules\\Files\\UseImportRelativeToNamespacePrefixRector\:\:refactor\(\) should be contravariant with parameter \$node \(PhpParser\\Node\) of method Rector\\Contract\\Rector\\RectorInterface\:\:refactor\(\)$#'
 			identifier: method.childParameterType
 			count: 3
 			path: src/Files/UseImportRelativeToNamespacePrefixRector.php

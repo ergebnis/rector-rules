@@ -34,7 +34,7 @@ use Example\Core;
 final class ExampleController
 {
     /**
-     * @var EntityManagerInterface
+     * @var Core\EntityManager\EntityManagerInterface
      */
     private $entityManager;
 

@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 For a full diff see [`1.11.0...main`][1.11.0...main].
 
+### Fixed
+
+- Adjusted `Rules\Files\UseImportRelativeToNamespacePrefixRector` to adjust DocBlocks as well ([#294]), by [@localheinz]
+
 ## [`1.11.0`][1.11.0]
 
 For a full diff see [`1.10.0...1.11.0`][1.10.0...1.11.0].
@@ -236,5 +240,6 @@ For a full diff see [`fd198f0...0.1.0`][fd198f0...0.1.0].
 [#281]: https://github.com/ergebnis/rector-rules/pull/281
 [#290]: https://github.com/ergebnis/rector-rules/pull/290
 [#291]: https://github.com/ergebnis/rector-rules/pull/291
+[#294]: https://github.com/ergebnis/rector-rules/pull/294
 
 [@localheinz]: https://github.com/localheinz

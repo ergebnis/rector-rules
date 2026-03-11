@@ -14,7 +14,11 @@ declare(strict_types=1);
 namespace Ergebnis\Rector\Rules\Files;
 
 use PhpParser\Node;
+use PHPStan\PhpDocParser\Ast;
+use Rector\BetterPhpDocParser;
+use Rector\Comments;
 use Rector\Contract;
+use Rector\PhpDocParser;
 use Rector\PhpParser;
 use Rector\Rector;
 use Symplify\RuleDocGenerator;
@@ -27,6 +31,16 @@ final class UseImportRelativeToNamespacePrefixRector extends Rector\AbstractRect
      * @var list<string>
      */
     private array $namespacePrefixes = [];
+    private BetterPhpDocParser\PhpDocInfo\PhpDocInfoFactory $phpDocInfoFactory;
+    private Comments\NodeDocBlock\DocBlockUpdater $docBlockUpdater;
+
+    public function __construct(
+        BetterPhpDocParser\PhpDocInfo\PhpDocInfoFactory $phpDocInfoFactory,
+        Comments\NodeDocBlock\DocBlockUpdater $docBlockUpdater
+    ) {
+        $this->phpDocInfoFactory = $phpDocInfoFactory;
+        $this->docBlockUpdater = $docBlockUpdater;
+    }
 
     public function getNodeTypes(): array
     {
@@ -217,6 +231,13 @@ CODE_SAMPLE
             $parentAlias,
         );
 
+        $this->replaceNamesInDocBlocks(
+            $containerNode,
+            $aliasToRelativePath,
+            $namespacePrefix,
+            $parentAlias,
+        );
+
         self::removeSubImportsAndAddParentImport(
             $containerNode,
             $namespacePrefix,
@@ -285,6 +306,91 @@ CODE_SAMPLE
                 $newName,
                 $node->getAttributes(),
             );
+        });
+    }
+
+    /**
+     * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
+     * @param array<string, string>                        $aliasToRelativePath
+     */
+    private function replaceNamesInDocBlocks(
+        Node $containerNode,
+        array $aliasToRelativePath,
+        string $namespacePrefix,
+        string $parentAlias
+    ): void {
+        $namespacePrefixWithSeparator = $namespacePrefix . '\\';
+
+        $this->traverseNodesWithCallable($containerNode->stmts, function (Node $node) use ($aliasToRelativePath, $namespacePrefixWithSeparator, $parentAlias): ?Node {
+            if ($node instanceof Node\Stmt\Use_) {
+                return null;
+            }
+
+            $phpDocInfo = $this->phpDocInfoFactory->createFromNode($node);
+
+            if (!$phpDocInfo instanceof BetterPhpDocParser\PhpDocInfo\PhpDocInfo) {
+                return null;
+            }
+
+            $hasChanged = false;
+
+            $phpDocNodeTraverser = new PhpDocParser\PhpDocParser\PhpDocNodeTraverser();
+
+            $phpDocNodeTraverser->traverseWithCallable($phpDocInfo->getPhpDocNode(), '', static function (Ast\Node $phpDocNode) use ($aliasToRelativePath, $namespacePrefixWithSeparator, $parentAlias, &$hasChanged): ?Ast\Type\IdentifierTypeNode {
+                if (!$phpDocNode instanceof Ast\Type\IdentifierTypeNode) {
+                    return null;
+                }
+
+                $name = $phpDocNode->name;
+
+                if (
+                    $phpDocNode instanceof BetterPhpDocParser\ValueObject\Type\FullyQualifiedIdentifierTypeNode
+                    || \strpos($name, '\\') === 0
+                ) {
+                    $name = \ltrim($name, '\\');
+
+                    if (\strpos($name, $namespacePrefixWithSeparator) !== 0) {
+                        return null;
+                    }
+
+                    $relativePath = \substr(
+                        $name,
+                        \strlen($namespacePrefixWithSeparator),
+                    );
+
+                    $hasChanged = true;
+
+                    return new Ast\Type\IdentifierTypeNode($parentAlias . '\\' . $relativePath);
+                }
+
+                $nameParts = \explode('\\', $name);
+                $firstName = $nameParts[0];
+
+                if (!\array_key_exists($firstName, $aliasToRelativePath)) {
+                    return null;
+                }
+
+                $remainingParts = \array_slice(
+                    $nameParts,
+                    1,
+                );
+
+                $newName = $aliasToRelativePath[$firstName];
+
+                if (\count($remainingParts) > 0) {
+                    $newName .= '\\' . \implode('\\', $remainingParts);
+                }
+
+                $hasChanged = true;
+
+                return new Ast\Type\IdentifierTypeNode($newName);
+            });
+
+            if ($hasChanged) {
+                $this->docBlockUpdater->updateRefactoredNodeWithPhpDocInfo($node);
+            }
+
+            return null;
         });
     }
 

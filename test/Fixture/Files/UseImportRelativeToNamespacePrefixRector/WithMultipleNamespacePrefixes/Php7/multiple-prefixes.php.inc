@@ -39,7 +39,7 @@ use Psr\Http;
 final class ExampleController extends AbstractController
 {
     /**
-     * @var UserRepository
+     * @var Domain\UserRepository
      */
     private $userRepository;
 

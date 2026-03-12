@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 For a full diff see [`1.12.0...main`][1.12.0...main].
 
+### Fixed
+
+- Adjusted `Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector` to support overlapping namespace prefixes by deferring to the more specific prefix ([#298]), by [@localheinz]
+
 ## [`1.12.0`][1.12.0]
 
 For a full diff see [`1.11.1...1.12.0`][1.11.1...1.12.0].

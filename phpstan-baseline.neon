@@ -127,6 +127,24 @@ parameters:
 			path: test/Unit/Files/ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorWithSingleNamespacePrefixTest.php
 
 		-
+			message: '''
+				#^Access to constant on deprecated class Ergebnis\\Rector\\Rules\\Files\\UseImportRelativeToNamespacePrefixRector\:
+				use ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector instead$#
+			'''
+			identifier: classConstant.deprecatedClass
+			count: 7
+			path: test/Unit/Files/UseImportRelativeToNamespacePrefixRectorConfigureTest.php
+
+		-
+			message: '''
+				#^Call to method configure\(\) of deprecated class Ergebnis\\Rector\\Rules\\Files\\UseImportRelativeToNamespacePrefixRector\:
+				use ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector instead$#
+			'''
+			identifier: method.deprecatedClass
+			count: 7
+			path: test/Unit/Files/UseImportRelativeToNamespacePrefixRectorConfigureTest.php
+
+		-
 			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Files\\UseImportRelativeToNamespacePrefixRectorWithMultipleNamespacePrefixesTest\:\:provideDataOnPhp7\(\) return type has no value type specified in iterable type iterable\.$#'
 			identifier: missingType.iterableValue
 			count: 1

@@ -19,6 +19,24 @@ parameters:
 			path: src/Files/UseImportRelativeToNamespacePrefixRector.php
 
 		-
+			message: '''
+				#^Access to constant on deprecated class Ergebnis\\Rector\\Rules\\Files\\UseImportRelativeToNamespacePrefixRector\:
+				use ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector instead$#
+			'''
+			identifier: classConstant.deprecatedClass
+			count: 1
+			path: test/Fixture/Files/UseImportRelativeToNamespacePrefixRector/WithMultipleNamespacePrefixes/config.php
+
+		-
+			message: '''
+				#^Access to constant on deprecated class Ergebnis\\Rector\\Rules\\Files\\UseImportRelativeToNamespacePrefixRector\:
+				use ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector instead$#
+			'''
+			identifier: classConstant.deprecatedClass
+			count: 1
+			path: test/Fixture/Files/UseImportRelativeToNamespacePrefixRector/WithSingleNamespacePrefix/config.php
+
+		-
 			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Arrays\\SortAssociativeArrayByKeyRectorWithComparisonFunctionStrcasecmpTest\:\:provideFilePathsPhp74\(\) return type has no value type specified in iterable type iterable\.$#'
 			identifier: missingType.iterableValue
 			count: 1

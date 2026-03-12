@@ -23,6 +23,9 @@ use Rector\PhpParser;
 use Rector\Rector;
 use Symplify\RuleDocGenerator;
 
+/**
+ * @deprecated use ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector instead
+ */
 final class UseImportRelativeToNamespacePrefixRector extends Rector\AbstractRector implements Contract\Rector\ConfigurableRectorInterface
 {
     private const CONFIGURATION_KEY_NAMESPACE_PREFIXES = 'namespacePrefixes';
@@ -134,6 +137,15 @@ CODE_SAMPLE
      */
     public function refactor(Node $node): ?Node
     {
+        @\trigger_error(
+            \sprintf(
+                '%s is deprecated, use %s instead.',
+                self::class,
+                ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class,
+            ),
+            \E_USER_DEPRECATED,
+        );
+
         /** @var PhpParser\Node\FileNode $node */
         if ($node->isNamespaced()) {
             $containerNode = $node->getNamespace();

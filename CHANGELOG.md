@@ -12,6 +12,10 @@ For a full diff see [`1.11.1...main`][1.11.1...main].
 
 - Added `Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector` to replace references to namespaced symbols (classes, functions, constants) whose fully-qualified name starts with a namespace prefix so they are relative to that prefix ([#295]), by [@localheinz]
 
+### Deprecated
+
+- Deprecated `Rules\Files\UseImportRelativeToNamespacePrefixRector` in favor of `Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector` ([#296]), by [@localheinz]
+
 ## [`1.11.1`][1.11.1]
 
 For a full diff see [`1.11.0...1.11.1`][1.11.0...1.11.1].
@@ -252,5 +256,6 @@ For a full diff see [`fd198f0...0.1.0`][fd198f0...0.1.0].
 [#291]: https://github.com/ergebnis/rector-rules/pull/291
 [#294]: https://github.com/ergebnis/rector-rules/pull/294
 [#295]: https://github.com/ergebnis/rector-rules/pull/295
+[#296]: https://github.com/ergebnis/rector-rules/pull/296
 
 [@localheinz]: https://github.com/localheinz

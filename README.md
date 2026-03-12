@@ -27,6 +27,7 @@ This project provides the following rules for [`rector/rector`](https://github.c
 
 - [`Ergebnis\Rector\Rules\Arrays\SortAssociativeArrayByKeyRector`](https://github.com/ergebnis/rector-rules#arrayssortassociativearraybykeyrector)
 - [`Ergebnis\Rector\Rules\Faker\GeneratorPropertyFetchToMethodCallRector`](https://github.com/ergebnis/rector-rules#fakergeneratorpropertyfetchtomethodcallrector)
+- [`Ergebnis\Rector\Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector`](https://github.com/ergebnis/rector-rules#filesreferencenamespacedsymbolsrelativetonamespaceprefixrector)
 - [`Ergebnis\Rector\Rules\Files\UseImportRelativeToNamespacePrefixRector`](https://github.com/ergebnis/rector-rules#filesrelativenamespaceimportrector)
 
 ### Arrays
@@ -77,6 +78,29 @@ This rule replaces references to deprecated properties of `Faker\Generator` with
 ```
 
 ### Files
+
+#### `Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector`
+
+This rule replaces references to namespaced symbols (classes, functions, constants) whose fully-qualified name starts with a namespace prefix so they are relative to that prefix.
+
+```diff
+ <?php
+
+ namespace App;
+
+-use Foo\Bar;
+-use Foo\Bar\Baz\Qux;
++use Foo\Bar\Baz;
+
+-new Bar\Baz\Qux\Quuz();
+-new Qux\Quuz\Grauply();
++new Baz\Qux\Quuz();
++new Baz\Qux\Quuz\Grauply();
+```
+
+##### Configuration
+
+- `namespacePrefixes`: a list of namespace prefixes to consolidate (e.g., `['Foo\Bar\Baz', 'Example\Domain']`)
 
 #### `Files\UseImportRelativeToNamespacePrefixRector`
 

@@ -33,7 +33,7 @@ return static function (Config\RectorConfig $rectorConfig): void {
         Rules\Faker\GeneratorPropertyFetchToMethodCallRector::class,
     ]);
 
-    $rectorConfig->ruleWithConfiguration(Rules\Files\UseImportRelativeToNamespacePrefixRector::class, [
+    $rectorConfig->ruleWithConfiguration(Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class, [
         'namespacePrefixes' => [
             'Ergebnis\Rector\Rules',
         ],

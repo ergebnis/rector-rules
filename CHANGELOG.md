@@ -272,5 +272,6 @@ For a full diff see [`fd198f0...0.1.0`][fd198f0...0.1.0].
 [#295]: https://github.com/ergebnis/rector-rules/pull/295
 [#296]: https://github.com/ergebnis/rector-rules/pull/296
 [#297]: https://github.com/ergebnis/rector-rules/pull/297
+[#298]: https://github.com/ergebnis/rector-rules/pull/298
 
 [@localheinz]: https://github.com/localheinz

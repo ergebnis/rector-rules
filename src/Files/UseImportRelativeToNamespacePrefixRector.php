@@ -54,6 +54,22 @@ final class UseImportRelativeToNamespacePrefixRector extends Rector\AbstractRect
 
     public function configure(array $configuration): void
     {
+        $configurationKeys = [
+            self::CONFIGURATION_KEY_NAMESPACE_PREFIXES,
+        ];
+
+        $unknownConfigurationKeys = \array_diff(
+            \array_keys($configuration),
+            $configurationKeys,
+        );
+
+        if (\count($unknownConfigurationKeys) > 0) {
+            throw new \InvalidArgumentException(\sprintf(
+                'Configuration contains unknown keys: "%s".',
+                \implode('", "', $unknownConfigurationKeys),
+            ));
+        }
+
         $namespacePrefixes = [];
 
         if (\array_key_exists(self::CONFIGURATION_KEY_NAMESPACE_PREFIXES, $configuration)) {

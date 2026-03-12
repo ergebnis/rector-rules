@@ -45,6 +45,23 @@ final class SortAssociativeArrayByKeyRector extends Rector\AbstractRector implem
 
     public function configure(array $configuration): void
     {
+        $configurationKeys = [
+            self::CONFIGURATION_KEY_COMPARISON_FUNCTION,
+            self::CONFIGURATION_KEY_DIRECTION,
+        ];
+
+        $unknownConfigurationKeys = \array_diff(
+            \array_keys($configuration),
+            $configurationKeys,
+        );
+
+        if (\count($unknownConfigurationKeys) > 0) {
+            throw new \InvalidArgumentException(\sprintf(
+                'Configuration contains unknown keys: "%s".',
+                \implode('", "', $unknownConfigurationKeys),
+            ));
+        }
+
         $comparisonFunction = 'strcmp';
 
         if (\array_key_exists(self::CONFIGURATION_KEY_COMPARISON_FUNCTION, $configuration)) {

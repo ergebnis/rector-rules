@@ -182,8 +182,8 @@ CODE_SAMPLE
             $namespacePrefix,
         );
 
-        $prefixAlias = $parts[\count($parts) - 1];
-        $prefixWithSeparator = $namespacePrefix . '\\';
+        $namespacePrefixAlias = $parts[\count($parts) - 1];
+        $namespacePrefixWithSeparator = $namespacePrefix . '\\';
 
         /** @var array<string, string> $importMap */
         $importMap = [];
@@ -210,32 +210,32 @@ CODE_SAMPLE
             }
         }
 
-        if (!self::hasMatchingImports($containerNode, $prefixWithSeparator)) {
+        if (!self::hasMatchingImports($containerNode, $namespacePrefixWithSeparator)) {
             return false;
         }
 
-        if (self::prefixAliasCollidesWithExistingImport($containerNode, $namespacePrefix, $prefixAlias)) {
+        if (self::prefixAliasCollidesWithExistingImport($containerNode, $namespacePrefix, $namespacePrefixAlias)) {
             return false;
         }
 
         $this->rewriteNamesInStatements(
             $containerNode,
-            $prefixAlias,
-            $prefixWithSeparator,
+            $namespacePrefixAlias,
+            $namespacePrefixWithSeparator,
         );
 
         $this->rewriteNamesInDocBlocks(
             $containerNode,
             $importMap,
             $namespacePrefix,
-            $prefixAlias,
-            $prefixWithSeparator,
+            $namespacePrefixAlias,
+            $namespacePrefixWithSeparator,
         );
 
         self::removeMatchingImportsAndAddPrefixImport(
             $containerNode,
             $namespacePrefix,
-            $prefixWithSeparator,
+            $namespacePrefixWithSeparator,
             $hasPrefixImport,
         );
 
@@ -247,7 +247,7 @@ CODE_SAMPLE
      */
     private static function hasMatchingImports(
         Node $containerNode,
-        string $prefixWithSeparator
+        string $namespacePrefixWithSeparator
     ): bool {
         foreach ($containerNode->stmts as $statement) {
             if (!$statement instanceof Node\Stmt\Use_) {
@@ -257,7 +257,7 @@ CODE_SAMPLE
             foreach ($statement->uses as $use) {
                 $name = $use->name->toString();
 
-                if (\strpos($name, $prefixWithSeparator) === 0) {
+                if (\strpos($name, $namespacePrefixWithSeparator) === 0) {
                     return true;
                 }
             }
@@ -271,26 +271,26 @@ CODE_SAMPLE
      */
     private function rewriteNamesInStatements(
         Node $containerNode,
-        string $prefixAlias,
-        string $prefixWithSeparator
+        string $namespacePrefixAlias,
+        string $namespacePrefixWithSeparator
     ): void {
-        $this->traverseNodesWithCallable($containerNode->stmts, static function (Node $node) use ($prefixAlias, $prefixWithSeparator): ?Node {
+        $this->traverseNodesWithCallable($containerNode->stmts, static function (Node $node) use ($namespacePrefixAlias, $namespacePrefixWithSeparator): ?Node {
             if (!$node instanceof Node\Name\FullyQualified) {
                 return null;
             }
 
             $fullName = $node->toString();
 
-            if (\strpos($fullName, $prefixWithSeparator) !== 0) {
+            if (\strpos($fullName, $namespacePrefixWithSeparator) !== 0) {
                 return null;
             }
 
             $relativePath = \substr(
                 $fullName,
-                \strlen($prefixWithSeparator),
+                \strlen($namespacePrefixWithSeparator),
             );
 
-            return new Node\Name($prefixAlias . '\\' . $relativePath);
+            return new Node\Name($namespacePrefixAlias . '\\' . $relativePath);
         });
     }
 
@@ -302,10 +302,10 @@ CODE_SAMPLE
         Node $containerNode,
         array $importMap,
         string $namespacePrefix,
-        string $prefixAlias,
-        string $prefixWithSeparator
+        string $namespacePrefixAlias,
+        string $namespacePrefixWithSeparator
     ): void {
-        $this->traverseNodesWithCallable($containerNode->stmts, function (Node $node) use ($importMap, $namespacePrefix, $prefixAlias, $prefixWithSeparator): ?Node {
+        $this->traverseNodesWithCallable($containerNode->stmts, function (Node $node) use ($importMap, $namespacePrefix, $namespacePrefixAlias, $namespacePrefixWithSeparator): ?Node {
             if ($node instanceof Node\Stmt\Use_) {
                 return null;
             }
@@ -320,7 +320,7 @@ CODE_SAMPLE
 
             $phpDocNodeTraverser = new PhpDocParser\PhpDocParser\PhpDocNodeTraverser();
 
-            $phpDocNodeTraverser->traverseWithCallable($phpDocInfo->getPhpDocNode(), '', static function (Ast\Node $phpDocNode) use ($importMap, $namespacePrefix, $prefixAlias, $prefixWithSeparator, &$hasChanged): ?Ast\Type\IdentifierTypeNode {
+            $phpDocNodeTraverser->traverseWithCallable($phpDocInfo->getPhpDocNode(), '', static function (Ast\Node $phpDocNode) use ($importMap, $namespacePrefix, $namespacePrefixAlias, $namespacePrefixWithSeparator, &$hasChanged): ?Ast\Type\IdentifierTypeNode {
                 if (!$phpDocNode instanceof Ast\Type\IdentifierTypeNode) {
                     return null;
                 }
@@ -333,18 +333,18 @@ CODE_SAMPLE
                 ) {
                     $name = \ltrim($name, '\\');
 
-                    if (\strpos($name, $prefixWithSeparator) !== 0) {
+                    if (\strpos($name, $namespacePrefixWithSeparator) !== 0) {
                         return null;
                     }
 
                     $relativePath = \substr(
                         $name,
-                        \strlen($prefixWithSeparator),
+                        \strlen($namespacePrefixWithSeparator),
                     );
 
                     $hasChanged = true;
 
-                    return new Ast\Type\IdentifierTypeNode($prefixAlias . '\\' . $relativePath);
+                    return new Ast\Type\IdentifierTypeNode($namespacePrefixAlias . '\\' . $relativePath);
                 }
 
                 $nameParts = \explode('\\', $name);
@@ -370,20 +370,20 @@ CODE_SAMPLE
 
                 if (
                     $referenceFqn !== $namespacePrefix
-                    && \strpos($referenceFqn, $prefixWithSeparator) !== 0
+                    && \strpos($referenceFqn, $namespacePrefixWithSeparator) !== 0
                 ) {
                     return null;
                 }
 
                 if ($referenceFqn === $namespacePrefix) {
-                    $newName = $prefixAlias;
+                    $newName = $namespacePrefixAlias;
                 } else {
                     $relativePath = \substr(
                         $referenceFqn,
-                        \strlen($prefixWithSeparator),
+                        \strlen($namespacePrefixWithSeparator),
                     );
 
-                    $newName = $prefixAlias . '\\' . $relativePath;
+                    $newName = $namespacePrefixAlias . '\\' . $relativePath;
                 }
 
                 if ($name === $newName) {
@@ -411,7 +411,7 @@ CODE_SAMPLE
         string $namespacePrefix,
         string $prefixAlias
     ): bool {
-        $prefixWithSeparator = $namespacePrefix . '\\';
+        $namespacePrefixWithSeparator = $namespacePrefix . '\\';
 
         foreach ($containerNode->stmts as $stmt) {
             if (!$stmt instanceof Node\Stmt\Use_) {
@@ -429,7 +429,7 @@ CODE_SAMPLE
                     continue;
                 }
 
-                if (\strpos($name, $prefixWithSeparator) === 0) {
+                if (\strpos($name, $namespacePrefixWithSeparator) === 0) {
                     continue;
                 }
 

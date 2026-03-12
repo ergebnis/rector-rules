@@ -28,6 +28,7 @@ This project provides the following rules for [`rector/rector`](https://github.c
 - [`Ergebnis\Rector\Rules\Arrays\SortAssociativeArrayByKeyRector`](https://github.com/ergebnis/rector-rules#arrayssortassociativearraybykeyrector)
 - [`Ergebnis\Rector\Rules\Faker\GeneratorPropertyFetchToMethodCallRector`](https://github.com/ergebnis/rector-rules#fakergeneratorpropertyfetchtomethodcallrector)
 - [`Ergebnis\Rector\Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector`](https://github.com/ergebnis/rector-rules#filesreferencenamespacedsymbolsrelativetonamespaceprefixrector)
+- [`Ergebnis\Rector\Rules\Traits\RemoveUnusedTraitUseRector`](https://github.com/ergebnis/rector-rules#traitsremoveunusedtraituserector)
 
 ### Arrays
 
@@ -100,6 +101,21 @@ This rule replaces references to namespaced symbols (classes, functions, constan
 ##### Configuration
 
 - `namespacePrefixes`: a list of namespace prefixes to consolidate (e.g., `['Foo\Bar\Baz', 'Example\Domain']`)
+
+### Traits
+
+#### `Traits\RemoveUnusedTraitUseRector`
+
+This rule removes unused trait `use` statements from `final` classes.
+
+```diff
+ <?php
+
+ final class Example
+ {
+-    use SomeTrait;
+ }
+```
 
 ## Changelog
 

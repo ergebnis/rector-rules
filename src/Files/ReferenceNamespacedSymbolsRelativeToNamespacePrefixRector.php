@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Ergebnis\Rector\Rules\Files;
 
 use PhpParser\Node;
+use PhpParser\NodeFinder;
 use PHPStan\PhpDocParser\Ast;
 use Rector\BetterPhpDocParser;
 use Rector\Comments;
@@ -237,6 +238,7 @@ CODE_SAMPLE
         if (
             !$hasDirectMatchingImports
             && !$hasParentImport
+            && !self::hasSourceWrittenFullyQualifiedReferencesMatchingPrefix($containerNode, $namespacePrefixWithSeparator, $moreSpecificNamespacePrefixesWithSeparator)
         ) {
             return false;
         }
@@ -366,6 +368,63 @@ CODE_SAMPLE
         }
 
         return false;
+    }
+
+    /**
+     * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
+     * @param list<string>                                 $moreSpecificNamespacePrefixesWithSeparator
+     */
+    private static function hasSourceWrittenFullyQualifiedReferencesMatchingPrefix(
+        Node $containerNode,
+        string $namespacePrefixWithSeparator,
+        array $moreSpecificNamespacePrefixesWithSeparator
+    ): bool {
+        $nodeFinder = new NodeFinder();
+
+        $match = $nodeFinder->findFirst(
+            $containerNode->stmts,
+            static function (Node $node) use ($namespacePrefixWithSeparator, $moreSpecificNamespacePrefixesWithSeparator): bool {
+                if (!$node instanceof Node\Name\FullyQualified) {
+                    return false;
+                }
+
+                $originalName = $node->getAttribute('originalName');
+
+                if (
+                    $originalName instanceof Node\Name
+                    && !$originalName instanceof Node\Name\FullyQualified
+                ) {
+                    return false;
+                }
+
+                return self::matchesNamespacePrefixExclusively(
+                    $node->toString(),
+                    $namespacePrefixWithSeparator,
+                    $moreSpecificNamespacePrefixesWithSeparator,
+                );
+            },
+        );
+
+        if (null !== $match) {
+            return true;
+        }
+
+        $docBlockPrefix = '\\' . $namespacePrefixWithSeparator;
+
+        $matchInDocBlock = $nodeFinder->findFirst(
+            $containerNode->stmts,
+            static function (Node $node) use ($docBlockPrefix): bool {
+                $docComment = $node->getDocComment();
+
+                if (null === $docComment) {
+                    return false;
+                }
+
+                return \strpos($docComment->getText(), $docBlockPrefix) !== false;
+            },
+        );
+
+        return null !== $matchInDocBlock;
     }
 
     /**
@@ -720,6 +779,53 @@ CODE_SAMPLE
                         $prefixUseStatement,
                     ],
                 );
+            } else {
+                $lastUseIndex = null;
+
+                foreach ($containerNode->stmts as $index => $statement) {
+                    if ($statement instanceof Node\Stmt\Use_) {
+                        $lastUseIndex = $index;
+                    }
+                }
+
+                $prefixUseStatement = new Node\Stmt\Use_([
+                    new Node\UseItem(new Node\Name($namespacePrefix)),
+                ]);
+
+                if (null !== $lastUseIndex) {
+                    \array_splice(
+                        $containerNode->stmts,
+                        (int) $lastUseIndex + 1,
+                        0,
+                        [
+                            $prefixUseStatement,
+                        ],
+                    );
+                } else {
+                    $insertIndex = 0;
+
+                    foreach ($containerNode->stmts as $index => $statement) {
+                        if (
+                            !$statement instanceof Node\Stmt\Declare_
+                            && !$statement instanceof Node\Stmt\Nop
+                        ) {
+                            $insertIndex = $index;
+
+                            break;
+                        }
+
+                        $insertIndex = $index + 1;
+                    }
+
+                    \array_splice(
+                        $containerNode->stmts,
+                        $insertIndex,
+                        0,
+                        [
+                            $prefixUseStatement,
+                        ],
+                    );
+                }
             }
         }
 

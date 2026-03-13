@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 For a full diff see [`1.12.3...main`][1.12.3...main].
 
+### Fixed
+
+- Adjusted `Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector` to handle fully qualified references ([#302]), by [@localheinz]
+
 ## [`1.12.3`][1.12.3]
 
 For a full diff see [`1.12.2...1.12.3`][1.12.2...1.12.3].
@@ -301,5 +305,6 @@ For a full diff see [`fd198f0...0.1.0`][fd198f0...0.1.0].
 [#298]: https://github.com/ergebnis/rector-rules/pull/298
 [#300]: https://github.com/ergebnis/rector-rules/pull/300
 [#301]: https://github.com/ergebnis/rector-rules/pull/301
+[#302]: https://github.com/ergebnis/rector-rules/pull/302
 
 [@localheinz]: https://github.com/localheinz

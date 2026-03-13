@@ -10,7 +10,7 @@ For a full diff see [`1.12.2...main`][1.12.2...main].
 
 ### Fixed
 
-- Adjusted `Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector` to skip rewriting when the namespace prefix alias collides with a class, interface, trait, or enum declared in the same file, by [@localheinz]
+- Adjusted `Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector` to skip rewriting when the namespace prefix alias collides with a class, interface, trait, or enum declared in the same file ([#301]), by [@localheinz]
 
 ## [`1.12.2`][1.12.2]
 
@@ -294,5 +294,6 @@ For a full diff see [`fd198f0...0.1.0`][fd198f0...0.1.0].
 [#297]: https://github.com/ergebnis/rector-rules/pull/297
 [#298]: https://github.com/ergebnis/rector-rules/pull/298
 [#300]: https://github.com/ergebnis/rector-rules/pull/300
+[#301]: https://github.com/ergebnis/rector-rules/pull/301
 
 [@localheinz]: https://github.com/localheinz

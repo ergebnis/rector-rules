@@ -93,8 +93,10 @@ This rule replaces references to namespaced symbols (classes, functions, constan
 
 -new Bar\Baz\Qux\Quuz();
 -new Qux\Quuz\Grauply();
+-new \Foo\Bar\Baz\Qux\Quuz();
 +new Baz\Qux\Quuz();
 +new Baz\Qux\Quuz\Grauply();
++new Baz\Qux\Quuz();
 ```
 
 ##### Configuration

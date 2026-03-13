@@ -4,13 +4,13 @@
 
 The following versions of `ergebnis/rector-rules` have active support:
 
-- `^1.12.3`
+- `^1.12.4`
 
 ## Unsupported Versions
 
 The following versions of `ergebnis/rector-rules` have reached their end of life:
 
-- `<1.12.3`
+- `<1.12.4`
 
 ## Reporting a Vulnerability
 

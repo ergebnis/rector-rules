@@ -223,7 +223,21 @@ CODE_SAMPLE
             }
         }
 
-        if (!self::hasMatchingImports($containerNode, $namespacePrefixWithSeparator, $moreSpecificNamespacePrefixesWithSeparator)) {
+        $hasDirectMatchingImports = self::hasMatchingImports(
+            $containerNode,
+            $namespacePrefixWithSeparator,
+            $moreSpecificNamespacePrefixesWithSeparator,
+        );
+
+        $hasParentImport = self::hasParentImport(
+            $containerNode,
+            $namespacePrefix,
+        );
+
+        if (
+            !$hasDirectMatchingImports
+            && !$hasParentImport
+        ) {
             return false;
         }
 
@@ -231,14 +245,14 @@ CODE_SAMPLE
             return false;
         }
 
-        $this->rewriteNamesInStatements(
+        $statementsRewritten = $this->rewriteNamesInStatements(
             $containerNode,
             $namespacePrefixAlias,
             $namespacePrefixWithSeparator,
             $moreSpecificNamespacePrefixesWithSeparator,
         );
 
-        $this->rewriteNamesInDocBlocks(
+        $docBlocksRewritten = $this->rewriteNamesInDocBlocks(
             $containerNode,
             $importMap,
             $namespacePrefix,
@@ -246,6 +260,14 @@ CODE_SAMPLE
             $namespacePrefixWithSeparator,
             $moreSpecificNamespacePrefixesWithSeparator,
         );
+
+        if (
+            !$hasDirectMatchingImports
+            && !$statementsRewritten
+            && !$docBlocksRewritten
+        ) {
+            return false;
+        }
 
         self::removeMatchingImportsAndAddPrefixImport(
             $containerNode,
@@ -310,6 +332,40 @@ CODE_SAMPLE
 
     /**
      * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
+     */
+    private static function hasParentImport(
+        Node $containerNode,
+        string $namespacePrefix
+    ): bool {
+        $namespacePrefixWithSeparator = $namespacePrefix . '\\';
+
+        foreach ($containerNode->stmts as $statement) {
+            if (!$statement instanceof Node\Stmt\Use_) {
+                continue;
+            }
+
+            if (Node\Stmt\Use_::TYPE_NORMAL !== $statement->type) {
+                continue;
+            }
+
+            foreach ($statement->uses as $use) {
+                $name = $use->name->toString();
+                $nameWithSeparator = $name . '\\';
+
+                if (
+                    \strlen($nameWithSeparator) < \strlen($namespacePrefixWithSeparator)
+                    && \strpos($namespacePrefixWithSeparator, $nameWithSeparator) === 0
+                ) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
      * @param list<string>                                 $moreSpecificNamespacePrefixesWithSeparator
      */
     private function rewriteNamesInStatements(
@@ -317,8 +373,10 @@ CODE_SAMPLE
         string $namespacePrefixAlias,
         string $namespacePrefixWithSeparator,
         array $moreSpecificNamespacePrefixesWithSeparator
-    ): void {
-        $this->traverseNodesWithCallable($containerNode->stmts, static function (Node $node) use ($namespacePrefixAlias, $namespacePrefixWithSeparator, $moreSpecificNamespacePrefixesWithSeparator): ?Node {
+    ): bool {
+        $hasChanged = false;
+
+        $this->traverseNodesWithCallable($containerNode->stmts, static function (Node $node) use ($namespacePrefixAlias, $namespacePrefixWithSeparator, $moreSpecificNamespacePrefixesWithSeparator, &$hasChanged): ?Node {
             if (!$node instanceof Node\Name\FullyQualified) {
                 return null;
             }
@@ -334,8 +392,12 @@ CODE_SAMPLE
                 \strlen($namespacePrefixWithSeparator),
             );
 
+            $hasChanged = true;
+
             return new Node\Name($namespacePrefixAlias . '\\' . $relativePath);
         });
+
+        return $hasChanged;
     }
 
     /**
@@ -350,8 +412,10 @@ CODE_SAMPLE
         string $namespacePrefixAlias,
         string $namespacePrefixWithSeparator,
         array $moreSpecificNamespacePrefixesWithSeparator
-    ): void {
-        $this->traverseNodesWithCallable($containerNode->stmts, function (Node $node) use ($importMap, $namespacePrefix, $namespacePrefixAlias, $namespacePrefixWithSeparator, $moreSpecificNamespacePrefixesWithSeparator): ?Node {
+    ): bool {
+        $anyDocBlockChanged = false;
+
+        $this->traverseNodesWithCallable($containerNode->stmts, function (Node $node) use (&$anyDocBlockChanged, $importMap, $namespacePrefix, $namespacePrefixAlias, $namespacePrefixWithSeparator, $moreSpecificNamespacePrefixesWithSeparator): ?Node {
             if ($node instanceof Node\Stmt\Use_) {
                 return null;
             }
@@ -442,11 +506,15 @@ CODE_SAMPLE
             });
 
             if ($hasChanged) {
+                $anyDocBlockChanged = true;
+
                 $this->docBlockUpdater->updateRefactoredNodeWithPhpDocInfo($node);
             }
 
             return null;
         });
+
+        return $anyDocBlockChanged;
     }
 
     /**
@@ -575,6 +643,53 @@ CODE_SAMPLE
 
                     return $index;
                 }, $indicesToRemove);
+            }
+        }
+
+        if (
+            !$hasPrefixImport
+            && null === $firstMatchIndex
+        ) {
+            /** @var ?int $parentImportIndex */
+            $parentImportIndex = null;
+
+            foreach ($containerNode->stmts as $index => $statement) {
+                if (!$statement instanceof Node\Stmt\Use_) {
+                    continue;
+                }
+
+                if (Node\Stmt\Use_::TYPE_NORMAL !== $statement->type) {
+                    continue;
+                }
+
+                foreach ($statement->uses as $use) {
+                    $name = $use->name->toString();
+                    $nameWithSeparator = $name . '\\';
+
+                    if (
+                        \strlen($nameWithSeparator) < \strlen($namespacePrefixWithSeparator)
+                        && \strpos($namespacePrefixWithSeparator, $nameWithSeparator) === 0
+                    ) {
+                        $parentImportIndex = $index;
+
+                        break 2;
+                    }
+                }
+            }
+
+            if (null !== $parentImportIndex) {
+                $prefixUseStatement = new Node\Stmt\Use_([
+                    new Node\UseItem(new Node\Name($namespacePrefix)),
+                ]);
+
+                \array_splice(
+                    $containerNode->stmts,
+                    (int) $parentImportIndex + 1,
+                    0,
+                    [
+                        $prefixUseStatement,
+                    ],
+                );
             }
         }
 

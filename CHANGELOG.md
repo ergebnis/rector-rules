@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 For a full diff see [`1.12.1...main`][1.12.1...main].
 
+### Fixed
+
+- Adjusted `Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector` to support parent namespace imports ([#300]), by [@localheinz]
+
 ## [`1.12.1`][1.12.1]
 
 For a full diff see [`1.12.0...1.12.1`][1.12.0...1.12.1].
@@ -279,5 +283,6 @@ For a full diff see [`fd198f0...0.1.0`][fd198f0...0.1.0].
 [#296]: https://github.com/ergebnis/rector-rules/pull/296
 [#297]: https://github.com/ergebnis/rector-rules/pull/297
 [#298]: https://github.com/ergebnis/rector-rules/pull/298
+[#300]: https://github.com/ergebnis/rector-rules/pull/300
 
 [@localheinz]: https://github.com/localheinz

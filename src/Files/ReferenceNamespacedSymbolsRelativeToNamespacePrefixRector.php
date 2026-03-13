@@ -245,6 +245,10 @@ CODE_SAMPLE
             return false;
         }
 
+        if (self::prefixAliasCollidesWithDeclaredSymbol($containerNode, $namespacePrefixAlias)) {
+            return false;
+        }
+
         $statementsRewritten = $this->rewriteNamesInStatements(
             $containerNode,
             $namespacePrefixAlias,
@@ -548,6 +552,32 @@ CODE_SAMPLE
                 }
 
                 if ($use->getAlias()->toString() === $prefixAlias) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
+     */
+    private static function prefixAliasCollidesWithDeclaredSymbol(
+        Node $containerNode,
+        string $prefixAlias
+    ): bool {
+        foreach ($containerNode->stmts as $statement) {
+            if (
+                $statement instanceof Node\Stmt\Class_
+                || $statement instanceof Node\Stmt\Interface_
+                || $statement instanceof Node\Stmt\Trait_
+                || $statement instanceof Node\Stmt\Enum_
+            ) {
+                if (
+                    null !== $statement->name
+                    && $statement->name->toString() === $prefixAlias
+                ) {
                     return true;
                 }
             }

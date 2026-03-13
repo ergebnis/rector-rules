@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 For a full diff see [`1.12.2...main`][1.12.2...main].
 
+### Fixed
+
+- Adjusted `Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector` to skip rewriting when the namespace prefix alias collides with a class, interface, trait, or enum declared in the same file, by [@localheinz]
+
 ## [`1.12.2`][1.12.2]
 
 For a full diff see [`1.12.1...1.12.2`][1.12.1...1.12.2].

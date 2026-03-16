@@ -60,7 +60,7 @@ final class ExampleService
     }
 
     /**
-     * @param \Example\Core $core
+     * @param Core $core
      */
     public function withFqn($core)
     {

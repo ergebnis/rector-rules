@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 For a full diff see [`1.12.4...main`][1.12.4...main].
 
+### Fixed
+
+- Adjusted `Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector` to also rewrite fully-qualified references to namespaced symbols identical to a namespace prefix ([#303]), by [@localheinz]
+
 ## [`1.12.4`][1.12.4]
 
 For a full diff see [`1.12.3...1.12.4`][1.12.3...1.12.4].
@@ -311,5 +315,6 @@ For a full diff see [`fd198f0...0.1.0`][fd198f0...0.1.0].
 [#300]: https://github.com/ergebnis/rector-rules/pull/300
 [#301]: https://github.com/ergebnis/rector-rules/pull/301
 [#302]: https://github.com/ergebnis/rector-rules/pull/302
+[#303]: https://github.com/ergebnis/rector-rules/pull/303
 
 [@localheinz]: https://github.com/localheinz

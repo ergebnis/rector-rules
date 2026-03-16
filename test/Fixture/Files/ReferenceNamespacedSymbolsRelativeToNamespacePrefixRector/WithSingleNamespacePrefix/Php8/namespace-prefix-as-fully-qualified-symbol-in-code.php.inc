@@ -26,7 +26,7 @@ final class ExampleController extends Core\Controller\AbstractController
 {
     public function dashboard(): ResponseInterface
     {
-        $core = new \Example\Core();
+        $core = new Core();
     }
 }
 

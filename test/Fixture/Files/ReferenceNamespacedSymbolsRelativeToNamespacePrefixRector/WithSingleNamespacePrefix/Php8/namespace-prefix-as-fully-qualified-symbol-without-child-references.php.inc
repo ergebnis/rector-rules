@@ -13,3 +13,20 @@ final class ExampleController
 }
 
 ?>
+-----
+<?php
+
+namespace Example\App;
+
+use Psr\Http\Message\ResponseInterface;
+use Example\Core;
+
+final class ExampleController
+{
+    public function dashboard(): ResponseInterface
+    {
+        $core = new Core();
+    }
+}
+
+?>

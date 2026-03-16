@@ -205,20 +205,34 @@ CODE_SAMPLE
         $hasPrefixImport = false;
 
         foreach ($containerNode->stmts as $statement) {
-            if (!$statement instanceof Node\Stmt\Use_) {
-                continue;
-            }
+            if ($statement instanceof Node\Stmt\Use_) {
+                if (Node\Stmt\Use_::TYPE_NORMAL === $statement->type) {
+                    foreach ($statement->uses as $use) {
+                        $alias = $use->getAlias()->toString();
 
-            if (Node\Stmt\Use_::TYPE_NORMAL === $statement->type) {
-                foreach ($statement->uses as $use) {
-                    $alias = $use->getAlias()->toString();
+                        $fqn = $use->name->toString();
 
-                    $fqn = $use->name->toString();
+                        $importMap[$alias] = $fqn;
 
-                    $importMap[$alias] = $fqn;
+                        if ($fqn === $namespacePrefix) {
+                            $hasPrefixImport = true;
+                        }
+                    }
+                }
+            } elseif ($statement instanceof Node\Stmt\GroupUse) {
+                if (Node\Stmt\Use_::TYPE_NORMAL === $statement->type) {
+                    $prefix = $statement->prefix->toString();
 
-                    if ($fqn === $namespacePrefix) {
-                        $hasPrefixImport = true;
+                    foreach ($statement->uses as $use) {
+                        $alias = $use->getAlias()->toString();
+
+                        $fqn = $prefix . '\\' . $use->name->toString();
+
+                        $importMap[$alias] = $fqn;
+
+                        if ($fqn === $namespacePrefix) {
+                            $hasPrefixImport = true;
+                        }
                     }
                 }
             }
@@ -320,15 +334,23 @@ CODE_SAMPLE
         array $moreSpecificNamespacePrefixesWithSeparator
     ): bool {
         foreach ($containerNode->stmts as $statement) {
-            if (!$statement instanceof Node\Stmt\Use_) {
-                continue;
-            }
+            if ($statement instanceof Node\Stmt\Use_) {
+                foreach ($statement->uses as $use) {
+                    $name = $use->name->toString();
 
-            foreach ($statement->uses as $use) {
-                $name = $use->name->toString();
+                    if (self::matchesNamespacePrefixExclusively($name, $namespacePrefixWithSeparator, $moreSpecificNamespacePrefixesWithSeparator)) {
+                        return true;
+                    }
+                }
+            } elseif ($statement instanceof Node\Stmt\GroupUse) {
+                $prefix = $statement->prefix->toString();
 
-                if (self::matchesNamespacePrefixExclusively($name, $namespacePrefixWithSeparator, $moreSpecificNamespacePrefixesWithSeparator)) {
-                    return true;
+                foreach ($statement->uses as $use) {
+                    $name = $prefix . '\\' . $use->name->toString();
+
+                    if (self::matchesNamespacePrefixExclusively($name, $namespacePrefixWithSeparator, $moreSpecificNamespacePrefixesWithSeparator)) {
+                        return true;
+                    }
                 }
             }
         }
@@ -346,23 +368,39 @@ CODE_SAMPLE
         $namespacePrefixWithSeparator = $namespacePrefix . '\\';
 
         foreach ($containerNode->stmts as $statement) {
-            if (!$statement instanceof Node\Stmt\Use_) {
-                continue;
-            }
+            if ($statement instanceof Node\Stmt\Use_) {
+                if (Node\Stmt\Use_::TYPE_NORMAL !== $statement->type) {
+                    continue;
+                }
 
-            if (Node\Stmt\Use_::TYPE_NORMAL !== $statement->type) {
-                continue;
-            }
+                foreach ($statement->uses as $use) {
+                    $name = $use->name->toString();
+                    $nameWithSeparator = $name . '\\';
 
-            foreach ($statement->uses as $use) {
-                $name = $use->name->toString();
-                $nameWithSeparator = $name . '\\';
+                    if (
+                        \strlen($nameWithSeparator) < \strlen($namespacePrefixWithSeparator)
+                        && \strpos($namespacePrefixWithSeparator, $nameWithSeparator) === 0
+                    ) {
+                        return true;
+                    }
+                }
+            } elseif ($statement instanceof Node\Stmt\GroupUse) {
+                if (Node\Stmt\Use_::TYPE_NORMAL !== $statement->type) {
+                    continue;
+                }
 
-                if (
-                    \strlen($nameWithSeparator) < \strlen($namespacePrefixWithSeparator)
-                    && \strpos($namespacePrefixWithSeparator, $nameWithSeparator) === 0
-                ) {
-                    return true;
+                $prefix = $statement->prefix->toString();
+
+                foreach ($statement->uses as $use) {
+                    $name = $prefix . '\\' . $use->name->toString();
+                    $nameWithSeparator = $name . '\\';
+
+                    if (
+                        \strlen($nameWithSeparator) < \strlen($namespacePrefixWithSeparator)
+                        && \strpos($namespacePrefixWithSeparator, $nameWithSeparator) === 0
+                    ) {
+                        return true;
+                    }
                 }
             }
         }
@@ -612,27 +650,47 @@ CODE_SAMPLE
         $namespacePrefixWithSeparator = $namespacePrefix . '\\';
 
         foreach ($containerNode->stmts as $stmt) {
-            if (!$stmt instanceof Node\Stmt\Use_) {
-                continue;
-            }
-
-            if (Node\Stmt\Use_::TYPE_NORMAL !== $stmt->type) {
-                continue;
-            }
-
-            foreach ($stmt->uses as $use) {
-                $name = $use->name->toString();
-
-                if ($name === $namespacePrefix) {
+            if ($stmt instanceof Node\Stmt\Use_) {
+                if (Node\Stmt\Use_::TYPE_NORMAL !== $stmt->type) {
                     continue;
                 }
 
-                if (\strpos($name, $namespacePrefixWithSeparator) === 0) {
+                foreach ($stmt->uses as $use) {
+                    $name = $use->name->toString();
+
+                    if ($name === $namespacePrefix) {
+                        continue;
+                    }
+
+                    if (\strpos($name, $namespacePrefixWithSeparator) === 0) {
+                        continue;
+                    }
+
+                    if ($use->getAlias()->toString() === $prefixAlias) {
+                        return true;
+                    }
+                }
+            } elseif ($stmt instanceof Node\Stmt\GroupUse) {
+                if (Node\Stmt\Use_::TYPE_NORMAL !== $stmt->type) {
                     continue;
                 }
 
-                if ($use->getAlias()->toString() === $prefixAlias) {
-                    return true;
+                $prefix = $stmt->prefix->toString();
+
+                foreach ($stmt->uses as $use) {
+                    $name = $prefix . '\\' . $use->name->toString();
+
+                    if ($name === $namespacePrefix) {
+                        continue;
+                    }
+
+                    if (\strpos($name, $namespacePrefixWithSeparator) === 0) {
+                        continue;
+                    }
+
+                    if ($use->getAlias()->toString() === $prefixAlias) {
+                        return true;
+                    }
                 }
             }
         }
@@ -684,52 +742,91 @@ CODE_SAMPLE
         $indicesToRemove = [];
 
         foreach ($containerNode->stmts as $index => $stmt) {
-            if (!$stmt instanceof Node\Stmt\Use_) {
-                continue;
-            }
+            if ($stmt instanceof Node\Stmt\Use_) {
+                $remainingUses = [];
 
-            $remainingUses = [];
+                foreach ($stmt->uses as $use) {
+                    $name = $use->name->toString();
 
-            foreach ($stmt->uses as $use) {
-                $name = $use->name->toString();
+                    if ($name === $namespacePrefix) {
+                        if (null === $firstMatchIndex) {
+                            $firstMatchIndex = $index;
+                        }
 
-                if ($name === $namespacePrefix) {
-                    if (null === $firstMatchIndex) {
-                        $firstMatchIndex = $index;
+                        $remainingUses[] = $use;
+
+                        continue;
+                    }
+
+                    if (self::matchesNamespacePrefixExclusively($name, $namespacePrefixWithSeparator, $moreSpecificNamespacePrefixesWithSeparator)) {
+                        if (null === $firstMatchIndex) {
+                            $firstMatchIndex = $index;
+                        }
+
+                        continue;
                     }
 
                     $remainingUses[] = $use;
-
-                    continue;
                 }
 
-                if (self::matchesNamespacePrefixExclusively($name, $namespacePrefixWithSeparator, $moreSpecificNamespacePrefixesWithSeparator)) {
-                    if (null === $firstMatchIndex) {
-                        $firstMatchIndex = $index;
+                if (\count($remainingUses) === 0) {
+                    $indicesToRemove[] = $index;
+                } else {
+                    $stmt->uses = $remainingUses;
+                }
+            } elseif ($stmt instanceof Node\Stmt\GroupUse) {
+                $prefix = $stmt->prefix->toString();
+
+                $remainingUses = [];
+
+                foreach ($stmt->uses as $use) {
+                    $name = $prefix . '\\' . $use->name->toString();
+
+                    if ($name === $namespacePrefix) {
+                        if (null === $firstMatchIndex) {
+                            $firstMatchIndex = $index;
+                        }
+
+                        $remainingUses[] = $use;
+
+                        continue;
                     }
 
-                    continue;
+                    if (self::matchesNamespacePrefixExclusively($name, $namespacePrefixWithSeparator, $moreSpecificNamespacePrefixesWithSeparator)) {
+                        if (null === $firstMatchIndex) {
+                            $firstMatchIndex = $index;
+                        }
+
+                        continue;
+                    }
+
+                    $remainingUses[] = $use;
                 }
 
-                $remainingUses[] = $use;
-            }
-
-            if (\count($remainingUses) === 0) {
-                $indicesToRemove[] = $index;
-            } else {
-                $stmt->uses = $remainingUses;
+                if (\count($remainingUses) === 0) {
+                    $indicesToRemove[] = $index;
+                } else {
+                    $stmt->uses = $remainingUses;
+                }
             }
         }
 
         if (!$hasPrefixImport && null !== $firstMatchIndex) {
-            /** @var Node\Stmt\Use_ $firstMatchNode */
             $firstMatchNode = $containerNode->stmts[(int) $firstMatchIndex];
 
             if (\in_array($firstMatchIndex, $indicesToRemove, true)) {
-                $firstMatchNode->type = Node\Stmt\Use_::TYPE_NORMAL;
-                $firstMatchNode->uses = [
-                    new Node\UseItem(new Node\Name($namespacePrefix)),
-                ];
+                if ($firstMatchNode instanceof Node\Stmt\Use_) {
+                    $firstMatchNode->type = Node\Stmt\Use_::TYPE_NORMAL;
+                    $firstMatchNode->uses = [
+                        new Node\UseItem(new Node\Name($namespacePrefix)),
+                    ];
+                } else {
+                    $prefixUseStatement = new Node\Stmt\Use_([
+                        new Node\UseItem(new Node\Name($namespacePrefix)),
+                    ]);
+
+                    $containerNode->stmts[(int) $firstMatchIndex] = $prefixUseStatement;
+                }
 
                 $indicesToRemove = \array_filter($indicesToRemove, static function (int $index) use ($firstMatchIndex): bool {
                     return $index !== $firstMatchIndex;
@@ -764,25 +861,43 @@ CODE_SAMPLE
             $parentImportIndex = null;
 
             foreach ($containerNode->stmts as $index => $statement) {
-                if (!$statement instanceof Node\Stmt\Use_) {
-                    continue;
-                }
+                if ($statement instanceof Node\Stmt\Use_) {
+                    if (Node\Stmt\Use_::TYPE_NORMAL !== $statement->type) {
+                        continue;
+                    }
 
-                if (Node\Stmt\Use_::TYPE_NORMAL !== $statement->type) {
-                    continue;
-                }
+                    foreach ($statement->uses as $use) {
+                        $name = $use->name->toString();
+                        $nameWithSeparator = $name . '\\';
 
-                foreach ($statement->uses as $use) {
-                    $name = $use->name->toString();
-                    $nameWithSeparator = $name . '\\';
+                        if (
+                            \strlen($nameWithSeparator) < \strlen($namespacePrefixWithSeparator)
+                            && \strpos($namespacePrefixWithSeparator, $nameWithSeparator) === 0
+                        ) {
+                            $parentImportIndex = $index;
 
-                    if (
-                        \strlen($nameWithSeparator) < \strlen($namespacePrefixWithSeparator)
-                        && \strpos($namespacePrefixWithSeparator, $nameWithSeparator) === 0
-                    ) {
-                        $parentImportIndex = $index;
+                            break 2;
+                        }
+                    }
+                } elseif ($statement instanceof Node\Stmt\GroupUse) {
+                    if (Node\Stmt\Use_::TYPE_NORMAL !== $statement->type) {
+                        continue;
+                    }
 
-                        break 2;
+                    $prefix = $statement->prefix->toString();
+
+                    foreach ($statement->uses as $use) {
+                        $name = $prefix . '\\' . $use->name->toString();
+                        $nameWithSeparator = $name . '\\';
+
+                        if (
+                            \strlen($nameWithSeparator) < \strlen($namespacePrefixWithSeparator)
+                            && \strpos($namespacePrefixWithSeparator, $nameWithSeparator) === 0
+                        ) {
+                            $parentImportIndex = $index;
+
+                            break 2;
+                        }
                     }
                 }
             }
@@ -804,7 +919,10 @@ CODE_SAMPLE
                 $lastUseIndex = null;
 
                 foreach ($containerNode->stmts as $index => $statement) {
-                    if ($statement instanceof Node\Stmt\Use_) {
+                    if (
+                        $statement instanceof Node\Stmt\Use_
+                        || $statement instanceof Node\Stmt\GroupUse
+                    ) {
                         $lastUseIndex = $index;
                     }
                 }

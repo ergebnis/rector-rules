@@ -238,7 +238,7 @@ CODE_SAMPLE
         if (
             !$hasDirectMatchingImports
             && !$hasParentImport
-            && !self::hasSourceWrittenFullyQualifiedReferencesMatchingPrefix($containerNode, $namespacePrefixWithSeparator, $moreSpecificNamespacePrefixesWithSeparator)
+            && !self::hasSourceWrittenFullyQualifiedReferencesMatchingPrefix($containerNode, $namespacePrefix, $namespacePrefixWithSeparator, $moreSpecificNamespacePrefixesWithSeparator)
         ) {
             return false;
         }
@@ -376,6 +376,7 @@ CODE_SAMPLE
      */
     private static function hasSourceWrittenFullyQualifiedReferencesMatchingPrefix(
         Node $containerNode,
+        string $namespacePrefix,
         string $namespacePrefixWithSeparator,
         array $moreSpecificNamespacePrefixesWithSeparator
     ): bool {
@@ -383,7 +384,7 @@ CODE_SAMPLE
 
         $match = $nodeFinder->findFirst(
             $containerNode->stmts,
-            static function (Node $node) use ($namespacePrefixWithSeparator, $moreSpecificNamespacePrefixesWithSeparator): bool {
+            static function (Node $node) use ($namespacePrefix, $namespacePrefixWithSeparator, $moreSpecificNamespacePrefixesWithSeparator): bool {
                 if (!$node instanceof Node\Name\FullyQualified) {
                     return false;
                 }
@@ -397,8 +398,14 @@ CODE_SAMPLE
                     return false;
                 }
 
+                $fullName = $node->toString();
+
+                if ($fullName === $namespacePrefix) {
+                    return true;
+                }
+
                 return self::matchesNamespacePrefixExclusively(
-                    $node->toString(),
+                    $fullName,
                     $namespacePrefixWithSeparator,
                     $moreSpecificNamespacePrefixesWithSeparator,
                 );
@@ -439,12 +446,20 @@ CODE_SAMPLE
     ): bool {
         $hasChanged = false;
 
-        $this->traverseNodesWithCallable($containerNode->stmts, static function (Node $node) use ($namespacePrefixAlias, $namespacePrefixWithSeparator, $moreSpecificNamespacePrefixesWithSeparator, &$hasChanged): ?Node {
+        $namespacePrefix = \rtrim($namespacePrefixWithSeparator, '\\');
+
+        $this->traverseNodesWithCallable($containerNode->stmts, static function (Node $node) use ($namespacePrefix, $namespacePrefixAlias, $namespacePrefixWithSeparator, $moreSpecificNamespacePrefixesWithSeparator, &$hasChanged): ?Node {
             if (!$node instanceof Node\Name\FullyQualified) {
                 return null;
             }
 
             $fullName = $node->toString();
+
+            if ($fullName === $namespacePrefix) {
+                $hasChanged = true;
+
+                return new Node\Name($namespacePrefixAlias);
+            }
 
             if (!self::matchesNamespacePrefixExclusively($fullName, $namespacePrefixWithSeparator, $moreSpecificNamespacePrefixesWithSeparator)) {
                 return null;
@@ -505,6 +520,12 @@ CODE_SAMPLE
                     || \strpos($name, '\\') === 0
                 ) {
                     $name = \ltrim($name, '\\');
+
+                    if ($name === $namespacePrefix) {
+                        $hasChanged = true;
+
+                        return new Ast\Type\IdentifierTypeNode($namespacePrefixAlias);
+                    }
 
                     if (!self::matchesNamespacePrefixExclusively($name, $namespacePrefixWithSeparator, $moreSpecificNamespacePrefixesWithSeparator)) {
                         return null;

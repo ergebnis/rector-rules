@@ -256,6 +256,7 @@ For a full diff see [`fd198f0...0.1.0`][fd198f0...0.1.0].
 [1.12.1]: https://github.com/ergebnis/rector-rules/releases/tag/1.12.1
 [1.12.2]: https://github.com/ergebnis/rector-rules/releases/tag/1.12.2
 [1.12.3]: https://github.com/ergebnis/rector-rules/releases/tag/1.12.3
+[1.12.4]: https://github.com/ergebnis/rector-rules/releases/tag/1.12.4
 
 [fd198f0...0.1.0]: https://github.com/ergebnis/rector-rules/compare/fd198f0...0.1.0
 [0.1.0...0.2.0]: https://github.com/ergebnis/rector-rules/compare/0.1.0...0.2.0

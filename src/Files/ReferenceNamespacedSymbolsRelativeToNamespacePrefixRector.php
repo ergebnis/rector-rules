@@ -27,13 +27,13 @@ use Symplify\RuleDocGenerator;
 final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Rector\AbstractRector implements Contract\Rector\ConfigurableRectorInterface
 {
     private const CONFIGURATION_KEY_NAMESPACE_PREFIXES = 'namespacePrefixes';
+    private BetterPhpDocParser\PhpDocInfo\PhpDocInfoFactory $phpDocInfoFactory;
+    private Comments\NodeDocBlock\DocBlockUpdater $docBlockUpdater;
 
     /**
      * @var list<string>
      */
     private array $namespacePrefixes = [];
-    private BetterPhpDocParser\PhpDocInfo\PhpDocInfoFactory $phpDocInfoFactory;
-    private Comments\NodeDocBlock\DocBlockUpdater $docBlockUpdater;
 
     public function __construct(
         BetterPhpDocParser\PhpDocInfo\PhpDocInfoFactory $phpDocInfoFactory,

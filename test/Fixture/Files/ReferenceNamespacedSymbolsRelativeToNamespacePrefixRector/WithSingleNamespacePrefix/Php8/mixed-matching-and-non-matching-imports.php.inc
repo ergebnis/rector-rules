@@ -4,17 +4,17 @@ namespace Example\App;
 
 use Example\Core\Controller\AbstractController;
 use Example\Core\Routing\Attribute\Route;
-use Other\Foo\Repository\FachbereichRepository;
+use Other\Foo\Repository\DepartmentRepository;
 use Psr\Http\Message\ResponseInterface;
 
 final class ExampleController extends AbstractController
 {
     /**
-     * @var FachbereichRepository
+     * @var DepartmentRepository
      */
     private $repository;
 
-    public function __construct(FachbereichRepository $repository)
+    public function __construct(DepartmentRepository $repository)
     {
         $this->repository = $repository;
     }
@@ -32,17 +32,17 @@ final class ExampleController extends AbstractController
 namespace Example\App;
 
 use Example\Core;
-use Other\Foo\Repository\FachbereichRepository;
+use Other\Foo\Repository\DepartmentRepository;
 use Psr\Http\Message\ResponseInterface;
 
 final class ExampleController extends Core\Controller\AbstractController
 {
     /**
-     * @var FachbereichRepository
+     * @var DepartmentRepository
      */
     private $repository;
 
-    public function __construct(FachbereichRepository $repository)
+    public function __construct(DepartmentRepository $repository)
     {
         $this->repository = $repository;
     }

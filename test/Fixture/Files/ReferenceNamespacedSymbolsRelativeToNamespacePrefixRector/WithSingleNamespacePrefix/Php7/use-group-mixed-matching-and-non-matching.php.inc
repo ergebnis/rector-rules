@@ -3,24 +3,24 @@
 namespace Example\App;
 
 use Example\Core\{Controller\AbstractController, Routing\Attribute\Route};
-use Other\Foo\{Repository\FachbereichRepository, Service\FachbereichService};
+use Other\Foo\{Repository\DepartmentRepository, Service\DepartmentService};
 use Psr\Http\Message\ResponseInterface;
 
 final class ExampleController extends AbstractController
 {
     /**
-     * @var FachbereichRepository
+     * @var DepartmentRepository
      */
     private $repository;
 
     /**
-     * @var FachbereichService
+     * @var DepartmentService
      */
     private $service;
 
     public function __construct(
-        FachbereichRepository $repository,
-        FachbereichService $service
+        DepartmentRepository $repository,
+        DepartmentService $service
     ) {
         $this->repository = $repository;
         $this->service = $service;
@@ -39,24 +39,24 @@ final class ExampleController extends AbstractController
 namespace Example\App;
 
 use Example\Core;
-use Other\Foo\{Repository\FachbereichRepository, Service\FachbereichService};
+use Other\Foo\{Repository\DepartmentRepository, Service\DepartmentService};
 use Psr\Http\Message\ResponseInterface;
 
 final class ExampleController extends Core\Controller\AbstractController
 {
     /**
-     * @var FachbereichRepository
+     * @var DepartmentRepository
      */
     private $repository;
 
     /**
-     * @var FachbereichService
+     * @var DepartmentService
      */
     private $service;
 
     public function __construct(
-        FachbereichRepository $repository,
-        FachbereichService $service
+        DepartmentRepository $repository,
+        DepartmentService $service
     ) {
         $this->repository = $repository;
         $this->service = $service;

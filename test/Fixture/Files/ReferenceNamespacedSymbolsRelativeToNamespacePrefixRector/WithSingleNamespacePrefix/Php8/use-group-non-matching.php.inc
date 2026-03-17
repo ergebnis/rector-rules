@@ -2,14 +2,14 @@
 
 namespace Example\App;
 
-use Other\Foo\{Repository\FachbereichRepository, Service\FachbereichService};
+use Other\Foo\{Repository\DepartmentRepository, Service\DepartmentService};
 use Psr\Http\Message\ResponseInterface;
 
 final class ExampleService
 {
     public function __construct(
-        private FachbereichRepository $repository,
-        private FachbereichService $service,
+        private DepartmentRepository $repository,
+        private DepartmentService $service,
     ) {
     }
 }

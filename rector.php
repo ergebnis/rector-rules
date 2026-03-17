@@ -41,7 +41,7 @@ return static function (Config\RectorConfig $rectorConfig): void {
             'Faker',
             'PhpParser',
             'PHPStan',
-            'PHPUnit\Framework',
+            'PHPUnit',
             'Rector',
             'Symplify',
         ],

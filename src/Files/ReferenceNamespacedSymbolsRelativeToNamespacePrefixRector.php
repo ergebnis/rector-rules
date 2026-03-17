@@ -114,9 +114,11 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
 
                 $namespacePrefixes[$value] = $namespacePrefix;
             }
+
+            $namespacePrefixes = \array_values($namespacePrefixes);
         }
 
-        $this->namespacePrefixes = \array_values($namespacePrefixes);
+        $this->namespacePrefixes = $namespacePrefixes;
     }
 
     public function getRuleDefinition(): RuleDocGenerator\ValueObject\RuleDefinition

@@ -18,6 +18,10 @@ use Rector\Testing;
 
 /**
  * @covers \Ergebnis\Rector\Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector
+ *
+ * @uses \Ergebnis\Rector\Rules\Files\NamespacePrefix
+ * @uses \Ergebnis\Rector\Rules\Files\NamespaceSegment
+ * @uses \Ergebnis\Rector\Rules\Files\NamespaceSegments
  */
 final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorConfigureTest extends Testing\PHPUnit\AbstractLazyTestCase
 {
@@ -59,18 +63,42 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorConfigureTe
         ]);
     }
 
-    public function testConfigureRejectsInvalidNamespacePrefix(): void
+    /**
+     * @dataProvider provideInvalidNamespacePrefix
+     */
+    public function testConfigureRejectsInvalidNamespacePrefix(string $namespacePrefix): void
     {
         $rector = $this->make(Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class);
 
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Value for configuration option "namespacePrefixes" needs to be an array of strings where each string is a valid namespace with at least two segments, got "SingleSegment".');
+        $this->expectExceptionMessage(\sprintf(
+            'Value for configuration option "namespacePrefixes" needs to be an array of strings where each string is a valid namespace with at least two segments, got "%s".',
+            $namespacePrefix,
+        ));
 
         $rector->configure([
             'namespacePrefixes' => [
-                'SingleSegment',
+                $namespacePrefix,
             ],
         ]);
+    }
+
+    /**
+     * @return \Generator<string, array{0: string}>
+     */
+    public static function provideInvalidNamespacePrefix(): iterable
+    {
+        $values = [
+            'string-empty' => '',
+            'string-ends-with-backslash' => 'Example\Core\\',
+            'string-segment-starts-with-digit' => 'Example\1Core',
+            'string-single-segment' => 'SingleSegment',
+            'string-starts-with-backslash' => '\Example\Core',
+        ];
+
+        foreach ($values as $key => $value) {
+            yield $key => [$value];
+        }
     }
 
     public function testConfigureRejectsDuplicateNamespacePrefixes(): void

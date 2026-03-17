@@ -17,6 +17,11 @@ use Rector\Testing;
 
 /**
  * @covers \Ergebnis\Rector\Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector
+ *
+ * @uses \Ergebnis\Rector\Rules\Files\NamespacePrefix
+ * @uses \Ergebnis\Rector\Rules\Files\NamespaceSegment
+ * @uses \Ergebnis\Rector\Rules\Files\NamespaceSegments
+ * @uses \Ergebnis\Rector\Rules\Files\Reference
  */
 final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorWithMultipleNamespacePrefixesTest extends Testing\PHPUnit\AbstractRectorTestCase
 {

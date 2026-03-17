@@ -4,6 +4,7 @@
     "bool",
     "Faker\\Generator",
     "false",
+    "int",
     "null",
     "PHPStan\\PhpDocParser\\Ast\\Type\\IdentifierTypeNode",
     "PHPStan\\Reflection\\ClassReflection",

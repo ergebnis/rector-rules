@@ -63,4 +63,9 @@ final class NamespacePrefix
     {
         return \strpos($other->namespaceSegments->toString(), $this->namespaceSegments->toString() . '\\') === 0;
     }
+
+    public function append(NamespaceSegment ...$namespaceSegments): self
+    {
+        return new self($this->namespaceSegments->append(...$namespaceSegments));
+    }
 }

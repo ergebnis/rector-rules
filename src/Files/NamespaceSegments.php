@@ -71,6 +71,14 @@ final class NamespaceSegments
         return $this->values[\count($this->values) - 1];
     }
 
+    public function append(NamespaceSegment ...$namespaceSegments): self
+    {
+        return new self(
+            ...$this->values,
+            ...$namespaceSegments,
+        );
+    }
+
     public function toString(): string
     {
         return $this->value;

@@ -103,6 +103,18 @@ parameters:
 			path: test/Unit/Faker/GeneratorPropertyFetchToMethodCallRectorTest.php
 
 		-
+			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Files\\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorWithCombinedNamespacePrefixesTest\:\:provideDataOnPhp7\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: test/Unit/Files/ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorWithCombinedNamespacePrefixesTest.php
+
+		-
+			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Files\\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorWithCombinedNamespacePrefixesTest\:\:provideDataOnPhp8\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: test/Unit/Files/ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorWithCombinedNamespacePrefixesTest.php
+
+		-
 			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Files\\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorWithMultipleNamespacePrefixesTest\:\:provideDataOnPhp7\(\) return type has no value type specified in iterable type iterable\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -125,6 +137,18 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: test/Unit/Files/ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorWithOverlappingNamespacePrefixesTest.php
+
+		-
+			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Files\\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorWithParentNamespacePrefixesTest\:\:provideDataOnPhp7\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: test/Unit/Files/ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorWithParentNamespacePrefixesTest.php
+
+		-
+			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Files\\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorWithParentNamespacePrefixesTest\:\:provideDataOnPhp8\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: test/Unit/Files/ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorWithParentNamespacePrefixesTest.php
 
 		-
 			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Files\\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorWithSingleNamespacePrefixTest\:\:provideDataOnPhp7\(\) return type has no value type specified in iterable type iterable\.$#'

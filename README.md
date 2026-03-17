@@ -102,6 +102,7 @@ This rule replaces references to namespaced symbols (classes, functions, constan
 ##### Configuration
 
 - `namespacePrefixes`: a list of namespace prefixes to consolidate (e.g., `['Foo\Bar\Baz', 'Example\Domain']`)
+- `parentNamespacePrefixes`: a list of parent namespace prefixes for automatic discovery of namespace prefixes per file (e.g., `['Foo\Bar']` will discover `Foo\Bar\Baz` as a namespace prefix when a file references symbols under `Foo\Bar\Baz`)
 
 ## Changelog
 

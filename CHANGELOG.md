@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 For a full diff see [`1.12.5...main`][1.12.5...main].
 
-### Changed
+### Added
 
 - Adjusted `Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector` to allow configuring parent namespace prefixes for automatic discovery of namespace prefixes ([#310]), by [@localheinz]
 

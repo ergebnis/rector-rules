@@ -213,4 +213,19 @@ final class NamespacePrefixTest extends Framework\TestCase
 
         self::assertTrue($one->isNamespacePrefixOf($two));
     }
+
+    public function testAppendReturnsNamespacePrefixWithMultipleAppendedSegments(): void
+    {
+        $namespaceSegments = [
+            Rules\Files\NamespaceSegment::fromString('Console'),
+            Rules\Files\NamespaceSegment::fromString('Command'),
+        ];
+
+        $namespacePrefix = Rules\Files\NamespacePrefix::fromString('Symfony\Component');
+
+        $mutated = $namespacePrefix->append(...$namespaceSegments);
+
+        self::assertNotSame($namespacePrefix, $mutated);
+        self::assertEquals(Rules\Files\NamespacePrefix::fromString('Symfony\Component\Console\Command'), $mutated);
+    }
 }

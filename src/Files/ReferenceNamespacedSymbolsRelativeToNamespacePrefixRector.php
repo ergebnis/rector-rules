@@ -27,6 +27,7 @@ use Symplify\RuleDocGenerator;
 final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Rector\AbstractRector implements Contract\Rector\ConfigurableRectorInterface
 {
     private const CONFIGURATION_KEY_NAMESPACE_PREFIXES = 'namespacePrefixes';
+    private const CONFIGURATION_KEY_PARENT_NAMESPACE_PREFIXES = 'parentNamespacePrefixes';
     private BetterPhpDocParser\PhpDocInfo\PhpDocInfoFactory $phpDocInfoFactory;
     private Comments\NodeDocBlock\DocBlockUpdater $docBlockUpdater;
 
@@ -34,6 +35,11 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
      * @var list<NamespacePrefix>
      */
     private array $namespacePrefixes = [];
+
+    /**
+     * @var list<NamespacePrefix>
+     */
+    private array $parentNamespacePrefixes = [];
 
     public function __construct(
         BetterPhpDocParser\PhpDocInfo\PhpDocInfoFactory $phpDocInfoFactory,
@@ -54,6 +60,7 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
     {
         $configurationKeys = [
             self::CONFIGURATION_KEY_NAMESPACE_PREFIXES,
+            self::CONFIGURATION_KEY_PARENT_NAMESPACE_PREFIXES,
         ];
 
         $unknownConfigurationKeys = \array_diff(
@@ -118,7 +125,67 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
             $namespacePrefixes = \array_values($namespacePrefixes);
         }
 
+        $parentNamespacePrefixes = [];
+
+        if (\array_key_exists(self::CONFIGURATION_KEY_PARENT_NAMESPACE_PREFIXES, $configuration)) {
+            if (!\is_array($configuration[self::CONFIGURATION_KEY_PARENT_NAMESPACE_PREFIXES])) {
+                throw new \InvalidArgumentException(\sprintf(
+                    'Value for configuration option "%s" needs to be an array of strings.',
+                    self::CONFIGURATION_KEY_PARENT_NAMESPACE_PREFIXES,
+                ));
+            }
+
+            foreach ($configuration[self::CONFIGURATION_KEY_PARENT_NAMESPACE_PREFIXES] as $value) {
+                if (!\is_string($value)) {
+                    throw new \InvalidArgumentException(\sprintf(
+                        'Value for configuration option "%s" needs to be an array of strings.',
+                        self::CONFIGURATION_KEY_PARENT_NAMESPACE_PREFIXES,
+                    ));
+                }
+
+                try {
+                    $parentNamespacePrefix = NamespacePrefix::fromString($value);
+                } catch (\InvalidArgumentException $exception) {
+                    throw new \InvalidArgumentException(\sprintf(
+                        'Value for configuration option "%s" needs to be an array of strings where each string is a valid namespace with at least one segment, got "%s".',
+                        self::CONFIGURATION_KEY_PARENT_NAMESPACE_PREFIXES,
+                        $value,
+                    ));
+                }
+
+                if (\array_key_exists($value, $parentNamespacePrefixes)) {
+                    throw new \InvalidArgumentException(\sprintf(
+                        'Value for configuration option "%s" needs to be an array of unique strings, got duplicate "%s".',
+                        self::CONFIGURATION_KEY_PARENT_NAMESPACE_PREFIXES,
+                        $value,
+                    ));
+                }
+
+                $parentNamespacePrefixes[$value] = $parentNamespacePrefix;
+            }
+
+            $parentNamespacePrefixes = \array_values($parentNamespacePrefixes);
+
+            foreach ($parentNamespacePrefixes as $parentNamespacePrefix) {
+                foreach ($parentNamespacePrefixes as $otherNamespacePrefix) {
+                    if ($parentNamespacePrefix->toString() === $otherNamespacePrefix->toString()) {
+                        continue;
+                    }
+
+                    if ($parentNamespacePrefix->isNamespacePrefixOf($otherNamespacePrefix)) {
+                        throw new \InvalidArgumentException(\sprintf(
+                            'Value for configuration option "%s" needs to be an array of strings where no string is a namespace prefix of another, got "%s" and "%s".',
+                            self::CONFIGURATION_KEY_PARENT_NAMESPACE_PREFIXES,
+                            $parentNamespacePrefix->toString(),
+                            $otherNamespacePrefix->toString(),
+                        ));
+                    }
+                }
+            }
+        }
+
         $this->namespacePrefixes = $namespacePrefixes;
+        $this->parentNamespacePrefixes = $parentNamespacePrefixes;
     }
 
     public function getRuleDefinition(): RuleDocGenerator\ValueObject\RuleDefinition
@@ -168,12 +235,27 @@ CODE_SAMPLE
             $containerNode = $node;
         }
 
+        $discoveredPrefixes = self::discoverNamespacePrefixesFromParents(
+            $containerNode,
+            $this->parentNamespacePrefixes,
+            $this->namespacePrefixes,
+        );
+
+        $allNamespacePrefixes = \array_merge(
+            $this->namespacePrefixes,
+            $discoveredPrefixes,
+        );
+
+        if (\count($allNamespacePrefixes) === 0) {
+            return null;
+        }
+
         $changed = false;
 
-        foreach ($this->namespacePrefixes as $namespacePrefix) {
+        foreach ($allNamespacePrefixes as $namespacePrefix) {
             $otherNamespacePrefixes = [];
 
-            foreach ($this->namespacePrefixes as $otherNamespacePrefix) {
+            foreach ($allNamespacePrefixes as $otherNamespacePrefix) {
                 if ($namespacePrefix->isNamespacePrefixOf($otherNamespacePrefix)) {
                     $otherNamespacePrefixes[] = $otherNamespacePrefix;
                 }
@@ -715,6 +797,159 @@ CODE_SAMPLE
         }
 
         return false;
+    }
+
+    /**
+     * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
+     * @param list<NamespacePrefix>                        $parentNamespacePrefixes
+     * @param list<NamespacePrefix>                        $existingNamespacePrefixes
+     *
+     * @return list<NamespacePrefix>
+     */
+    private static function discoverNamespacePrefixesFromParents(
+        Node $containerNode,
+        array $parentNamespacePrefixes,
+        array $existingNamespacePrefixes
+    ): array {
+        if (\count($parentNamespacePrefixes) === 0) {
+            return [];
+        }
+
+        /** @var array<string, NamespacePrefix> $discovered */
+        $discovered = [];
+
+        $existingKeys = [];
+
+        foreach ($existingNamespacePrefixes as $existingPrefix) {
+            $existingKeys[$existingPrefix->toString()] = true;
+        }
+
+        foreach ($containerNode->stmts as $statement) {
+            if ($statement instanceof Node\Stmt\Use_) {
+                if (Node\Stmt\Use_::TYPE_NORMAL !== $statement->type) {
+                    continue;
+                }
+
+                foreach ($statement->uses as $use) {
+                    $reference = $use->name->toString();
+
+                    self::discoverChildPrefix(
+                        $reference,
+                        $parentNamespacePrefixes,
+                        $existingKeys,
+                        $discovered,
+                    );
+                }
+            } elseif ($statement instanceof Node\Stmt\GroupUse) {
+                if (Node\Stmt\Use_::TYPE_NORMAL !== $statement->type) {
+                    continue;
+                }
+
+                $prefix = $statement->prefix->toString();
+
+                foreach ($statement->uses as $use) {
+                    $reference = \sprintf(
+                        '%s\\%s',
+                        $prefix,
+                        $use->name->toString(),
+                    );
+
+                    self::discoverChildPrefix(
+                        $reference,
+                        $parentNamespacePrefixes,
+                        $existingKeys,
+                        $discovered,
+                    );
+                }
+            }
+        }
+
+        $nodeFinder = new NodeFinder();
+
+        $nodeFinder->find(
+            $containerNode->stmts,
+            static function (Node $node) use ($parentNamespacePrefixes, &$existingKeys, &$discovered): bool {
+                if (!$node instanceof Node\Name\FullyQualified) {
+                    return false;
+                }
+
+                self::discoverChildPrefix(
+                    $node->toString(),
+                    $parentNamespacePrefixes,
+                    $existingKeys,
+                    $discovered,
+                );
+
+                return false;
+            },
+        );
+
+        $nodeFinder->find(
+            $containerNode->stmts,
+            static function (Node $node) use ($parentNamespacePrefixes, &$existingKeys, &$discovered): bool {
+                $docComment = $node->getDocComment();
+
+                if (null === $docComment) {
+                    return false;
+                }
+
+                $text = $docComment->getText();
+
+                foreach ($parentNamespacePrefixes as $parentNamespacePrefix) {
+                    $pattern = \sprintf(
+                        '/\\\\%s\\\\([a-zA-Z_][a-zA-Z0-9_]*)/',
+                        \preg_quote($parentNamespacePrefix->toString(), '/'),
+                    );
+
+                    if (\preg_match_all($pattern, $text, $matches) > 0) {
+                        foreach ($matches[1] as $segmentString) {
+                            $segment = NamespaceSegment::fromString($segmentString);
+                            $childPrefix = $parentNamespacePrefix->append($segment);
+                            $childKey = $childPrefix->toString();
+
+                            if (!\array_key_exists($childKey, $discovered) && !\array_key_exists($childKey, $existingKeys)) {
+                                $discovered[$childKey] = $childPrefix;
+                            }
+                        }
+                    }
+                }
+
+                return false;
+            },
+        );
+
+        return \array_values($discovered);
+    }
+
+    /**
+     * @param list<NamespacePrefix>          $parentNamespacePrefixes
+     * @param array<string, true>            $existingKeys
+     * @param array<string, NamespacePrefix> $discovered
+     */
+    private static function discoverChildPrefix(
+        string $reference,
+        array $parentNamespacePrefixes,
+        array &$existingKeys,
+        array &$discovered
+    ): void {
+        foreach ($parentNamespacePrefixes as $parentNamespacePrefix) {
+            $parentString = $parentNamespacePrefix->toString();
+
+            if (\strpos($reference, $parentString . '\\') !== 0) {
+                continue;
+            }
+
+            $remaining = \substr($reference, \strlen($parentString) + 1);
+            $parts = \explode('\\', $remaining);
+
+            $segment = NamespaceSegment::fromString($parts[0]);
+            $childPrefix = $parentNamespacePrefix->append($segment);
+            $childKey = $childPrefix->toString();
+
+            if (!\array_key_exists($childKey, $discovered) && !\array_key_exists($childKey, $existingKeys)) {
+                $discovered[$childKey] = $childPrefix;
+            }
+        }
     }
 
     /**

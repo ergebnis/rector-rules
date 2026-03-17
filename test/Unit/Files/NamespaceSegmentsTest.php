@@ -143,4 +143,19 @@ final class NamespaceSegmentsTest extends Framework\TestCase
             ];
         }
     }
+
+    public function testAppendReturnsNamespaceSegmentsWithAppendedSegments(): void
+    {
+        $otherNamespaceSegments = [
+            Rules\Files\NamespaceSegment::fromString('Console'),
+            Rules\Files\NamespaceSegment::fromString('Command'),
+        ];
+
+        $namespaceSegments = Rules\Files\NamespaceSegments::fromString('Symfony\Component');
+
+        $mutated = $namespaceSegments->append(...$otherNamespaceSegments);
+
+        self::assertNotSame($namespaceSegments, $mutated);
+        self::assertEquals(Rules\Files\NamespaceSegments::fromString('Symfony\Component\Console\Command'), $mutated);
+    }
 }

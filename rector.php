@@ -37,6 +37,14 @@ return static function (Config\RectorConfig $rectorConfig): void {
         'namespacePrefixes' => [
             'Ergebnis\Rector\Rules',
         ],
+        'parentNamespacePrefixes' => [
+            'Faker',
+            'PhpParser',
+            'PHPStan',
+            'PHPUnit\Framework',
+            'Rector',
+            'Symplify',
+        ],
     ]);
 
     $rectorConfig->sets([

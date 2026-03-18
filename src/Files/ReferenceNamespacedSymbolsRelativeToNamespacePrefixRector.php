@@ -26,10 +26,12 @@ use Symplify\RuleDocGenerator;
 
 final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Rector\AbstractRector implements Contract\Rector\ConfigurableRectorInterface
 {
+    private const CONFIGURATION_KEY_FORCE_RELATIVE_REFERENCES = 'forceRelativeReferences';
     private const CONFIGURATION_KEY_NAMESPACE_PREFIXES = 'namespacePrefixes';
     private const CONFIGURATION_KEY_PARENT_NAMESPACE_PREFIXES = 'parentNamespacePrefixes';
     private BetterPhpDocParser\PhpDocInfo\PhpDocInfoFactory $phpDocInfoFactory;
     private Comments\NodeDocBlock\DocBlockUpdater $docBlockUpdater;
+    private bool $forceRelativeReferences = false;
 
     /**
      * @var list<NamespacePrefix>
@@ -59,6 +61,7 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
     public function configure(array $configuration): void
     {
         $configurationKeys = [
+            self::CONFIGURATION_KEY_FORCE_RELATIVE_REFERENCES,
             self::CONFIGURATION_KEY_NAMESPACE_PREFIXES,
             self::CONFIGURATION_KEY_PARENT_NAMESPACE_PREFIXES,
         ];
@@ -73,6 +76,19 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
                 'Configuration contains unknown keys: "%s".',
                 \implode('", "', $unknownConfigurationKeys),
             ));
+        }
+
+        $forceRelativeReferences = false;
+
+        if (\array_key_exists(self::CONFIGURATION_KEY_FORCE_RELATIVE_REFERENCES, $configuration)) {
+            if (!\is_bool($configuration[self::CONFIGURATION_KEY_FORCE_RELATIVE_REFERENCES])) {
+                throw new \InvalidArgumentException(\sprintf(
+                    'Value for configuration option "%s" needs to be a boolean.',
+                    self::CONFIGURATION_KEY_FORCE_RELATIVE_REFERENCES,
+                ));
+            }
+
+            $forceRelativeReferences = $configuration[self::CONFIGURATION_KEY_FORCE_RELATIVE_REFERENCES];
         }
 
         $namespacePrefixes = [];
@@ -198,6 +214,7 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
             }
         }
 
+        $this->forceRelativeReferences = $forceRelativeReferences;
         $this->namespacePrefixes = $namespacePrefixes;
         $this->parentNamespacePrefixes = $parentNamespacePrefixes;
     }
@@ -384,6 +401,48 @@ CODE_SAMPLE
                         ],
                     ],
                 ),
+                new RuleDocGenerator\ValueObject\CodeSample\ConfiguredCodeSample(
+                    <<<'CODE_SAMPLE'
+namespace Example\Core\Bar;
+
+use Example\Core\Bar\Baz;
+use Example\Core\Bar\Baz\Qux;
+use Example\Core\Quz;
+
+final class ExampleService
+{
+    public function __construct(
+        private Baz $baz,
+        private Qux $qux,
+        private Quz $quz,
+    ) {
+    }
+}
+CODE_SAMPLE
+                    ,
+                    <<<'CODE_SAMPLE'
+namespace Example\Core\Bar;
+
+use Example\Core;
+
+final class ExampleService
+{
+    public function __construct(
+        private Core\Bar\Baz $baz,
+        private Core\Bar\Baz\Qux $qux,
+        private Core\Quz $quz,
+    ) {
+    }
+}
+CODE_SAMPLE
+                    ,
+                    [
+                        self::CONFIGURATION_KEY_FORCE_RELATIVE_REFERENCES => true,
+                        self::CONFIGURATION_KEY_NAMESPACE_PREFIXES => [
+                            'Example\Core',
+                        ],
+                    ],
+                ),
             ],
         );
     }
@@ -513,10 +572,14 @@ CODE_SAMPLE
             return false;
         }
 
-        $namespacePrefixOfContainingFile = self::namespacePrefixOfContainingFile(
-            $containerNode,
-            $namespacePrefix,
-        );
+        $namespacePrefixOfContainingFile = null;
+
+        if (!$this->forceRelativeReferences) {
+            $namespacePrefixOfContainingFile = self::namespacePrefixOfContainingFile(
+                $containerNode,
+                $namespacePrefix,
+            );
+        }
 
         if (
             !$namespacePrefixOfContainingFile instanceof NamespacePrefix

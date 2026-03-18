@@ -75,7 +75,14 @@ final class UseImportRelativeToNamespacePrefixRector extends Rector\AbstractRect
         if (\array_key_exists(self::CONFIGURATION_KEY_NAMESPACE_PREFIXES, $configuration)) {
             if (!\is_array($configuration[self::CONFIGURATION_KEY_NAMESPACE_PREFIXES])) {
                 throw new \InvalidArgumentException(\sprintf(
-                    'Value for configuration option "%s" needs to be an array of strings.',
+                    'Value for configuration option "%s" needs to be a list of strings.',
+                    self::CONFIGURATION_KEY_NAMESPACE_PREFIXES,
+                ));
+            }
+
+            if (\array_values($configuration[self::CONFIGURATION_KEY_NAMESPACE_PREFIXES]) !== $configuration[self::CONFIGURATION_KEY_NAMESPACE_PREFIXES]) {
+                throw new \InvalidArgumentException(\sprintf(
+                    'Value for configuration option "%s" needs to be a list of strings.',
                     self::CONFIGURATION_KEY_NAMESPACE_PREFIXES,
                 ));
             }
@@ -83,14 +90,14 @@ final class UseImportRelativeToNamespacePrefixRector extends Rector\AbstractRect
             foreach ($configuration[self::CONFIGURATION_KEY_NAMESPACE_PREFIXES] as $namespacePrefix) {
                 if (!\is_string($namespacePrefix)) {
                     throw new \InvalidArgumentException(\sprintf(
-                        'Value for configuration option "%s" needs to be an array of strings.',
+                        'Value for configuration option "%s" needs to be a list of strings.',
                         self::CONFIGURATION_KEY_NAMESPACE_PREFIXES,
                     ));
                 }
 
                 if (1 !== \preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*(\\\\[a-zA-Z_][a-zA-Z0-9_]*)+$/', $namespacePrefix)) {
                     throw new \InvalidArgumentException(\sprintf(
-                        'Value for configuration option "%s" needs to be an array of strings where each string is a valid namespace with at least two segments, got "%s".',
+                        'Value for configuration option "%s" needs to be a list of strings where each string is a valid namespace with at least two segments, got "%s".',
                         self::CONFIGURATION_KEY_NAMESPACE_PREFIXES,
                         $namespacePrefix,
                     ));
@@ -98,7 +105,7 @@ final class UseImportRelativeToNamespacePrefixRector extends Rector\AbstractRect
 
                 if (\in_array($namespacePrefix, $namespacePrefixes, true)) {
                     throw new \InvalidArgumentException(\sprintf(
-                        'Value for configuration option "%s" needs to be an array of unique strings, got duplicate "%s".',
+                        'Value for configuration option "%s" needs to be a list of unique strings, got duplicate "%s".',
                         self::CONFIGURATION_KEY_NAMESPACE_PREFIXES,
                         $namespacePrefix,
                     ));

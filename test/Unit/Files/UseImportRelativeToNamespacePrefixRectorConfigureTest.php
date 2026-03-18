@@ -33,7 +33,7 @@ final class UseImportRelativeToNamespacePrefixRectorConfigureTest extends Testin
         ]);
     }
 
-    public function testConfigureRejectsNonArrayNamespacePrefixes(): void
+    public function testConfigureRejectsNamespacePrefixesWhenValueIsNotList(): void
     {
         $rector = $this->make(Rules\Files\UseImportRelativeToNamespacePrefixRector::class);
 
@@ -45,7 +45,7 @@ final class UseImportRelativeToNamespacePrefixRectorConfigureTest extends Testin
         ]);
     }
 
-    public function testConfigureRejectsNonStringNamespacePrefix(): void
+    public function testConfigureRejectsNamespacePrefixesWhenValueIsNotAListOfString(): void
     {
         $rector = $this->make(Rules\Files\UseImportRelativeToNamespacePrefixRector::class);
 
@@ -59,7 +59,7 @@ final class UseImportRelativeToNamespacePrefixRectorConfigureTest extends Testin
         ]);
     }
 
-    public function testConfigureRejectsInvalidNamespacePrefix(): void
+    public function testConfigureRejectsNamespacePrefixesWhenValueIsNotAListOfValidNamespacePrefixes(): void
     {
         $rector = $this->make(Rules\Files\UseImportRelativeToNamespacePrefixRector::class);
 
@@ -73,7 +73,7 @@ final class UseImportRelativeToNamespacePrefixRectorConfigureTest extends Testin
         ]);
     }
 
-    public function testConfigureRejectsDuplicateNamespacePrefixes(): void
+    public function testConfigureRejectsNamespacePrefixesWhenValueIsAListWithDuplicateNamespacePrefixes(): void
     {
         $rector = $this->make(Rules\Files\UseImportRelativeToNamespacePrefixRector::class);
 
@@ -88,7 +88,7 @@ final class UseImportRelativeToNamespacePrefixRectorConfigureTest extends Testin
         ]);
     }
 
-    public function testConfigureAcceptsValidConfiguration(): void
+    public function testConfigureAcceptsNamespacePrefixesWhenItIsAListOfValidNamespacePrefixes(): void
     {
         $rector = $this->make(Rules\Files\UseImportRelativeToNamespacePrefixRector::class);
 
@@ -102,7 +102,7 @@ final class UseImportRelativeToNamespacePrefixRectorConfigureTest extends Testin
         $this->addToAssertionCount(1);
     }
 
-    public function testConfigureAcceptsEmptyConfiguration(): void
+    public function testConfigureAcceptsNamespacePrefixesWhenItIsAnEmptyList(): void
     {
         $rector = $this->make(Rules\Files\UseImportRelativeToNamespacePrefixRector::class);
 

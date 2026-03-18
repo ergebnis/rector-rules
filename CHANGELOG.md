@@ -6,7 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## Unreleased
 
-For a full diff see [`1.13.1...main`][1.13.1...main].
+For a full diff see [`1.13.2...main`][1.13.2...main].
+
+## [`1.13.2`][1.13.2]
+
+For a full diff see [`1.13.1...1.13.2`][1.13.1...1.13.2].
 
 ### Fixed
 
@@ -312,7 +316,8 @@ For a full diff see [`fd198f0...0.1.0`][fd198f0...0.1.0].
 [1.12.4...1.12.5]: https://github.com/ergebnis/rector-rules/compare/1.12.4...1.12.5
 [1.12.5...1.13.0]: https://github.com/ergebnis/rector-rules/compare/1.12.5...1.13.0
 [1.13.0...1.13.1]: https://github.com/ergebnis/rector-rules/compare/1.13.0...1.13.1
-[1.13.1...main]: https://github.com/ergebnis/rector-rules/compare/1.13.1...main
+[1.13.1...1.13.2]: https://github.com/ergebnis/rector-rules/compare/1.13.1...1.13.2
+[1.13.2...main]: https://github.com/ergebnis/rector-rules/compare/1.13.2...main
 
 [#1]: https://github.com/ergebnis/rector-rules/pull/1
 [#3]: https://github.com/ergebnis/rector-rules/pull/3

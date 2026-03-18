@@ -80,7 +80,14 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
         if (\array_key_exists(self::CONFIGURATION_KEY_NAMESPACE_PREFIXES, $configuration)) {
             if (!\is_array($configuration[self::CONFIGURATION_KEY_NAMESPACE_PREFIXES])) {
                 throw new \InvalidArgumentException(\sprintf(
-                    'Value for configuration option "%s" needs to be an array of strings.',
+                    'Value for configuration option "%s" needs to be a list of strings.',
+                    self::CONFIGURATION_KEY_NAMESPACE_PREFIXES,
+                ));
+            }
+
+            if (\array_values($configuration[self::CONFIGURATION_KEY_NAMESPACE_PREFIXES]) !== $configuration[self::CONFIGURATION_KEY_NAMESPACE_PREFIXES]) {
+                throw new \InvalidArgumentException(\sprintf(
+                    'Value for configuration option "%s" needs to be a list of strings.',
                     self::CONFIGURATION_KEY_NAMESPACE_PREFIXES,
                 ));
             }
@@ -88,7 +95,7 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
             foreach ($configuration[self::CONFIGURATION_KEY_NAMESPACE_PREFIXES] as $value) {
                 if (!\is_string($value)) {
                     throw new \InvalidArgumentException(\sprintf(
-                        'Value for configuration option "%s" needs to be an array of strings.',
+                        'Value for configuration option "%s" needs to be a list of strings.',
                         self::CONFIGURATION_KEY_NAMESPACE_PREFIXES,
                     ));
                 }
@@ -97,7 +104,7 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
                     $namespacePrefix = NamespacePrefix::fromString($value);
                 } catch (\InvalidArgumentException $exception) {
                     throw new \InvalidArgumentException(\sprintf(
-                        'Value for configuration option "%s" needs to be an array of strings where each string is a valid namespace with at least two segments, got "%s".',
+                        'Value for configuration option "%s" needs to be a list of strings where each string is a valid namespace with at least two segments, got "%s".',
                         self::CONFIGURATION_KEY_NAMESPACE_PREFIXES,
                         $value,
                     ));
@@ -105,7 +112,7 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
 
                 if ($namespacePrefix->namespaceSegmentCount() < 2) {
                     throw new \InvalidArgumentException(\sprintf(
-                        'Value for configuration option "%s" needs to be an array of strings where each string is a valid namespace with at least two segments, got "%s".',
+                        'Value for configuration option "%s" needs to be a list of strings where each string is a valid namespace with at least two segments, got "%s".',
                         self::CONFIGURATION_KEY_NAMESPACE_PREFIXES,
                         $value,
                     ));
@@ -113,7 +120,7 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
 
                 if (\array_key_exists($value, $namespacePrefixes)) {
                     throw new \InvalidArgumentException(\sprintf(
-                        'Value for configuration option "%s" needs to be an array of unique strings, got duplicate "%s".',
+                        'Value for configuration option "%s" needs to be a list of unique strings, got duplicate "%s".',
                         self::CONFIGURATION_KEY_NAMESPACE_PREFIXES,
                         $value,
                     ));
@@ -130,7 +137,14 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
         if (\array_key_exists(self::CONFIGURATION_KEY_PARENT_NAMESPACE_PREFIXES, $configuration)) {
             if (!\is_array($configuration[self::CONFIGURATION_KEY_PARENT_NAMESPACE_PREFIXES])) {
                 throw new \InvalidArgumentException(\sprintf(
-                    'Value for configuration option "%s" needs to be an array of strings.',
+                    'Value for configuration option "%s" needs to be a list of strings.',
+                    self::CONFIGURATION_KEY_PARENT_NAMESPACE_PREFIXES,
+                ));
+            }
+
+            if (\array_values($configuration[self::CONFIGURATION_KEY_PARENT_NAMESPACE_PREFIXES]) !== $configuration[self::CONFIGURATION_KEY_PARENT_NAMESPACE_PREFIXES]) {
+                throw new \InvalidArgumentException(\sprintf(
+                    'Value for configuration option "%s" needs to be a list of strings.',
                     self::CONFIGURATION_KEY_PARENT_NAMESPACE_PREFIXES,
                 ));
             }
@@ -138,7 +152,7 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
             foreach ($configuration[self::CONFIGURATION_KEY_PARENT_NAMESPACE_PREFIXES] as $value) {
                 if (!\is_string($value)) {
                     throw new \InvalidArgumentException(\sprintf(
-                        'Value for configuration option "%s" needs to be an array of strings.',
+                        'Value for configuration option "%s" needs to be a list of strings.',
                         self::CONFIGURATION_KEY_PARENT_NAMESPACE_PREFIXES,
                     ));
                 }
@@ -147,7 +161,7 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
                     $parentNamespacePrefix = NamespacePrefix::fromString($value);
                 } catch (\InvalidArgumentException $exception) {
                     throw new \InvalidArgumentException(\sprintf(
-                        'Value for configuration option "%s" needs to be an array of strings where each string is a valid namespace with at least one segment, got "%s".',
+                        'Value for configuration option "%s" needs to be a list of strings where each string is a valid namespace with at least one segment, got "%s".',
                         self::CONFIGURATION_KEY_PARENT_NAMESPACE_PREFIXES,
                         $value,
                     ));
@@ -155,7 +169,7 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
 
                 if (\array_key_exists($value, $parentNamespacePrefixes)) {
                     throw new \InvalidArgumentException(\sprintf(
-                        'Value for configuration option "%s" needs to be an array of unique strings, got duplicate "%s".',
+                        'Value for configuration option "%s" needs to be a list of unique strings, got duplicate "%s".',
                         self::CONFIGURATION_KEY_PARENT_NAMESPACE_PREFIXES,
                         $value,
                     ));
@@ -174,7 +188,7 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
 
                     if ($parentNamespacePrefix->isNamespacePrefixOf($otherNamespacePrefix)) {
                         throw new \InvalidArgumentException(\sprintf(
-                            'Value for configuration option "%s" needs to be an array of strings where no string is a namespace prefix of another, got "%s" and "%s".',
+                            'Value for configuration option "%s" needs to be a list of strings where no string is a namespace prefix of another, got "%s" and "%s".',
                             self::CONFIGURATION_KEY_PARENT_NAMESPACE_PREFIXES,
                             $parentNamespacePrefix->toString(),
                             $otherNamespacePrefix->toString(),

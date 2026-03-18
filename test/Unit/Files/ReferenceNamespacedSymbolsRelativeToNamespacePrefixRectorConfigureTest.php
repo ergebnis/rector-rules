@@ -42,25 +42,47 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorConfigureTe
         $rector = $this->make(Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class);
 
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Value for configuration option "namespacePrefixes" needs to be an array of strings.');
+        $this->expectExceptionMessage('Value for configuration option "namespacePrefixes" needs to be a list of strings.');
 
         $rector->configure([
             'namespacePrefixes' => 'not-an-array',
         ]);
     }
 
-    public function testConfigureRejectsNamespacePrefixesWhenValueIsNotAListOfString(): void
+    /**
+     * @dataProvider provideNamespacePrefixesWhereValueIsNotAListOfStrings
+     */
+    public function testConfigureRejectsNamespacePrefixesWhenValueIsNotAListOfStrings(array $value): void
     {
         $rector = $this->make(Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class);
 
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Value for configuration option "namespacePrefixes" needs to be an array of strings.');
+        $this->expectExceptionMessage('Value for configuration option "namespacePrefixes" needs to be a list of strings.');
 
         $rector->configure([
-            'namespacePrefixes' => [
+            'namespacePrefixes' => $value,
+        ]);
+    }
+
+    /**
+     * @return \Generator<string, array{0: mixed}>
+     */
+    public static function provideNamespacePrefixesWhereValueIsNotAListOfStrings(): iterable
+    {
+        $values = [
+            'associative-array' => [
+                'foo' => 'Example\Core',
+            ],
+            'list-with-non-string-item' => [
                 123,
             ],
-        ]);
+        ];
+
+        foreach ($values as $key => $value) {
+            yield $key => [
+                $value,
+            ];
+        }
     }
 
     /**
@@ -72,7 +94,7 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorConfigureTe
 
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage(\sprintf(
-            'Value for configuration option "namespacePrefixes" needs to be an array of strings where each string is a valid namespace with at least two segments, got "%s".',
+            'Value for configuration option "namespacePrefixes" needs to be a list of strings where each string is a valid namespace with at least two segments, got "%s".',
             $namespacePrefix,
         ));
 
@@ -97,7 +119,9 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorConfigureTe
         ];
 
         foreach ($values as $key => $value) {
-            yield $key => [$value];
+            yield $key => [
+                $value,
+            ];
         }
     }
 
@@ -106,7 +130,7 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorConfigureTe
         $rector = $this->make(Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class);
 
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Value for configuration option "namespacePrefixes" needs to be an array of unique strings, got duplicate "Example\Core".');
+        $this->expectExceptionMessage('Value for configuration option "namespacePrefixes" needs to be a list of unique strings, got duplicate "Example\Core".');
 
         $rector->configure([
             'namespacePrefixes' => [
@@ -144,25 +168,47 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorConfigureTe
         $rector = $this->make(Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class);
 
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Value for configuration option "parentNamespacePrefixes" needs to be an array of strings.');
+        $this->expectExceptionMessage('Value for configuration option "parentNamespacePrefixes" needs to be a list of strings.');
 
         $rector->configure([
             'parentNamespacePrefixes' => 'not-an-array',
         ]);
     }
 
-    public function testConfigureRejectsParentNamespacePrefixesWhenValueIsNotAListOfString(): void
+    /**
+     * @dataProvider provideParentNamespacePrefixesWhereValueIsNotAListOfStrings
+     */
+    public function testConfigureRejectsParentNamespacePrefixesWhereValueIsNotAListOfStrings(array $value): void
     {
         $rector = $this->make(Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class);
 
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Value for configuration option "parentNamespacePrefixes" needs to be an array of strings.');
+        $this->expectExceptionMessage('Value for configuration option "parentNamespacePrefixes" needs to be a list of strings.');
 
         $rector->configure([
-            'parentNamespacePrefixes' => [
+            'parentNamespacePrefixes' => $value,
+        ]);
+    }
+
+    /**
+     * @return \Generator<string, array{0: mixed}>
+     */
+    public static function provideParentNamespacePrefixesWhereValueIsNotAListOfStrings(): iterable
+    {
+        $values = [
+            'associative-array' => [
+                'foo' => 'Example',
+            ],
+            'list-with-non-string-item' => [
                 123,
             ],
-        ]);
+        ];
+
+        foreach ($values as $key => $value) {
+            yield $key => [
+                $value,
+            ];
+        }
     }
 
     /**
@@ -174,7 +220,7 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorConfigureTe
 
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage(\sprintf(
-            'Value for configuration option "parentNamespacePrefixes" needs to be an array of strings where each string is a valid namespace with at least one segment, got "%s".',
+            'Value for configuration option "parentNamespacePrefixes" needs to be a list of strings where each string is a valid namespace with at least one segment, got "%s".',
             $parentNamespacePrefix,
         ));
 
@@ -198,7 +244,9 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorConfigureTe
         ];
 
         foreach ($values as $key => $value) {
-            yield $key => [$value];
+            yield $key => [
+                $value,
+            ];
         }
     }
 
@@ -207,7 +255,7 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorConfigureTe
         $rector = $this->make(Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class);
 
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Value for configuration option "parentNamespacePrefixes" needs to be an array of unique strings, got duplicate "Example".');
+        $this->expectExceptionMessage('Value for configuration option "parentNamespacePrefixes" needs to be a list of unique strings, got duplicate "Example".');
 
         $rector->configure([
             'parentNamespacePrefixes' => [
@@ -222,7 +270,7 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorConfigureTe
         $rector = $this->make(Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class);
 
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Value for configuration option "parentNamespacePrefixes" needs to be an array of strings where no string is a namespace prefix of another, got "Example" and "Example\Core".');
+        $this->expectExceptionMessage('Value for configuration option "parentNamespacePrefixes" needs to be a list of strings where no string is a namespace prefix of another, got "Example" and "Example\Core".');
 
         $rector->configure([
             'parentNamespacePrefixes' => [
@@ -237,7 +285,7 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorConfigureTe
         $rector = $this->make(Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class);
 
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Value for configuration option "parentNamespacePrefixes" needs to be an array of strings where no string is a namespace prefix of another, got "Example" and "Example\Core".');
+        $this->expectExceptionMessage('Value for configuration option "parentNamespacePrefixes" needs to be a list of strings where no string is a namespace prefix of another, got "Example" and "Example\Core".');
 
         $rector->configure([
             'parentNamespacePrefixes' => [

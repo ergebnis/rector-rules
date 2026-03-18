@@ -38,25 +38,47 @@ final class UseImportRelativeToNamespacePrefixRectorConfigureTest extends Testin
         $rector = $this->make(Rules\Files\UseImportRelativeToNamespacePrefixRector::class);
 
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Value for configuration option "namespacePrefixes" needs to be an array of strings.');
+        $this->expectExceptionMessage('Value for configuration option "namespacePrefixes" needs to be a list of strings.');
 
         $rector->configure([
             'namespacePrefixes' => 'not-an-array',
         ]);
     }
 
-    public function testConfigureRejectsNamespacePrefixesWhenValueIsNotAListOfString(): void
+    /**
+     * @dataProvider provideNamespacePrefixesWhereValueIsNotAListOfStrings
+     */
+    public function testConfigureRejectsNamespacePrefixesWhenValueIsNotAListOfStrings(array $value): void
     {
         $rector = $this->make(Rules\Files\UseImportRelativeToNamespacePrefixRector::class);
 
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Value for configuration option "namespacePrefixes" needs to be an array of strings.');
+        $this->expectExceptionMessage('Value for configuration option "namespacePrefixes" needs to be a list of strings.');
 
         $rector->configure([
-            'namespacePrefixes' => [
+            'namespacePrefixes' => $value,
+        ]);
+    }
+
+    /**
+     * @return \Generator<string, array{0: mixed}>
+     */
+    public static function provideNamespacePrefixesWhereValueIsNotAListOfStrings(): iterable
+    {
+        $values = [
+            'associative-array' => [
+                'foo' => 'Example\Core',
+            ],
+            'list-with-non-string-item' => [
                 123,
             ],
-        ]);
+        ];
+
+        foreach ($values as $key => $value) {
+            yield $key => [
+                $value,
+            ];
+        }
     }
 
     public function testConfigureRejectsNamespacePrefixesWhenValueIsNotAListOfValidNamespacePrefixes(): void
@@ -64,7 +86,7 @@ final class UseImportRelativeToNamespacePrefixRectorConfigureTest extends Testin
         $rector = $this->make(Rules\Files\UseImportRelativeToNamespacePrefixRector::class);
 
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Value for configuration option "namespacePrefixes" needs to be an array of strings where each string is a valid namespace with at least two segments, got "SingleSegment".');
+        $this->expectExceptionMessage('Value for configuration option "namespacePrefixes" needs to be a list of strings where each string is a valid namespace with at least two segments, got "SingleSegment".');
 
         $rector->configure([
             'namespacePrefixes' => [
@@ -78,7 +100,7 @@ final class UseImportRelativeToNamespacePrefixRectorConfigureTest extends Testin
         $rector = $this->make(Rules\Files\UseImportRelativeToNamespacePrefixRector::class);
 
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Value for configuration option "namespacePrefixes" needs to be an array of unique strings, got duplicate "Example\Core".');
+        $this->expectExceptionMessage('Value for configuration option "namespacePrefixes" needs to be a list of unique strings, got duplicate "Example\Core".');
 
         $rector->configure([
             'namespacePrefixes' => [

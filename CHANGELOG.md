@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 For a full diff see [`1.13.2...main`][1.13.2...main].
 
+### Fixed
+
+- Adjusted `Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector` and `Rules\Files\UseImportRelativeToNamespacePrefixRector` to reject arrays that are not lists ([#314]), by [@localheinz]
+
 ## [`1.13.2`][1.13.2]
 
 For a full diff see [`1.13.1...1.13.2`][1.13.1...1.13.2].
@@ -356,5 +360,6 @@ For a full diff see [`fd198f0...0.1.0`][fd198f0...0.1.0].
 [#306]: https://github.com/ergebnis/rector-rules/pull/306
 [#310]: https://github.com/ergebnis/rector-rules/pull/310
 [#312]: https://github.com/ergebnis/rector-rules/pull/312
+[#314]: https://github.com/ergebnis/rector-rules/pull/314
 
 [@localheinz]: https://github.com/localheinz

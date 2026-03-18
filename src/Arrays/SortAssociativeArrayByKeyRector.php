@@ -184,6 +184,80 @@ CODE_SAMPLE,
                         self::CONFIGURATION_KEY_DIRECTION => 'desc',
                     ],
                 ),
+                new RuleDocGenerator\ValueObject\CodeSample\ConfiguredCodeSample(
+                    <<<'CODE_SAMPLE'
+$data = [
+    'Quz' => 'qux',
+    'QuZ' => 'qux',
+    'quz' => 'qux',
+    'Quux' => 'quuz',
+    'quux' => 'quuz',
+];
+CODE_SAMPLE
+                    ,
+                    <<<'CODE_SAMPLE'
+$data = [
+    'Quux' => 'quuz',
+    'quux' => 'quuz',
+    'Quz' => 'qux',
+    'QuZ' => 'qux',
+    'quz' => 'qux',
+];
+CODE_SAMPLE,
+                    [
+                        self::CONFIGURATION_KEY_COMPARISON_FUNCTION => 'strcasecmp',
+                    ],
+                ),
+                new RuleDocGenerator\ValueObject\CodeSample\ConfiguredCodeSample(
+                    <<<'CODE_SAMPLE'
+$data = [
+    'Quz10' => 'qux',
+    'Quz2' => 'qux',
+    'Quz' => 'qux',
+    'Quux' => 'quuz',
+];
+CODE_SAMPLE
+                    ,
+                    <<<'CODE_SAMPLE'
+$data = [
+    'Quux' => 'quuz',
+    'Quz' => 'qux',
+    'Quz2' => 'qux',
+    'Quz10' => 'qux',
+];
+CODE_SAMPLE,
+                    [
+                        self::CONFIGURATION_KEY_COMPARISON_FUNCTION => 'strnatcmp',
+                    ],
+                ),
+                new RuleDocGenerator\ValueObject\CodeSample\ConfiguredCodeSample(
+                    <<<'CODE_SAMPLE'
+$data = [
+    'Quz10' => 'qux',
+    'Quz2' => 'qux',
+    'Quz' => 'qux',
+    'QuZ' => 'qux',
+    'quz' => 'qux',
+    'Quux' => 'quuz',
+    'quux' => 'quuz',
+];
+CODE_SAMPLE
+                    ,
+                    <<<'CODE_SAMPLE'
+$data = [
+    'Quux' => 'quuz',
+    'quux' => 'quuz',
+    'Quz' => 'qux',
+    'QuZ' => 'qux',
+    'quz' => 'qux',
+    'Quz2' => 'qux',
+    'Quz10' => 'qux',
+];
+CODE_SAMPLE,
+                    [
+                        self::CONFIGURATION_KEY_COMPARISON_FUNCTION => 'strnatcasecmp',
+                    ],
+                ),
             ],
         );
     }

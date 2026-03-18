@@ -344,11 +344,22 @@ CODE_SAMPLE
             return false;
         }
 
-        if (self::lastNamespaceSegmentOfNamespacePrefixCollidesWithExistingImport($containerNode, $namespacePrefix)) {
+        $fileNamespaceMatchesPrefix = self::fileNamespaceMatchesPrefix(
+            $containerNode,
+            $namespacePrefix,
+        );
+
+        if (
+            !$fileNamespaceMatchesPrefix
+            && self::lastNamespaceSegmentOfNamespacePrefixCollidesWithExistingImport($containerNode, $namespacePrefix)
+        ) {
             return false;
         }
 
-        if (self::lastNamespaceSegmentOfNamespacePrefixCollidesWithDeclaredSymbol($containerNode, $namespacePrefix)) {
+        if (
+            !$fileNamespaceMatchesPrefix
+            && self::lastNamespaceSegmentOfNamespacePrefixCollidesWithDeclaredSymbol($containerNode, $namespacePrefix)
+        ) {
             return false;
         }
 
@@ -356,6 +367,7 @@ CODE_SAMPLE
             $containerNode,
             $namespacePrefix,
             $otherNamespacePrefixes,
+            $fileNamespaceMatchesPrefix,
         );
 
         $docBlocksRewritten = $this->rewriteNamesInDocBlocks(
@@ -363,6 +375,7 @@ CODE_SAMPLE
             $aliasesToReferences,
             $namespacePrefix,
             $otherNamespacePrefixes,
+            $fileNamespaceMatchesPrefix,
         );
 
         if (
@@ -378,6 +391,7 @@ CODE_SAMPLE
             $namespacePrefix,
             $hasPrefixImport,
             $otherNamespacePrefixes,
+            $fileNamespaceMatchesPrefix,
         );
 
         return true;
@@ -539,13 +553,14 @@ CODE_SAMPLE
     private function rewriteNamesInStatements(
         Node $containerNode,
         NamespacePrefix $namespacePrefix,
-        array $otherNamespacePrefixes
+        array $otherNamespacePrefixes,
+        bool $fileNamespaceMatchesPrefix
     ): bool {
         $lastNamespaceSegmentOfNamespacePrefix = $namespacePrefix->lastNamespaceSegment();
 
         $hasChanged = false;
 
-        $this->traverseNodesWithCallable($containerNode->stmts, static function (Node $node) use ($namespacePrefix, $lastNamespaceSegmentOfNamespacePrefix, $otherNamespacePrefixes, &$hasChanged): ?Node {
+        $this->traverseNodesWithCallable($containerNode->stmts, static function (Node $node) use ($namespacePrefix, $lastNamespaceSegmentOfNamespacePrefix, $otherNamespacePrefixes, $fileNamespaceMatchesPrefix, &$hasChanged): ?Node {
             if (!$node instanceof Node\Name\FullyQualified) {
                 return null;
             }
@@ -564,6 +579,14 @@ CODE_SAMPLE
             }
 
             $hasChanged = true;
+
+            if ($fileNamespaceMatchesPrefix) {
+                if ($reference->is($namespacePrefix)) {
+                    return null;
+                }
+
+                return new Node\Name($reference->relativeTo($namespacePrefix)->toString());
+            }
 
             if ($reference->is($namespacePrefix)) {
                 return new Node\Name($lastNamespaceSegmentOfNamespacePrefix->toString());
@@ -588,11 +611,12 @@ CODE_SAMPLE
         Node $containerNode,
         array $aliasesToReferences,
         NamespacePrefix $namespacePrefix,
-        array $otherNamespacePrefixes
+        array $otherNamespacePrefixes,
+        bool $fileNamespaceMatchesPrefix
     ): bool {
         $anyDocBlockChanged = false;
 
-        $this->traverseNodesWithCallable($containerNode->stmts, function (Node $node) use (&$anyDocBlockChanged, $aliasesToReferences, $namespacePrefix, $otherNamespacePrefixes): ?Node {
+        $this->traverseNodesWithCallable($containerNode->stmts, function (Node $node) use (&$anyDocBlockChanged, $aliasesToReferences, $namespacePrefix, $otherNamespacePrefixes, $fileNamespaceMatchesPrefix): ?Node {
             if ($node instanceof Node\Stmt\Use_) {
                 return null;
             }
@@ -607,7 +631,7 @@ CODE_SAMPLE
 
             $phpDocNodeTraverser = new PhpDocParser\PhpDocParser\PhpDocNodeTraverser();
 
-            $phpDocNodeTraverser->traverseWithCallable($phpDocInfo->getPhpDocNode(), '', static function (Ast\Node $phpDocNode) use ($aliasesToReferences, $namespacePrefix, $otherNamespacePrefixes, &$hasChanged): ?Ast\Type\IdentifierTypeNode {
+            $phpDocNodeTraverser->traverseWithCallable($phpDocInfo->getPhpDocNode(), '', static function (Ast\Node $phpDocNode) use ($aliasesToReferences, $namespacePrefix, $otherNamespacePrefixes, $fileNamespaceMatchesPrefix, &$hasChanged): ?Ast\Type\IdentifierTypeNode {
                 if (!$phpDocNode instanceof Ast\Type\IdentifierTypeNode) {
                     return null;
                 }
@@ -630,6 +654,14 @@ CODE_SAMPLE
                     }
 
                     $hasChanged = true;
+
+                    if ($fileNamespaceMatchesPrefix) {
+                        if ($reference->is($namespacePrefix)) {
+                            return null;
+                        }
+
+                        return new Ast\Type\IdentifierTypeNode($reference->relativeTo($namespacePrefix)->toString());
+                    }
 
                     if ($reference->is($namespacePrefix)) {
                         return new Ast\Type\IdentifierTypeNode($namespacePrefix->lastNamespaceSegment()->toString());
@@ -677,7 +709,13 @@ CODE_SAMPLE
                     return null;
                 }
 
-                if ($reference->is($namespacePrefix)) {
+                if ($fileNamespaceMatchesPrefix) {
+                    if ($reference->is($namespacePrefix)) {
+                        return null;
+                    }
+
+                    $newName = $reference->relativeTo($namespacePrefix)->toString();
+                } elseif ($reference->is($namespacePrefix)) {
                     $newName = $namespacePrefix->lastNamespaceSegment()->toString();
                 } else {
                     $newName = \sprintf(
@@ -797,6 +835,24 @@ CODE_SAMPLE
         }
 
         return false;
+    }
+
+    /**
+     * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
+     */
+    private static function fileNamespaceMatchesPrefix(
+        Node $containerNode,
+        NamespacePrefix $namespacePrefix
+    ): bool {
+        if (!$containerNode instanceof Node\Stmt\Namespace_) {
+            return false;
+        }
+
+        if (null === $containerNode->name) {
+            return false;
+        }
+
+        return $containerNode->name->toString() === $namespacePrefix->toString();
     }
 
     /**
@@ -960,7 +1016,8 @@ CODE_SAMPLE
         Node $containerNode,
         NamespacePrefix $namespacePrefix,
         bool $hasPrefixImport,
-        array $otherNamespacePrefixes
+        array $otherNamespacePrefixes,
+        bool $fileNamespaceMatchesPrefix
     ): void {
         /** @var ?int $firstMatchIndex */
         $firstMatchIndex = null;
@@ -1046,6 +1103,18 @@ CODE_SAMPLE
                     $stmt->uses = $remainingUses;
                 }
             }
+        }
+
+        if ($fileNamespaceMatchesPrefix) {
+            foreach (\array_reverse($indicesToRemove) as $index) {
+                \array_splice(
+                    $containerNode->stmts,
+                    $index,
+                    1,
+                );
+            }
+
+            return;
         }
 
         if (!$hasPrefixImport && null !== $firstMatchIndex) {

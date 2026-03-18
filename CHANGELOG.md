@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 For a full diff see [`1.13.1...main`][1.13.1...main].
 
+### Fixed
+
+- Adjusted `Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector` to remove unnecessary imports without adding a prefix import when the file namespace is the parent namespace prefix ([#312]), by [@localheinz]
+
 ## [`1.13.1`][1.13.1]
 
 For a full diff see [`1.13.0...1.13.1`][1.13.0...1.13.1].

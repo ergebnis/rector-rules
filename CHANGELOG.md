@@ -14,7 +14,7 @@ For a full diff see [`1.13.0...1.13.1`][1.13.0...1.13.1].
 
 ### Fixed
 
-- Adjusted `Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector` to remove redundant imports without adding a prefix import when the file namespace matches the namespace prefix ([#312]), by [@localheinz]
+- Adjusted `Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector` to remove unnecessary imports without adding a prefix import when the file namespace matches the namespace prefix ([#312]), by [@localheinz]
 
 ## [`1.13.0`][1.13.0]
 

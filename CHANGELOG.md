@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 For a full diff see [`1.13.2...main`][1.13.2...main].
 
+### Added
+
+- Added `forceRelativeReferences` configuration option to `Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector` to force references to be expressed relative to the namespace prefix even when the file namespace matches the prefix ([#315]), by [@localheinz]
+
 ### Fixed
 
 - Adjusted `Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector` and `Rules\Files\UseImportRelativeToNamespacePrefixRector` to reject arrays that are not lists ([#314]), by [@localheinz]
@@ -361,5 +365,6 @@ For a full diff see [`fd198f0...0.1.0`][fd198f0...0.1.0].
 [#310]: https://github.com/ergebnis/rector-rules/pull/310
 [#312]: https://github.com/ergebnis/rector-rules/pull/312
 [#314]: https://github.com/ergebnis/rector-rules/pull/314
+[#315]: https://github.com/ergebnis/rector-rules/pull/315
 
 [@localheinz]: https://github.com/localheinz

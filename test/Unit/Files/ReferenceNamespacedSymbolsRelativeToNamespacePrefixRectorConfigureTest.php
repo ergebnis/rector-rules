@@ -37,6 +37,32 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorConfigureTe
         ]);
     }
 
+    public function testConfigureRejectsNonBoolForceRelativeReferences(): void
+    {
+        $rector = $this->make(Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class);
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Value for configuration option "forceRelativeReferences" needs to be a boolean.');
+
+        $rector->configure([
+            'forceRelativeReferences' => 'not-a-bool',
+        ]);
+    }
+
+    public function testConfigureAcceptsForceRelativeReferences(): void
+    {
+        $rector = $this->make(Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class);
+
+        $rector->configure([
+            'forceRelativeReferences' => true,
+            'namespacePrefixes' => [
+                'Example\Core',
+            ],
+        ]);
+
+        $this->addToAssertionCount(1);
+    }
+
     public function testConfigureRejectsNamespacePrefixesWhenValueIsNotList(): void
     {
         $rector = $this->make(Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class);

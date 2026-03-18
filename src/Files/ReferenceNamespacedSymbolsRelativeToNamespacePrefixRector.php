@@ -215,6 +215,161 @@ CODE_SAMPLE
                         ],
                     ],
                 ),
+                new RuleDocGenerator\ValueObject\CodeSample\ConfiguredCodeSample(
+                    <<<'CODE_SAMPLE'
+namespace Example\App;
+
+use Example\Core\Routing\Attribute\Route;
+use Example\Domain\UserRepository;
+use Psr\Http\Message\ResponseInterface;
+
+final class ExampleController
+{
+    private UserRepository $userRepository;
+
+    #[Route(path: '/example', name: 'example')]
+    public function dashboard(): ResponseInterface
+    {
+    }
+}
+CODE_SAMPLE
+                    ,
+                    <<<'CODE_SAMPLE'
+namespace Example\App;
+
+use Example\Core\Routing;
+use Example\Domain;
+use Psr\Http;
+
+final class ExampleController
+{
+    private Domain\UserRepository $userRepository;
+
+    #[Routing\Attribute\Route(path: '/example', name: 'example')]
+    public function dashboard(): Http\Message\ResponseInterface
+    {
+    }
+}
+CODE_SAMPLE
+                    ,
+                    [
+                        self::CONFIGURATION_KEY_NAMESPACE_PREFIXES => [
+                            'Example\Core\Routing',
+                            'Example\Domain',
+                            'Psr\Http',
+                        ],
+                    ],
+                ),
+                new RuleDocGenerator\ValueObject\CodeSample\ConfiguredCodeSample(
+                    <<<'CODE_SAMPLE'
+namespace Example\App;
+
+use Example\Core\Controller\AbstractController;
+
+final class ExampleController extends AbstractController
+{
+}
+CODE_SAMPLE
+                    ,
+                    <<<'CODE_SAMPLE'
+namespace Example\App;
+
+use Example\Core;
+
+final class ExampleController extends Core\Controller\AbstractController
+{
+}
+CODE_SAMPLE
+                    ,
+                    [
+                        self::CONFIGURATION_KEY_PARENT_NAMESPACE_PREFIXES => [
+                            'Example',
+                        ],
+                    ],
+                ),
+                new RuleDocGenerator\ValueObject\CodeSample\ConfiguredCodeSample(
+                    <<<'CODE_SAMPLE'
+namespace Example\App;
+
+use Example\Core\Controller\AbstractController;
+use Example\Core\Routing\Attribute\Route;
+
+final class ExampleController extends AbstractController
+{
+    #[Route(path: '/example', name: 'example')]
+    public function dashboard()
+    {
+    }
+}
+CODE_SAMPLE
+                    ,
+                    <<<'CODE_SAMPLE'
+namespace Example\App;
+
+use Example\Core;
+use Example\Core\Routing;
+
+final class ExampleController extends Core\Controller\AbstractController
+{
+    #[Routing\Attribute\Route(path: '/example', name: 'example')]
+    public function dashboard()
+    {
+    }
+}
+CODE_SAMPLE
+                    ,
+                    [
+                        self::CONFIGURATION_KEY_NAMESPACE_PREFIXES => [
+                            'Example\Core\Routing',
+                        ],
+                        self::CONFIGURATION_KEY_PARENT_NAMESPACE_PREFIXES => [
+                            'Example',
+                        ],
+                    ],
+                ),
+                new RuleDocGenerator\ValueObject\CodeSample\ConfiguredCodeSample(
+                    <<<'CODE_SAMPLE'
+namespace Example\App;
+
+use Example\Core\Caching\Redis\Connection;
+use Example\Core\Controller\AbstractController;
+use Example\Core\Routing\Attribute\Route;
+
+final class ExampleController extends AbstractController
+{
+    #[Route(path: '/example', name: 'example')]
+    #[Connection(host: 'localhost')]
+    public function dashboard()
+    {
+    }
+}
+CODE_SAMPLE
+                    ,
+                    <<<'CODE_SAMPLE'
+namespace Example\App;
+
+use Example\Core\Caching\Redis;
+use Example\Core;
+use Example\Core\Routing;
+
+final class ExampleController extends Core\Controller\AbstractController
+{
+    #[Routing\Attribute\Route(path: '/example', name: 'example')]
+    #[Redis\Connection(host: 'localhost')]
+    public function dashboard()
+    {
+    }
+}
+CODE_SAMPLE
+                    ,
+                    [
+                        self::CONFIGURATION_KEY_NAMESPACE_PREFIXES => [
+                            'Example\Core\Routing',
+                            'Example\Core',
+                            'Example\Core\Caching\Redis',
+                        ],
+                    ],
+                ),
             ],
         );
     }

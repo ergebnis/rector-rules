@@ -17,9 +17,8 @@ use Rector\Config;
 return static function (Config\RectorConfig $rectorConfig): void {
     $rectorConfig->ruleWithConfiguration(Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class, [
         'namespacePrefixes' => [
-            'Example\Core\Routing',
-            'Example\Domain',
-            'Psr\Http',
+            'App\Controller',
+            'App\Entity',
         ],
     ]);
 };

@@ -23,7 +23,7 @@ use Rector\Testing;
  * @uses \Ergebnis\Rector\Rules\Files\NamespaceSegments
  * @uses \Ergebnis\Rector\Rules\Files\Reference
  */
-final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorWithForceRelativeReferencesTest extends Testing\PHPUnit\AbstractRectorTestCase
+final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorWithDefaultConfigurationTest extends Testing\PHPUnit\AbstractRectorTestCase
 {
     /**
      * @dataProvider provideData
@@ -35,11 +35,11 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorWithForceRe
 
     public static function provideData(): iterable
     {
-        return self::yieldFilesFromDirectory(__DIR__ . '/../../Fixture/Files/ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector/WithForceRelativeReferences');
+        return self::yieldFilesFromDirectory(__DIR__ . '/../../Fixture/Files/ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector/WithDefaultConfiguration');
     }
 
     public function provideConfigFilePath(): string
     {
-        return __DIR__ . '/../../Fixture/Files/ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector/WithForceRelativeReferences/config.php';
+        return __DIR__ . '/../../Fixture/Files/ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector/WithDefaultConfiguration/config.php';
     }
 }

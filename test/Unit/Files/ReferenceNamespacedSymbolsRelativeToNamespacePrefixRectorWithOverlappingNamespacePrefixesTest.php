@@ -26,33 +26,16 @@ use Rector\Testing;
 final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorWithOverlappingNamespacePrefixesTest extends Testing\PHPUnit\AbstractRectorTestCase
 {
     /**
-     * @dataProvider provideDataOnPhp7
-     *
-     * @requires PHP < 8.0
+     * @dataProvider provideData
      */
-    public function testOnPhp7(string $filePath): void
+    public function test(string $filePath): void
     {
         $this->doTestFile($filePath);
     }
 
-    public static function provideDataOnPhp7(): iterable
+    public static function provideData(): iterable
     {
-        return self::yieldFilesFromDirectory(__DIR__ . '/../../Fixture/Files/ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector/WithOverlappingNamespacePrefixes/Php7');
-    }
-
-    /**
-     * @dataProvider provideDataOnPhp8
-     *
-     * @requires PHP >= 8.0
-     */
-    public function testOnPhp8(string $filePath): void
-    {
-        $this->doTestFile($filePath);
-    }
-
-    public static function provideDataOnPhp8(): iterable
-    {
-        return self::yieldFilesFromDirectory(__DIR__ . '/../../Fixture/Files/ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector/WithOverlappingNamespacePrefixes/Php8');
+        return self::yieldFilesFromDirectory(__DIR__ . '/../../Fixture/Files/ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector/WithOverlappingNamespacePrefixes');
     }
 
     public function provideConfigFilePath(): string

@@ -151,6 +151,12 @@ parameters:
 			path: test/Unit/Files/ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorWithNamespacePrefixesTest.php
 
 		-
+			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Files\\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorWithNamespacePrefixesTest\:\:provideDataOnPhp81\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: test/Unit/Files/ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorWithNamespacePrefixesTest.php
+
+		-
 			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Files\\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorWithOverlappingNamespacePrefixesTest\:\:provideData\(\) return type has no value type specified in iterable type iterable\.$#'
 			identifier: missingType.iterableValue
 			count: 1

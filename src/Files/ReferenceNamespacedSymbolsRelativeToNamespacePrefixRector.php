@@ -463,7 +463,7 @@ CODE_SAMPLE
             $containerNode = $node;
         }
 
-        $discoveredPrefixes = self::discoverNamespacePrefixesFromParents(
+        $discoveredNamespacePrefixes = self::discoverNamespacePrefixesFromParents(
             $containerNode,
             $this->parentNamespacePrefixes,
             $this->namespacePrefixes,
@@ -471,7 +471,7 @@ CODE_SAMPLE
 
         $allNamespacePrefixes = \array_merge(
             $this->namespacePrefixes,
-            $discoveredPrefixes,
+            $discoveredNamespacePrefixes,
         );
 
         if (\count($allNamespacePrefixes) === 0) {

@@ -1279,7 +1279,9 @@ CODE_SAMPLE
                             $firstMatchIndex = $index;
                         }
 
-                        $remainingUses[] = $use;
+                        if (!$fileNamespaceAsPrefix instanceof NamespacePrefix) {
+                            $remainingUses[] = $use;
+                        }
 
                         continue;
                     }
@@ -1320,7 +1322,9 @@ CODE_SAMPLE
                             $firstMatchIndex = $index;
                         }
 
-                        $remainingUses[] = $use;
+                        if (!$fileNamespaceAsPrefix instanceof NamespacePrefix) {
+                            $remainingUses[] = $use;
+                        }
 
                         continue;
                     }

@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 For a full diff see [`1.14.0...main`][1.14.0...main].
 
+### Fixed
+
+- Adjusted `Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector` to remove imports in file where namespace is identical to namespace prefix ([#316]), by [@localheinz]
+
 ## [`1.14.0`][1.14.0]
 
 For a full diff see [`1.13.2...1.14.0`][1.13.2...1.14.0].
@@ -373,5 +377,6 @@ For a full diff see [`fd198f0...0.1.0`][fd198f0...0.1.0].
 [#312]: https://github.com/ergebnis/rector-rules/pull/312
 [#314]: https://github.com/ergebnis/rector-rules/pull/314
 [#315]: https://github.com/ergebnis/rector-rules/pull/315
+[#316]: https://github.com/ergebnis/rector-rules/pull/316
 
 [@localheinz]: https://github.com/localheinz

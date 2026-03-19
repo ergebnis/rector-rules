@@ -463,7 +463,7 @@ CODE_SAMPLE
             $containerNode = $node;
         }
 
-        $discoveredNamespacePrefixes = self::discoverNamespacePrefixesFromParents(
+        $discoveredNamespacePrefixes = self::discoverNamespacePrefixesFromParentNamespacePrefixes(
             $containerNode,
             $this->parentNamespacePrefixes,
             $this->namespacePrefixes,
@@ -1104,7 +1104,7 @@ CODE_SAMPLE
      *
      * @return list<NamespacePrefix>
      */
-    private static function discoverNamespacePrefixesFromParents(
+    private static function discoverNamespacePrefixesFromParentNamespacePrefixes(
         Node $containerNode,
         array $parentNamespacePrefixes,
         array $existingNamespacePrefixes

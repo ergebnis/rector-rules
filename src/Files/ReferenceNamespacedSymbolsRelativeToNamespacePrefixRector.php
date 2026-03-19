@@ -1100,14 +1100,14 @@ CODE_SAMPLE
     /**
      * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
      * @param list<NamespacePrefix>                        $parentNamespacePrefixes
-     * @param list<NamespacePrefix>                        $existingNamespacePrefixes
+     * @param list<NamespacePrefix>                        $namespacePrefixes
      *
      * @return list<NamespacePrefix>
      */
     private static function discoverNamespacePrefixesFromParentNamespacePrefixes(
         Node $containerNode,
         array $parentNamespacePrefixes,
-        array $existingNamespacePrefixes
+        array $namespacePrefixes
     ): array {
         if (\count($parentNamespacePrefixes) === 0) {
             return [];
@@ -1118,7 +1118,7 @@ CODE_SAMPLE
 
         $existingKeys = [];
 
-        foreach ($existingNamespacePrefixes as $existingPrefix) {
+        foreach ($namespacePrefixes as $existingPrefix) {
             $existingKeys[$existingPrefix->toString()] = true;
         }
 

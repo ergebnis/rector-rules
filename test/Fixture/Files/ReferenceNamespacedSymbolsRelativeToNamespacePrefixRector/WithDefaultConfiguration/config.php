@@ -15,9 +15,5 @@ use Ergebnis\Rector\Rules;
 use Rector\Config;
 
 return static function (Config\RectorConfig $rectorConfig): void {
-    $rectorConfig->ruleWithConfiguration(Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class, [
-        'parentNamespacePrefixes' => [
-            'Symfony\Component',
-        ],
-    ]);
+    $rectorConfig->rule(Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class);
 };

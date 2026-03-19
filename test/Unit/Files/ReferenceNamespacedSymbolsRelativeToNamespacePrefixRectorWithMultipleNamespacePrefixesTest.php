@@ -26,33 +26,16 @@ use Rector\Testing;
 final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorWithMultipleNamespacePrefixesTest extends Testing\PHPUnit\AbstractRectorTestCase
 {
     /**
-     * @dataProvider provideDataOnPhp7
-     *
-     * @requires PHP < 8.0
+     * @dataProvider provideData
      */
-    public function testOnPhp7(string $filePath): void
+    public function test(string $filePath): void
     {
         $this->doTestFile($filePath);
     }
 
-    public static function provideDataOnPhp7(): iterable
+    public static function provideData(): iterable
     {
-        return self::yieldFilesFromDirectory(__DIR__ . '/../../Fixture/Files/ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector/WithMultipleNamespacePrefixes/Php7');
-    }
-
-    /**
-     * @dataProvider provideDataOnPhp8
-     *
-     * @requires PHP >= 8.0
-     */
-    public function testOnPhp8(string $filePath): void
-    {
-        $this->doTestFile($filePath);
-    }
-
-    public static function provideDataOnPhp8(): iterable
-    {
-        return self::yieldFilesFromDirectory(__DIR__ . '/../../Fixture/Files/ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector/WithMultipleNamespacePrefixes/Php8');
+        return self::yieldFilesFromDirectory(__DIR__ . '/../../Fixture/Files/ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector/WithMultipleNamespacePrefixes');
     }
 
     public function provideConfigFilePath(): string

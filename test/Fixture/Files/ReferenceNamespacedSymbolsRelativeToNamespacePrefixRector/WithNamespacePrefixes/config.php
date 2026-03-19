@@ -16,8 +16,8 @@ use Rector\Config;
 
 return static function (Config\RectorConfig $rectorConfig): void {
     $rectorConfig->ruleWithConfiguration(Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class, [
-        'parentNamespacePrefixes' => [
-            'Symfony\Component',
+        'namespacePrefixes' => [
+            'App\Controller',
         ],
     ]);
 };

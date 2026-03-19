@@ -18,7 +18,7 @@ return static function (Config\RectorConfig $rectorConfig): void {
     $rectorConfig->ruleWithConfiguration(Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class, [
         'forceRelativeReferences' => true,
         'namespacePrefixes' => [
-            'Example\Core',
+            'App\Controller',
         ],
     ]);
 };

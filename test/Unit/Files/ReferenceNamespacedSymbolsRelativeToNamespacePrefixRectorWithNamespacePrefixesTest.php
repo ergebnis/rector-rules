@@ -68,6 +68,21 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorWithNamespa
         return self::yieldFilesFromDirectory(__DIR__ . '/../../Fixture/Files/ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector/WithNamespacePrefixes/Php81');
     }
 
+    /**
+     * @dataProvider provideDataOnPhp82
+     *
+     * @requires PHP >= 8.2
+     */
+    public function testOnPhp82(string $filePath): void
+    {
+        $this->doTestFile($filePath);
+    }
+
+    public static function provideDataOnPhp82(): iterable
+    {
+        return self::yieldFilesFromDirectory(__DIR__ . '/../../Fixture/Files/ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector/WithNamespacePrefixes/Php82');
+    }
+
     public function provideConfigFilePath(): string
     {
         return __DIR__ . '/../../Fixture/Files/ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector/WithNamespacePrefixes/config.php';

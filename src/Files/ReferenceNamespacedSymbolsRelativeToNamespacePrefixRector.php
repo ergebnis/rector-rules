@@ -1113,8 +1113,8 @@ CODE_SAMPLE
             return [];
         }
 
-        /** @var array<string, NamespacePrefix> $discovered */
-        $discovered = [];
+        /** @var array<string, NamespacePrefix> $discoveredNamespacePrefixes */
+        $discoveredNamespacePrefixes = [];
 
         $existingKeys = [];
 
@@ -1135,7 +1135,7 @@ CODE_SAMPLE
                         $reference,
                         $parentNamespacePrefixes,
                         $existingKeys,
-                        $discovered,
+                        $discoveredNamespacePrefixes,
                     );
                 }
             } elseif ($statement instanceof Node\Stmt\GroupUse) {
@@ -1156,7 +1156,7 @@ CODE_SAMPLE
                         $reference,
                         $parentNamespacePrefixes,
                         $existingKeys,
-                        $discovered,
+                        $discoveredNamespacePrefixes,
                     );
                 }
             }
@@ -1166,7 +1166,7 @@ CODE_SAMPLE
 
         $nodeFinder->find(
             $containerNode->stmts,
-            static function (Node $node) use ($parentNamespacePrefixes, &$existingKeys, &$discovered): bool {
+            static function (Node $node) use ($parentNamespacePrefixes, &$existingKeys, &$discoveredNamespacePrefixes): bool {
                 if (!$node instanceof Node\Name\FullyQualified) {
                     return false;
                 }
@@ -1175,7 +1175,7 @@ CODE_SAMPLE
                     $node->toString(),
                     $parentNamespacePrefixes,
                     $existingKeys,
-                    $discovered,
+                    $discoveredNamespacePrefixes,
                 );
 
                 return false;
@@ -1184,7 +1184,7 @@ CODE_SAMPLE
 
         $nodeFinder->find(
             $containerNode->stmts,
-            static function (Node $node) use ($parentNamespacePrefixes, &$existingKeys, &$discovered): bool {
+            static function (Node $node) use ($parentNamespacePrefixes, &$existingKeys, &$discoveredNamespacePrefixes): bool {
                 $docComment = $node->getDocComment();
 
                 if (null === $docComment) {
@@ -1205,8 +1205,8 @@ CODE_SAMPLE
                             $childPrefix = $parentNamespacePrefix->append($segment);
                             $childKey = $childPrefix->toString();
 
-                            if (!\array_key_exists($childKey, $discovered) && !\array_key_exists($childKey, $existingKeys)) {
-                                $discovered[$childKey] = $childPrefix;
+                            if (!\array_key_exists($childKey, $discoveredNamespacePrefixes) && !\array_key_exists($childKey, $existingKeys)) {
+                                $discoveredNamespacePrefixes[$childKey] = $childPrefix;
                             }
                         }
                     }
@@ -1216,7 +1216,7 @@ CODE_SAMPLE
             },
         );
 
-        return \array_values($discovered);
+        return \array_values($discoveredNamespacePrefixes);
     }
 
     /**

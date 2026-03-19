@@ -469,21 +469,21 @@ CODE_SAMPLE
             $this->namespacePrefixes,
         );
 
-        $allNamespacePrefixes = \array_merge(
+        $namespacePrefixes = \array_merge(
             $this->namespacePrefixes,
             $discoveredNamespacePrefixes,
         );
 
-        if (\count($allNamespacePrefixes) === 0) {
+        if (\count($namespacePrefixes) === 0) {
             return null;
         }
 
         $changed = false;
 
-        foreach ($allNamespacePrefixes as $namespacePrefix) {
+        foreach ($namespacePrefixes as $namespacePrefix) {
             $otherNamespacePrefixes = [];
 
-            foreach ($allNamespacePrefixes as $otherNamespacePrefix) {
+            foreach ($namespacePrefixes as $otherNamespacePrefix) {
                 if ($namespacePrefix->isNamespacePrefixOf($otherNamespacePrefix)) {
                     $otherNamespacePrefixes[] = $otherNamespacePrefix;
                 }

@@ -1227,7 +1227,7 @@ CODE_SAMPLE
     private static function discoverChildPrefix(
         string $reference,
         array $parentNamespacePrefixes,
-        array &$existingKeys,
+        array $existingKeys,
         array &$discovered
     ): void {
         foreach ($parentNamespacePrefixes as $parentNamespacePrefix) {

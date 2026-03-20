@@ -812,7 +812,7 @@ CODE_SAMPLE
 
             $hasChanged = true;
 
-            if (null !== $namespacePrefixOfContainingFile) {
+            if ($namespacePrefixOfContainingFile instanceof NamespacePrefix) {
                 if ($reference->is($namespacePrefixOfContainingFile)) {
                     return null;
                 }
@@ -887,7 +887,7 @@ CODE_SAMPLE
 
                     $hasChanged = true;
 
-                    if (null !== $namespacePrefixOfContainingFile) {
+                    if ($namespacePrefixOfContainingFile instanceof NamespacePrefix) {
                         if ($reference->is($namespacePrefixOfContainingFile)) {
                             return null;
                         }
@@ -941,7 +941,7 @@ CODE_SAMPLE
                     return null;
                 }
 
-                if (null !== $namespacePrefixOfContainingFile) {
+                if ($namespacePrefixOfContainingFile instanceof NamespacePrefix) {
                     if ($reference->is($namespacePrefixOfContainingFile)) {
                         return null;
                     }
@@ -1351,7 +1351,7 @@ CODE_SAMPLE
             }
         }
 
-        if (null !== $namespacePrefixOfContainingFile) {
+        if ($namespacePrefixOfContainingFile instanceof NamespacePrefix) {
             foreach (\array_reverse($indicesToRemove) as $index) {
                 \array_splice(
                     $containerNode->stmts,

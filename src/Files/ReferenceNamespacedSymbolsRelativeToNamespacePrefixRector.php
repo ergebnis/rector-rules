@@ -636,6 +636,7 @@ CODE_SAMPLE
             !$hasDirectMatchingImports
             && !$hasParentImport
             && !self::hasSourceWrittenFullyQualifiedReferencesMatchingPrefix($containerNode, $namespacePrefix, $moreSpecificNamespacePrefixes)
+            && !($this->forceRelativeReferences && self::hasPartiallyQualifiedReferencesMatchingPrefix($containerNode, $namespacePrefix, $moreSpecificNamespacePrefixes))
         ) {
             return false;
         }
@@ -850,6 +851,100 @@ CODE_SAMPLE
      * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
      * @param list<NamespacePrefix>                        $moreSpecificNamespacePrefixes
      */
+    private static function hasPartiallyQualifiedReferencesMatchingPrefix(
+        Node $containerNode,
+        NamespacePrefix $namespacePrefix,
+        array $moreSpecificNamespacePrefixes
+    ): bool {
+        $nodeFinder = new NodeFinder();
+
+        $match = $nodeFinder->findFirst(
+            $containerNode->stmts,
+            static function (Node $node) use ($namespacePrefix, $moreSpecificNamespacePrefixes): bool {
+                if (!$node instanceof Node\Name\FullyQualified) {
+                    return false;
+                }
+
+                $originalName = $node->getAttribute('originalName');
+
+                if (!$originalName instanceof Node\Name) {
+                    return false;
+                }
+
+                if ($originalName instanceof Node\Name\FullyQualified) {
+                    return false;
+                }
+
+                if (\strpos($originalName->toString(), '\\') === false) {
+                    return false;
+                }
+
+                $reference = Reference::fromString($node->toString());
+
+                return $reference->isOrIsDeclaredInOneOf($namespacePrefix)
+                    && !$reference->isOrIsDeclaredInOneOf(...$moreSpecificNamespacePrefixes);
+            },
+        );
+
+        if (null !== $match) {
+            return true;
+        }
+
+        if (!$containerNode instanceof Node\Stmt\Namespace_) {
+            return false;
+        }
+
+        if (null === $containerNode->name) {
+            return false;
+        }
+
+        $fileNamespace = $containerNode->name->toString();
+
+        $docBlockPartialPrefix = $namespacePrefix->toString();
+
+        if (\strpos($docBlockPartialPrefix, $fileNamespace . '\\') === 0) {
+            $docBlockPartialPrefix = \substr($docBlockPartialPrefix, \strlen($fileNamespace) + 1);
+        }
+
+        $matchInDocBlock = $nodeFinder->findFirst(
+            $containerNode->stmts,
+            static function (Node $node) use ($fileNamespace, $namespacePrefix, $moreSpecificNamespacePrefixes): bool {
+                $docComment = $node->getDocComment();
+
+                if (null === $docComment) {
+                    return false;
+                }
+
+                $text = $docComment->getText();
+
+                if (\preg_match_all('/(?:^|[^\\\\a-zA-Z0-9_])([A-Z][a-zA-Z0-9_]*(?:\\\\[A-Z][a-zA-Z0-9_]*)+)/', $text, $matches) === 0) {
+                    return false;
+                }
+
+                foreach ($matches[1] as $partialName) {
+                    $fullyQualified = $fileNamespace . '\\' . $partialName;
+
+                    $reference = Reference::fromString($fullyQualified);
+
+                    if (
+                        $reference->isOrIsDeclaredInOneOf($namespacePrefix)
+                        && !$reference->isOrIsDeclaredInOneOf(...$moreSpecificNamespacePrefixes)
+                    ) {
+                        return true;
+                    }
+                }
+
+                return false;
+            },
+        );
+
+        return null !== $matchInDocBlock;
+    }
+
+    /**
+     * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
+     * @param list<NamespacePrefix>                        $moreSpecificNamespacePrefixes
+     */
     private function rewriteNamesInStatements(
         Node $containerNode,
         NamespacePrefix $namespacePrefix,
@@ -916,7 +1011,7 @@ CODE_SAMPLE
     ): bool {
         $anyDocBlockChanged = false;
 
-        $this->traverseNodesWithCallable($containerNode->stmts, function (Node $node) use (&$anyDocBlockChanged, $aliasesToReferences, $namespacePrefix, $moreSpecificNamespacePrefixes, $namespacePrefixOfContainingFile): ?Node {
+        $this->traverseNodesWithCallable($containerNode->stmts, function (Node $node) use (&$anyDocBlockChanged, $aliasesToReferences, $containerNode, $namespacePrefix, $moreSpecificNamespacePrefixes, $namespacePrefixOfContainingFile): ?Node {
             if ($node instanceof Node\Stmt\Use_) {
                 return null;
             }
@@ -931,7 +1026,7 @@ CODE_SAMPLE
 
             $phpDocNodeTraverser = new PhpDocParser\PhpDocParser\PhpDocNodeTraverser();
 
-            $phpDocNodeTraverser->traverseWithCallable($phpDocInfo->getPhpDocNode(), '', static function (Ast\Node $phpDocNode) use ($aliasesToReferences, $namespacePrefix, $moreSpecificNamespacePrefixes, $namespacePrefixOfContainingFile, &$hasChanged): ?Ast\Type\IdentifierTypeNode {
+            $phpDocNodeTraverser->traverseWithCallable($phpDocInfo->getPhpDocNode(), '', static function (Ast\Node $phpDocNode) use ($aliasesToReferences, $containerNode, $namespacePrefix, $moreSpecificNamespacePrefixes, $namespacePrefixOfContainingFile, &$hasChanged): ?Ast\Type\IdentifierTypeNode {
                 if (!$phpDocNode instanceof Ast\Type\IdentifierTypeNode) {
                     return null;
                 }
@@ -982,7 +1077,52 @@ CODE_SAMPLE
                 $firstName = $nameParts[0];
 
                 if (!\array_key_exists($firstName, $aliasesToReferences)) {
-                    return null;
+                    if (
+                        \count($nameParts) < 2
+                        || !$containerNode instanceof Node\Stmt\Namespace_
+                        || null === $containerNode->name
+                    ) {
+                        return null;
+                    }
+
+                    $fullyQualifiedName = $containerNode->name->toString() . '\\' . $phpDocNode->name;
+
+                    $reference = Reference::fromString($fullyQualifiedName);
+
+                    if (
+                        !$reference->is($namespacePrefix)
+                        && !$reference->isDeclaredIn($namespacePrefix)
+                    ) {
+                        return null;
+                    }
+
+                    if ($reference->isOrIsDeclaredInOneOf(...$moreSpecificNamespacePrefixes)) {
+                        return null;
+                    }
+
+                    if ($namespacePrefixOfContainingFile instanceof NamespacePrefix) {
+                        if ($reference->is($namespacePrefixOfContainingFile)) {
+                            return null;
+                        }
+
+                        $newName = $reference->relativeTo($namespacePrefixOfContainingFile)->toString();
+                    } elseif ($reference->is($namespacePrefix)) {
+                        $newName = $namespacePrefix->lastNamespaceSegment()->toString();
+                    } else {
+                        $newName = \sprintf(
+                            '%s\\%s',
+                            $namespacePrefix->lastNamespaceSegment()->toString(),
+                            $reference->relativeTo($namespacePrefix)->toString(),
+                        );
+                    }
+
+                    if ($phpDocNode->name === $newName) {
+                        return null;
+                    }
+
+                    $hasChanged = true;
+
+                    return new Ast\Type\IdentifierTypeNode($newName);
                 }
 
                 $importReference = $aliasesToReferences[$firstName];
@@ -1677,6 +1817,7 @@ CODE_SAMPLE
                     ],
                 );
             } else {
+                $insertBeforeIndex = null;
                 $lastUseIndex = null;
 
                 foreach ($containerNode->stmts as $index => $statement) {
@@ -1685,6 +1826,27 @@ CODE_SAMPLE
                         || $statement instanceof Node\Stmt\GroupUse
                     ) {
                         $lastUseIndex = $index;
+
+                        if (null === $insertBeforeIndex) {
+                            $existingUseName = null;
+
+                            if ($statement instanceof Node\Stmt\Use_) {
+                                foreach ($statement->uses as $use) {
+                                    $existingUseName = $use->name->toString();
+
+                                    break;
+                                }
+                            } elseif ($statement instanceof Node\Stmt\GroupUse) {
+                                $existingUseName = $statement->prefix->toString();
+                            }
+
+                            if (
+                                null !== $existingUseName
+                                && \strcmp($namespacePrefix->toString(), $existingUseName) < 0
+                            ) {
+                                $insertBeforeIndex = $index;
+                            }
+                        }
                     }
                 }
 
@@ -1692,7 +1854,16 @@ CODE_SAMPLE
                     new Node\UseItem(new Node\Name($namespacePrefix->toString())),
                 ]);
 
-                if (null !== $lastUseIndex) {
+                if (null !== $insertBeforeIndex) {
+                    \array_splice(
+                        $containerNode->stmts,
+                        $insertBeforeIndex,
+                        0,
+                        [
+                            $prefixUseStatement,
+                        ],
+                    );
+                } elseif (null !== $lastUseIndex) {
                     \array_splice(
                         $containerNode->stmts,
                         (int) $lastUseIndex + 1,

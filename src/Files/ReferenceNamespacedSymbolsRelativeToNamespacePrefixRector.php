@@ -631,12 +631,12 @@ CODE_SAMPLE
 
     /**
      * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
-     * @param list<NamespacePrefix>                        $otherNamespacePrefixes
+     * @param list<NamespacePrefix>                        $moreSpecificNamespacePrefixes
      */
     private static function hasMatchingImports(
         Node $containerNode,
         NamespacePrefix $namespacePrefix,
-        array $otherNamespacePrefixes
+        array $moreSpecificNamespacePrefixes
     ): bool {
         foreach ($containerNode->stmts as $statement) {
             if ($statement instanceof Node\Stmt\Use_) {
@@ -646,7 +646,7 @@ CODE_SAMPLE
                     if (
                         !$reference->is($namespacePrefix)
                         && $reference->isDeclaredIn($namespacePrefix)
-                        && !$reference->isOrIsDeclaredInOneOf(...$otherNamespacePrefixes)
+                        && !$reference->isOrIsDeclaredInOneOf(...$moreSpecificNamespacePrefixes)
                     ) {
                         return true;
                     }
@@ -664,7 +664,7 @@ CODE_SAMPLE
                     if (
                         !$reference->is($namespacePrefix)
                         && $reference->isDeclaredIn($namespacePrefix)
-                        && !$reference->isOrIsDeclaredInOneOf(...$otherNamespacePrefixes)
+                        && !$reference->isOrIsDeclaredInOneOf(...$moreSpecificNamespacePrefixes)
                     ) {
                         return true;
                     }

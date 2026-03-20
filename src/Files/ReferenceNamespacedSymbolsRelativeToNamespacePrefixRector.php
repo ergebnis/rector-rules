@@ -636,7 +636,10 @@ CODE_SAMPLE
             !$hasDirectMatchingImports
             && !$hasParentImport
             && !self::hasSourceWrittenFullyQualifiedReferencesMatchingPrefix($containerNode, $namespacePrefix, $moreSpecificNamespacePrefixes)
-            && !($this->forceRelativeReferences && self::hasPartiallyQualifiedReferencesMatchingPrefix($containerNode, $namespacePrefix, $moreSpecificNamespacePrefixes))
+            && !(
+                $this->forceRelativeReferences
+                && self::hasPartiallyQualifiedReferencesMatchingNamespacePrefix($containerNode, $namespacePrefix, $moreSpecificNamespacePrefixes)
+            )
         ) {
             return false;
         }
@@ -851,7 +854,7 @@ CODE_SAMPLE
      * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
      * @param list<NamespacePrefix>                        $moreSpecificNamespacePrefixes
      */
-    private static function hasPartiallyQualifiedReferencesMatchingPrefix(
+    private static function hasPartiallyQualifiedReferencesMatchingNamespacePrefix(
         Node $containerNode,
         NamespacePrefix $namespacePrefix,
         array $moreSpecificNamespacePrefixes
@@ -1857,7 +1860,7 @@ CODE_SAMPLE
                 if (null !== $insertBeforeIndex) {
                     \array_splice(
                         $containerNode->stmts,
-                        $insertBeforeIndex,
+                        (int) $insertBeforeIndex,
                         0,
                         [
                             $prefixUseStatement,

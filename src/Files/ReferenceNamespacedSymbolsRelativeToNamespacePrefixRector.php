@@ -837,18 +837,18 @@ CODE_SAMPLE
     /**
      * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
      * @param array<string, Reference>                     $aliasesToReferences
-     * @param list<NamespacePrefix>                        $otherNamespacePrefixes
+     * @param list<NamespacePrefix>                        $moreSpecificNamespacePrefixes
      */
     private function rewriteNamesInDocBlocks(
         Node $containerNode,
         array $aliasesToReferences,
         NamespacePrefix $namespacePrefix,
-        array $otherNamespacePrefixes,
+        array $moreSpecificNamespacePrefixes,
         ?NamespacePrefix $fileNamespaceAsPrefix
     ): bool {
         $anyDocBlockChanged = false;
 
-        $this->traverseNodesWithCallable($containerNode->stmts, function (Node $node) use (&$anyDocBlockChanged, $aliasesToReferences, $namespacePrefix, $otherNamespacePrefixes, $fileNamespaceAsPrefix): ?Node {
+        $this->traverseNodesWithCallable($containerNode->stmts, function (Node $node) use (&$anyDocBlockChanged, $aliasesToReferences, $namespacePrefix, $moreSpecificNamespacePrefixes, $fileNamespaceAsPrefix): ?Node {
             if ($node instanceof Node\Stmt\Use_) {
                 return null;
             }
@@ -863,7 +863,7 @@ CODE_SAMPLE
 
             $phpDocNodeTraverser = new PhpDocParser\PhpDocParser\PhpDocNodeTraverser();
 
-            $phpDocNodeTraverser->traverseWithCallable($phpDocInfo->getPhpDocNode(), '', static function (Ast\Node $phpDocNode) use ($aliasesToReferences, $namespacePrefix, $otherNamespacePrefixes, $fileNamespaceAsPrefix, &$hasChanged): ?Ast\Type\IdentifierTypeNode {
+            $phpDocNodeTraverser->traverseWithCallable($phpDocInfo->getPhpDocNode(), '', static function (Ast\Node $phpDocNode) use ($aliasesToReferences, $namespacePrefix, $moreSpecificNamespacePrefixes, $fileNamespaceAsPrefix, &$hasChanged): ?Ast\Type\IdentifierTypeNode {
                 if (!$phpDocNode instanceof Ast\Type\IdentifierTypeNode) {
                     return null;
                 }
@@ -881,7 +881,7 @@ CODE_SAMPLE
                         return null;
                     }
 
-                    if ($reference->isOrIsDeclaredInOneOf(...$otherNamespacePrefixes)) {
+                    if ($reference->isOrIsDeclaredInOneOf(...$moreSpecificNamespacePrefixes)) {
                         return null;
                     }
 
@@ -937,7 +937,7 @@ CODE_SAMPLE
                     return null;
                 }
 
-                if ($reference->isOrIsDeclaredInOneOf(...$otherNamespacePrefixes)) {
+                if ($reference->isOrIsDeclaredInOneOf(...$moreSpecificNamespacePrefixes)) {
                     return null;
                 }
 

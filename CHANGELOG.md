@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 For a full diff see [`1.15.0...main`][1.15.0...main].
 
+### Fixed
+
+- Adjusted `Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector` to rewrite partially-qualified names when `forceRelativeReferences` is enabled ([#326]), by [@localheinz]
+
 ## [`1.15.0`][1.15.0]
 
 For a full diff see [`1.14.1...1.15.0`][1.14.1...1.15.0].
@@ -395,5 +399,6 @@ For a full diff see [`fd198f0...0.1.0`][fd198f0...0.1.0].
 [#315]: https://github.com/ergebnis/rector-rules/pull/315
 [#316]: https://github.com/ergebnis/rector-rules/pull/316
 [#324]: https://github.com/ergebnis/rector-rules/pull/324
+[#326]: https://github.com/ergebnis/rector-rules/pull/326
 
 [@localheinz]: https://github.com/localheinz

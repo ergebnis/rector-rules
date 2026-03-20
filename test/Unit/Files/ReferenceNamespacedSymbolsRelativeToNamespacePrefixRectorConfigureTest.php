@@ -379,4 +379,72 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorConfigureTe
 
         $this->addToAssertionCount(1);
     }
+
+    public function testConfigureRejectsNonBoolDiscoverNamespacePrefixes(): void
+    {
+        $rector = $this->make(Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class);
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Value for configuration option "discoverNamespacePrefixes" needs to be a boolean.');
+
+        $rector->configure([
+            'discoverNamespacePrefixes' => 'not-a-bool',
+        ]);
+    }
+
+    public function testConfigureAcceptsDiscoverNamespacePrefixes(): void
+    {
+        $rector = $this->make(Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class);
+
+        $rector->configure([
+            'discoverNamespacePrefixes' => true,
+        ]);
+
+        $this->addToAssertionCount(1);
+    }
+
+    public function testConfigureAcceptsCombinedDiscoverNamespacePrefixesAndNamespacePrefixes(): void
+    {
+        $rector = $this->make(Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class);
+
+        $rector->configure([
+            'discoverNamespacePrefixes' => true,
+            'namespacePrefixes' => [
+                'Example\Core',
+            ],
+        ]);
+
+        $this->addToAssertionCount(1);
+    }
+
+    public function testConfigureAcceptsCombinedDiscoverNamespacePrefixesAndParentNamespacePrefixes(): void
+    {
+        $rector = $this->make(Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class);
+
+        $rector->configure([
+            'discoverNamespacePrefixes' => true,
+            'parentNamespacePrefixes' => [
+                'Symfony\Component',
+            ],
+        ]);
+
+        $this->addToAssertionCount(1);
+    }
+
+    public function testConfigureAcceptsCombinedDiscoverNamespacePrefixesAndNamespacePrefixesAndParentNamespacePrefixes(): void
+    {
+        $rector = $this->make(Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class);
+
+        $rector->configure([
+            'discoverNamespacePrefixes' => true,
+            'namespacePrefixes' => [
+                'Example\Core',
+            ],
+            'parentNamespacePrefixes' => [
+                'Symfony\Component',
+            ],
+        ]);
+
+        $this->addToAssertionCount(1);
+    }
 }

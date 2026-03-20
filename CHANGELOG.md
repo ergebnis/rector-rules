@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 For a full diff see [`1.14.1...main`][1.14.1...main].
 
+### Added
+
+- Added `discoverNamespacePrefixes` configuration option to `Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector` to automatically discover parent namespace prefixes from file references ([#324]), by [@localheinz]
+
 ## [`1.14.1`][1.14.1]
 
 For a full diff see [`1.14.0...1.14.1`][1.14.0...1.14.1].
@@ -384,5 +388,6 @@ For a full diff see [`fd198f0...0.1.0`][fd198f0...0.1.0].
 [#314]: https://github.com/ergebnis/rector-rules/pull/314
 [#315]: https://github.com/ergebnis/rector-rules/pull/315
 [#316]: https://github.com/ergebnis/rector-rules/pull/316
+[#324]: https://github.com/ergebnis/rector-rules/pull/324
 
 [@localheinz]: https://github.com/localheinz

@@ -780,19 +780,19 @@ CODE_SAMPLE
 
     /**
      * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
-     * @param list<NamespacePrefix>                        $otherNamespacePrefixes
+     * @param list<NamespacePrefix>                        $moreSpecificNamespacePrefixes
      */
     private function rewriteNamesInStatements(
         Node $containerNode,
         NamespacePrefix $namespacePrefix,
-        array $otherNamespacePrefixes,
+        array $moreSpecificNamespacePrefixes,
         ?NamespacePrefix $fileNamespaceAsPrefix
     ): bool {
         $lastNamespaceSegmentOfNamespacePrefix = $namespacePrefix->lastNamespaceSegment();
 
         $hasChanged = false;
 
-        $this->traverseNodesWithCallable($containerNode->stmts, static function (Node $node) use ($namespacePrefix, $lastNamespaceSegmentOfNamespacePrefix, $otherNamespacePrefixes, $fileNamespaceAsPrefix, &$hasChanged): ?Node {
+        $this->traverseNodesWithCallable($containerNode->stmts, static function (Node $node) use ($namespacePrefix, $lastNamespaceSegmentOfNamespacePrefix, $moreSpecificNamespacePrefixes, $fileNamespaceAsPrefix, &$hasChanged): ?Node {
             if (!$node instanceof Node\Name\FullyQualified) {
                 return null;
             }
@@ -806,7 +806,7 @@ CODE_SAMPLE
                 return null;
             }
 
-            if ($reference->isOrIsDeclaredInOneOf(...$otherNamespacePrefixes)) {
+            if ($reference->isOrIsDeclaredInOneOf(...$moreSpecificNamespacePrefixes)) {
                 return null;
             }
 

@@ -1259,7 +1259,7 @@ CODE_SAMPLE
         NamespacePrefix $namespacePrefix,
         bool $hasPrefixImport,
         array $moreSpecificNamespacePrefixes,
-        ?NamespacePrefix $fileNamespaceAsPrefix
+        ?NamespacePrefix $namespacePrefixOfContainingFile
     ): void {
         /** @var ?int $firstMatchIndex */
         $firstMatchIndex = null;
@@ -1279,7 +1279,7 @@ CODE_SAMPLE
                             $firstMatchIndex = $index;
                         }
 
-                        if (!$fileNamespaceAsPrefix instanceof NamespacePrefix) {
+                        if (!$namespacePrefixOfContainingFile instanceof NamespacePrefix) {
                             $remainingUses[] = $use;
                         }
 
@@ -1322,7 +1322,7 @@ CODE_SAMPLE
                             $firstMatchIndex = $index;
                         }
 
-                        if (!$fileNamespaceAsPrefix instanceof NamespacePrefix) {
+                        if (!$namespacePrefixOfContainingFile instanceof NamespacePrefix) {
                             $remainingUses[] = $use;
                         }
 
@@ -1351,7 +1351,7 @@ CODE_SAMPLE
             }
         }
 
-        if (null !== $fileNamespaceAsPrefix) {
+        if (null !== $namespacePrefixOfContainingFile) {
             foreach (\array_reverse($indicesToRemove) as $index) {
                 \array_splice(
                     $containerNode->stmts,

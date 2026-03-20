@@ -721,18 +721,18 @@ CODE_SAMPLE
 
     /**
      * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
-     * @param list<NamespacePrefix>                        $otherNamespacePrefixes
+     * @param list<NamespacePrefix>                        $moreSpecificNamespacePrefixes
      */
     private static function hasSourceWrittenFullyQualifiedReferencesMatchingPrefix(
         Node $containerNode,
         NamespacePrefix $namespacePrefix,
-        array $otherNamespacePrefixes
+        array $moreSpecificNamespacePrefixes
     ): bool {
         $nodeFinder = new NodeFinder();
 
         $match = $nodeFinder->findFirst(
             $containerNode->stmts,
-            static function (Node $node) use ($namespacePrefix, $otherNamespacePrefixes): bool {
+            static function (Node $node) use ($namespacePrefix, $moreSpecificNamespacePrefixes): bool {
                 if (!$node instanceof Node\Name\FullyQualified) {
                     return false;
                 }
@@ -749,7 +749,7 @@ CODE_SAMPLE
                 $reference = Reference::fromString($node->toString());
 
                 return $reference->isOrIsDeclaredInOneOf($namespacePrefix)
-                    && !$reference->isOrIsDeclaredInOneOf(...$otherNamespacePrefixes);
+                    && !$reference->isOrIsDeclaredInOneOf(...$moreSpecificNamespacePrefixes);
             },
         );
 

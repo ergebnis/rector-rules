@@ -503,12 +503,12 @@ CODE_SAMPLE
 
     /**
      * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
-     * @param list<NamespacePrefix>                        $otherNamespacePrefixes
+     * @param list<NamespacePrefix>                        $moreSpecificNamespacePrefixes
      */
     private function processNamespacePrefix(
         Node $containerNode,
         NamespacePrefix $namespacePrefix,
-        array $otherNamespacePrefixes
+        array $moreSpecificNamespacePrefixes
     ): bool {
         /** @var array<string, Reference> $aliasesToReferences */
         $aliasesToReferences = [];
@@ -556,7 +556,7 @@ CODE_SAMPLE
         $hasDirectMatchingImports = self::hasMatchingImports(
             $containerNode,
             $namespacePrefix,
-            $otherNamespacePrefixes,
+            $moreSpecificNamespacePrefixes,
         );
 
         $hasParentImport = self::hasParentImport(
@@ -567,7 +567,7 @@ CODE_SAMPLE
         if (
             !$hasDirectMatchingImports
             && !$hasParentImport
-            && !self::hasSourceWrittenFullyQualifiedReferencesMatchingPrefix($containerNode, $namespacePrefix, $otherNamespacePrefixes)
+            && !self::hasSourceWrittenFullyQualifiedReferencesMatchingPrefix($containerNode, $namespacePrefix, $moreSpecificNamespacePrefixes)
         ) {
             return false;
         }
@@ -598,7 +598,7 @@ CODE_SAMPLE
         $statementsRewritten = $this->rewriteNamesInStatements(
             $containerNode,
             $namespacePrefix,
-            $otherNamespacePrefixes,
+            $moreSpecificNamespacePrefixes,
             $namespacePrefixOfContainingFile,
         );
 
@@ -606,7 +606,7 @@ CODE_SAMPLE
             $containerNode,
             $aliasesToReferences,
             $namespacePrefix,
-            $otherNamespacePrefixes,
+            $moreSpecificNamespacePrefixes,
             $namespacePrefixOfContainingFile,
         );
 
@@ -622,7 +622,7 @@ CODE_SAMPLE
             $containerNode,
             $namespacePrefix,
             $hasPrefixImport,
-            $otherNamespacePrefixes,
+            $moreSpecificNamespacePrefixes,
             $namespacePrefixOfContainingFile,
         );
 

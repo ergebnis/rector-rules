@@ -1252,13 +1252,13 @@ CODE_SAMPLE
 
     /**
      * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
-     * @param list<NamespacePrefix>                        $otherNamespacePrefixes
+     * @param list<NamespacePrefix>                        $moreSpecificNamespacePrefixes
      */
     private static function removeMatchingImportsAndAddPrefixImport(
         Node $containerNode,
         NamespacePrefix $namespacePrefix,
         bool $hasPrefixImport,
-        array $otherNamespacePrefixes,
+        array $moreSpecificNamespacePrefixes,
         ?NamespacePrefix $fileNamespaceAsPrefix
     ): void {
         /** @var ?int $firstMatchIndex */
@@ -1288,7 +1288,7 @@ CODE_SAMPLE
 
                     if (
                         $reference->isDeclaredIn($namespacePrefix)
-                        && !$reference->isOrIsDeclaredInOneOf(...$otherNamespacePrefixes)
+                        && !$reference->isOrIsDeclaredInOneOf(...$moreSpecificNamespacePrefixes)
                     ) {
                         if (null === $firstMatchIndex) {
                             $firstMatchIndex = $index;
@@ -1331,7 +1331,7 @@ CODE_SAMPLE
 
                     if (
                         $reference->isDeclaredIn($namespacePrefix)
-                        && !$reference->isOrIsDeclaredInOneOf(...$otherNamespacePrefixes)
+                        && !$reference->isOrIsDeclaredInOneOf(...$moreSpecificNamespacePrefixes)
                     ) {
                         if (null === $firstMatchIndex) {
                             $firstMatchIndex = $index;

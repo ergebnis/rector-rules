@@ -618,7 +618,7 @@ CODE_SAMPLE
             return false;
         }
 
-        self::removeMatchingImportsAndAddPrefixImport(
+        self::removeMatchingImportsAndAddNamespacePrefixImport(
             $containerNode,
             $namespacePrefix,
             $hasPrefixImport,
@@ -1254,7 +1254,7 @@ CODE_SAMPLE
      * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
      * @param list<NamespacePrefix>                        $moreSpecificNamespacePrefixes
      */
-    private static function removeMatchingImportsAndAddPrefixImport(
+    private static function removeMatchingImportsAndAddNamespacePrefixImport(
         Node $containerNode,
         NamespacePrefix $namespacePrefix,
         bool $hasPrefixImport,

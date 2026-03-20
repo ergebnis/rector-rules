@@ -101,6 +101,7 @@ This rule replaces references to namespaced symbols (classes, functions, constan
 
 ##### Configuration
 
+- `discoverNamespacePrefixes`: a boolean (default `false`) that automatically discovers parent namespace prefixes by scanning the file's references (use statements, fully-qualified names, docblocks, namespace declaration) and extracting their first segment (e.g., `Symfony` from `Symfony\Component\HttpFoundation\Request`), then feeds them into the `parentNamespacePrefixes` discovery mechanism
 - `forceRelativeReferences`: a boolean (default `false`) that forces references to be expressed relative to the namespace prefix even when the file namespace matches the prefix
 - `namespacePrefixes`: a list of namespace prefixes to consolidate (e.g., `['Foo\Bar\Baz', 'Example\Domain']`)
 - `parentNamespacePrefixes`: a list of parent namespace prefixes for automatic discovery of namespace prefixes per file (e.g., `['Foo\Bar']` will discover `Foo\Bar\Baz` as a namespace prefix when a file references symbols under `Foo\Bar\Baz`)

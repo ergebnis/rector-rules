@@ -121,6 +121,48 @@ parameters:
 			path: test/Unit/Files/ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorWithDefaultConfigurationTest.php
 
 		-
+			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Files\\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorWithDiscoverNamespacePrefixesAndForceRelativeReferencesAndNamespacePrefixesAndParentNamespacePrefixesTest\:\:provideData\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: test/Unit/Files/ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorWithDiscoverNamespacePrefixesAndForceRelativeReferencesAndNamespacePrefixesAndParentNamespacePrefixesTest.php
+
+		-
+			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Files\\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorWithDiscoverNamespacePrefixesAndForceRelativeReferencesAndParentNamespacePrefixesTest\:\:provideData\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: test/Unit/Files/ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorWithDiscoverNamespacePrefixesAndForceRelativeReferencesAndParentNamespacePrefixesTest.php
+
+		-
+			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Files\\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorWithDiscoverNamespacePrefixesAndForceRelativeReferencesTest\:\:provideData\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: test/Unit/Files/ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorWithDiscoverNamespacePrefixesAndForceRelativeReferencesTest.php
+
+		-
+			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Files\\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorWithDiscoverNamespacePrefixesAndNamespacePrefixesAndParentNamespacePrefixesTest\:\:provideData\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: test/Unit/Files/ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorWithDiscoverNamespacePrefixesAndNamespacePrefixesAndParentNamespacePrefixesTest.php
+
+		-
+			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Files\\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorWithDiscoverNamespacePrefixesAndNamespacePrefixesTest\:\:provideData\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: test/Unit/Files/ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorWithDiscoverNamespacePrefixesAndNamespacePrefixesTest.php
+
+		-
+			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Files\\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorWithDiscoverNamespacePrefixesAndParentNamespacePrefixesTest\:\:provideData\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: test/Unit/Files/ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorWithDiscoverNamespacePrefixesAndParentNamespacePrefixesTest.php
+
+		-
+			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Files\\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorWithDiscoverNamespacePrefixesTest\:\:provideData\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: test/Unit/Files/ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorWithDiscoverNamespacePrefixesTest.php
+
+		-
 			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Files\\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorWithForceRelativeReferencesAndNamespacePrefixesAndParentNamespacePrefixesTest\:\:provideData\(\) return type has no value type specified in iterable type iterable\.$#'
 			identifier: missingType.iterableValue
 			count: 1

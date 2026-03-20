@@ -26,11 +26,13 @@ use Symplify\RuleDocGenerator;
 
 final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Rector\AbstractRector implements Contract\Rector\ConfigurableRectorInterface
 {
+    private const CONFIGURATION_KEY_DISCOVER_NAMESPACE_PREFIXES = 'discoverNamespacePrefixes';
     private const CONFIGURATION_KEY_FORCE_RELATIVE_REFERENCES = 'forceRelativeReferences';
     private const CONFIGURATION_KEY_NAMESPACE_PREFIXES = 'namespacePrefixes';
     private const CONFIGURATION_KEY_PARENT_NAMESPACE_PREFIXES = 'parentNamespacePrefixes';
     private BetterPhpDocParser\PhpDocInfo\PhpDocInfoFactory $phpDocInfoFactory;
     private Comments\NodeDocBlock\DocBlockUpdater $docBlockUpdater;
+    private bool $discoverNamespacePrefixes = false;
     private bool $forceRelativeReferences = false;
 
     /**
@@ -61,6 +63,7 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
     public function configure(array $configuration): void
     {
         $configurationKeys = [
+            self::CONFIGURATION_KEY_DISCOVER_NAMESPACE_PREFIXES,
             self::CONFIGURATION_KEY_FORCE_RELATIVE_REFERENCES,
             self::CONFIGURATION_KEY_NAMESPACE_PREFIXES,
             self::CONFIGURATION_KEY_PARENT_NAMESPACE_PREFIXES,
@@ -76,6 +79,19 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
                 'Configuration contains unknown keys: "%s".',
                 \implode('", "', $unknownConfigurationKeys),
             ));
+        }
+
+        $discoverNamespacePrefixes = false;
+
+        if (\array_key_exists(self::CONFIGURATION_KEY_DISCOVER_NAMESPACE_PREFIXES, $configuration)) {
+            if (!\is_bool($configuration[self::CONFIGURATION_KEY_DISCOVER_NAMESPACE_PREFIXES])) {
+                throw new \InvalidArgumentException(\sprintf(
+                    'Value for configuration option "%s" needs to be a boolean.',
+                    self::CONFIGURATION_KEY_DISCOVER_NAMESPACE_PREFIXES,
+                ));
+            }
+
+            $discoverNamespacePrefixes = $configuration[self::CONFIGURATION_KEY_DISCOVER_NAMESPACE_PREFIXES];
         }
 
         $forceRelativeReferences = false;
@@ -214,6 +230,7 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
             }
         }
 
+        $this->discoverNamespacePrefixes = $discoverNamespacePrefixes;
         $this->forceRelativeReferences = $forceRelativeReferences;
         $this->namespacePrefixes = $namespacePrefixes;
         $this->parentNamespacePrefixes = $parentNamespacePrefixes;
@@ -443,6 +460,42 @@ CODE_SAMPLE
                         ],
                     ],
                 ),
+                new RuleDocGenerator\ValueObject\CodeSample\ConfiguredCodeSample(
+                    <<<'CODE_SAMPLE'
+namespace App;
+
+use Ramsey\Uuid\Uuid;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+
+final class Kernel
+{
+    public function handle(Request $request): Response
+    {
+        $id = Uuid::uuid4();
+    }
+}
+CODE_SAMPLE
+                    ,
+                    <<<'CODE_SAMPLE'
+namespace App;
+
+use Ramsey\Uuid;
+use Symfony\Component;
+
+final class Kernel
+{
+    public function handle(Component\HttpFoundation\Request $request): Component\HttpFoundation\Response
+    {
+        $id = Uuid\Uuid::uuid4();
+    }
+}
+CODE_SAMPLE
+                    ,
+                    [
+                        self::CONFIGURATION_KEY_DISCOVER_NAMESPACE_PREFIXES => true,
+                    ],
+                ),
             ],
         );
     }
@@ -463,9 +516,24 @@ CODE_SAMPLE
             $containerNode = $node;
         }
 
+        $parentNamespacePrefixes = $this->parentNamespacePrefixes;
+
+        if ($this->discoverNamespacePrefixes) {
+            $discoveredParents = self::discoverParentNamespacePrefixesFromFile(
+                $containerNode,
+                $this->parentNamespacePrefixes,
+                $this->namespacePrefixes,
+            );
+
+            $parentNamespacePrefixes = \array_merge(
+                $this->parentNamespacePrefixes,
+                $discoveredParents,
+            );
+        }
+
         $discoveredNamespacePrefixes = self::discoverNamespacePrefixesFromParentNamespacePrefixes(
             $containerNode,
-            $this->parentNamespacePrefixes,
+            $parentNamespacePrefixes,
             $this->namespacePrefixes,
         );
 
@@ -1095,6 +1163,151 @@ CODE_SAMPLE
         }
 
         return null;
+    }
+
+    /**
+     * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
+     * @param list<NamespacePrefix>                        $existingParentNamespacePrefixes
+     * @param list<NamespacePrefix>                        $existingNamespacePrefixes
+     *
+     * @return list<NamespacePrefix>
+     */
+    private static function discoverParentNamespacePrefixesFromFile(
+        Node $containerNode,
+        array $existingParentNamespacePrefixes,
+        array $existingNamespacePrefixes
+    ): array {
+        /** @var array<string, NamespacePrefix> $discovered */
+        $discovered = [];
+
+        $collectFirstSegment = static function (string $reference) use (&$discovered): void {
+            $parts = \explode('\\', $reference);
+
+            if (\count($parts) < 2) {
+                return;
+            }
+
+            $firstSegment = $parts[0];
+
+            if (\array_key_exists($firstSegment, $discovered)) {
+                return;
+            }
+
+            try {
+                $discovered[$firstSegment] = NamespacePrefix::fromString($firstSegment);
+            } catch (\InvalidArgumentException $exception) {
+                return;
+            }
+        };
+
+        if (
+            $containerNode instanceof Node\Stmt\Namespace_
+            && null !== $containerNode->name
+        ) {
+            $collectFirstSegment($containerNode->name->toString());
+        }
+
+        foreach ($containerNode->stmts as $statement) {
+            if ($statement instanceof Node\Stmt\Use_) {
+                if (Node\Stmt\Use_::TYPE_NORMAL !== $statement->type) {
+                    continue;
+                }
+
+                foreach ($statement->uses as $use) {
+                    $collectFirstSegment($use->name->toString());
+                }
+            } elseif ($statement instanceof Node\Stmt\GroupUse) {
+                if (Node\Stmt\Use_::TYPE_NORMAL !== $statement->type) {
+                    continue;
+                }
+
+                $prefix = $statement->prefix->toString();
+
+                foreach ($statement->uses as $use) {
+                    $collectFirstSegment(\sprintf(
+                        '%s\\%s',
+                        $prefix,
+                        $use->name->toString(),
+                    ));
+                }
+            }
+        }
+
+        $nodeFinder = new NodeFinder();
+
+        $nodeFinder->find(
+            $containerNode->stmts,
+            static function (Node $node) use ($collectFirstSegment): bool {
+                if (!$node instanceof Node\Name\FullyQualified) {
+                    return false;
+                }
+
+                $collectFirstSegment($node->toString());
+
+                return false;
+            },
+        );
+
+        $nodeFinder->find(
+            $containerNode->stmts,
+            static function (Node $node) use (&$discovered): bool {
+                $docComment = $node->getDocComment();
+
+                if (null === $docComment) {
+                    return false;
+                }
+
+                $text = $docComment->getText();
+
+                $pattern = '/\\\\([a-zA-Z_][a-zA-Z0-9_]*)\\\\[a-zA-Z_]/';
+
+                if (\preg_match_all($pattern, $text, $matches) > 0) {
+                    foreach ($matches[1] as $segmentString) {
+                        if (\array_key_exists($segmentString, $discovered)) {
+                            continue;
+                        }
+
+                        try {
+                            $discovered[$segmentString] = NamespacePrefix::fromString($segmentString);
+                        } catch (\InvalidArgumentException $exception) {
+                            continue;
+                        }
+                    }
+                }
+
+                return false;
+            },
+        );
+
+        foreach ($discovered as $key => $discoveredPrefix) {
+            foreach ($existingParentNamespacePrefixes as $existingParent) {
+                if (
+                    $discoveredPrefix->isNamespacePrefixOf($existingParent)
+                    || $existingParent->isNamespacePrefixOf($discoveredPrefix)
+                    || $discoveredPrefix->toString() === $existingParent->toString()
+                ) {
+                    unset($discovered[$key]);
+
+                    break;
+                }
+            }
+        }
+
+        foreach ($discovered as $key => $discoveredPrefix) {
+            foreach ($existingNamespacePrefixes as $existingPrefix) {
+                if (
+                    $discoveredPrefix->isNamespacePrefixOf($existingPrefix)
+                    || $existingPrefix->isNamespacePrefixOf($discoveredPrefix)
+                    || $discoveredPrefix->toString() === $existingPrefix->toString()
+                ) {
+                    unset($discovered[$key]);
+
+                    break;
+                }
+            }
+        }
+
+        return \array_values($discovered);
     }
 
     /**

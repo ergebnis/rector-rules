@@ -481,15 +481,15 @@ CODE_SAMPLE
         $changed = false;
 
         foreach ($namespacePrefixes as $namespacePrefix) {
-            $otherNamespacePrefixes = [];
+            $moreSpecificNamespacePrefixes = [];
 
             foreach ($namespacePrefixes as $otherNamespacePrefix) {
                 if ($namespacePrefix->isNamespacePrefixOf($otherNamespacePrefix)) {
-                    $otherNamespacePrefixes[] = $otherNamespacePrefix;
+                    $moreSpecificNamespacePrefixes[] = $otherNamespacePrefix;
                 }
             }
 
-            if ($this->processNamespacePrefix($containerNode, $namespacePrefix, $otherNamespacePrefixes)) {
+            if ($this->processNamespacePrefix($containerNode, $namespacePrefix, $moreSpecificNamespacePrefixes)) {
                 $changed = true;
             }
         }

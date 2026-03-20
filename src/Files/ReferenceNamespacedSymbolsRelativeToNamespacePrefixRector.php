@@ -786,13 +786,13 @@ CODE_SAMPLE
         Node $containerNode,
         NamespacePrefix $namespacePrefix,
         array $moreSpecificNamespacePrefixes,
-        ?NamespacePrefix $fileNamespaceAsPrefix
+        ?NamespacePrefix $namespacePrefixOfContainingFile
     ): bool {
         $lastNamespaceSegmentOfNamespacePrefix = $namespacePrefix->lastNamespaceSegment();
 
         $hasChanged = false;
 
-        $this->traverseNodesWithCallable($containerNode->stmts, static function (Node $node) use ($namespacePrefix, $lastNamespaceSegmentOfNamespacePrefix, $moreSpecificNamespacePrefixes, $fileNamespaceAsPrefix, &$hasChanged): ?Node {
+        $this->traverseNodesWithCallable($containerNode->stmts, static function (Node $node) use ($namespacePrefix, $lastNamespaceSegmentOfNamespacePrefix, $moreSpecificNamespacePrefixes, $namespacePrefixOfContainingFile, &$hasChanged): ?Node {
             if (!$node instanceof Node\Name\FullyQualified) {
                 return null;
             }
@@ -812,12 +812,12 @@ CODE_SAMPLE
 
             $hasChanged = true;
 
-            if (null !== $fileNamespaceAsPrefix) {
-                if ($reference->is($fileNamespaceAsPrefix)) {
+            if (null !== $namespacePrefixOfContainingFile) {
+                if ($reference->is($namespacePrefixOfContainingFile)) {
                     return null;
                 }
 
-                return new Node\Name($reference->relativeTo($fileNamespaceAsPrefix)->toString());
+                return new Node\Name($reference->relativeTo($namespacePrefixOfContainingFile)->toString());
             }
 
             if ($reference->is($namespacePrefix)) {

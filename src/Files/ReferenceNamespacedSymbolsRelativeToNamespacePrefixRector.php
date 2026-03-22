@@ -627,14 +627,14 @@ CODE_SAMPLE
             $moreSpecificNamespacePrefixes,
         );
 
-        $hasParentImport = self::hasParentNamespacePrefixImport(
+        $parentNamespacePrefixImport = self::hasParentNamespacePrefixImport(
             $containerNode,
             $namespacePrefix,
         );
 
         if (
             !$hasDirectMatchingImports
-            && !$hasParentImport
+            && !$parentNamespacePrefixImport
             && !$hasNamespacePrefixImport
             && !self::hasSourceWrittenFullyQualifiedReferencesMatchingPrefix($containerNode, $namespacePrefix, $moreSpecificNamespacePrefixes)
             && !(

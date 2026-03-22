@@ -621,7 +621,7 @@ CODE_SAMPLE
             }
         }
 
-        $hasDirectMatchingImports = self::hasMatchingImports(
+        $hasDirectMatchingImports = self::hasMatchingNamespacePrefixImports(
             $containerNode,
             $namespacePrefix,
             $moreSpecificNamespacePrefixes,
@@ -706,7 +706,7 @@ CODE_SAMPLE
      * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
      * @param list<NamespacePrefix>                        $moreSpecificNamespacePrefixes
      */
-    private static function hasMatchingImports(
+    private static function hasMatchingNamespacePrefixImports(
         Node $containerNode,
         NamespacePrefix $namespacePrefix,
         array $moreSpecificNamespacePrefixes

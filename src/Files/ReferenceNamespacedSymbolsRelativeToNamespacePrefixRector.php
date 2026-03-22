@@ -621,7 +621,7 @@ CODE_SAMPLE
             }
         }
 
-        $hasDirectMatchingImports = self::hasMatchingNamespacePrefixImports(
+        $hasMatchingNamespacePrefixImports = self::hasMatchingNamespacePrefixImports(
             $containerNode,
             $namespacePrefix,
             $moreSpecificNamespacePrefixes,
@@ -633,7 +633,7 @@ CODE_SAMPLE
         );
 
         if (
-            !$hasDirectMatchingImports
+            !$hasMatchingNamespacePrefixImports
             && !$parentNamespacePrefixImport
             && !$hasNamespacePrefixImport
             && !self::hasSourceWrittenFullyQualifiedReferencesMatchingPrefix($containerNode, $namespacePrefix, $moreSpecificNamespacePrefixes)
@@ -684,7 +684,7 @@ CODE_SAMPLE
         );
 
         if (
-            !$hasDirectMatchingImports
+            !$hasMatchingNamespacePrefixImports
             && !$statementsRewritten
             && !$docBlocksRewritten
         ) {

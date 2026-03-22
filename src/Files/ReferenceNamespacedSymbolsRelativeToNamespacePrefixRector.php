@@ -581,7 +581,7 @@ CODE_SAMPLE
         /** @var array<string, Reference> $aliasesToReferences */
         $aliasesToReferences = [];
 
-        $hasPrefixImport = false;
+        $hasNamespacePrefixImport = false;
 
         foreach ($containerNode->stmts as $statement) {
             if ($statement instanceof Node\Stmt\Use_) {
@@ -594,7 +594,7 @@ CODE_SAMPLE
                         $aliasesToReferences[$alias] = $reference;
 
                         if ($reference->is($namespacePrefix)) {
-                            $hasPrefixImport = true;
+                            $hasNamespacePrefixImport = true;
                         }
                     }
                 }
@@ -614,7 +614,7 @@ CODE_SAMPLE
                         $aliasesToReferences[$alias] = $reference;
 
                         if ($reference->is($namespacePrefix)) {
-                            $hasPrefixImport = true;
+                            $hasNamespacePrefixImport = true;
                         }
                     }
                 }
@@ -635,7 +635,7 @@ CODE_SAMPLE
         if (
             !$hasDirectMatchingImports
             && !$hasParentImport
-            && !$hasPrefixImport
+            && !$hasNamespacePrefixImport
             && !self::hasSourceWrittenFullyQualifiedReferencesMatchingPrefix($containerNode, $namespacePrefix, $moreSpecificNamespacePrefixes)
             && !(
                 $this->forceRelativeReferences
@@ -694,7 +694,7 @@ CODE_SAMPLE
         self::removeMatchingImportsAndAddNamespacePrefixImport(
             $containerNode,
             $namespacePrefix,
-            $hasPrefixImport,
+            $hasNamespacePrefixImport,
             $moreSpecificNamespacePrefixes,
             $namespacePrefixOfContainingFile,
         );

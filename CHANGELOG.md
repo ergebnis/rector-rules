@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 For a full diff see [`1.15.1...main`][1.15.1...main].
 
+### Fixed
+
+- Adjusted `Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector` to rewrite references relative to current namespace when file has only prefix import ([#327]), by [@localheinz]
+
 ## [`1.15.1`][1.15.1]
 
 For a full diff see [`1.15.0...1.15.1`][1.15.0...1.15.1].
@@ -406,5 +410,6 @@ For a full diff see [`fd198f0...0.1.0`][fd198f0...0.1.0].
 [#316]: https://github.com/ergebnis/rector-rules/pull/316
 [#324]: https://github.com/ergebnis/rector-rules/pull/324
 [#326]: https://github.com/ergebnis/rector-rules/pull/326
+[#327]: https://github.com/ergebnis/rector-rules/pull/327
 
 [@localheinz]: https://github.com/localheinz

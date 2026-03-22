@@ -635,6 +635,7 @@ CODE_SAMPLE
         if (
             !$hasDirectMatchingImports
             && !$hasParentImport
+            && !$hasPrefixImport
             && !self::hasSourceWrittenFullyQualifiedReferencesMatchingPrefix($containerNode, $namespacePrefix, $moreSpecificNamespacePrefixes)
             && !(
                 $this->forceRelativeReferences
@@ -976,15 +977,28 @@ CODE_SAMPLE
                 return null;
             }
 
-            $hasChanged = true;
-
             if ($namespacePrefixOfContainingFile instanceof NamespacePrefix) {
                 if ($reference->is($namespacePrefixOfContainingFile)) {
                     return null;
                 }
 
-                return new Node\Name($reference->relativeTo($namespacePrefixOfContainingFile)->toString());
+                $rewrittenName = $reference->relativeTo($namespacePrefixOfContainingFile)->toString();
+
+                $originalName = $node->getAttribute('originalName');
+
+                if (
+                    $originalName instanceof Node\Name
+                    && $originalName->toString() === $rewrittenName
+                ) {
+                    return null;
+                }
+
+                $hasChanged = true;
+
+                return new Node\Name($rewrittenName);
             }
+
+            $hasChanged = true;
 
             if ($reference->is($namespacePrefix)) {
                 return new Node\Name($lastNamespaceSegmentOfNamespacePrefix->toString());

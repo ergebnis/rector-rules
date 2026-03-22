@@ -1627,7 +1627,7 @@ CODE_SAMPLE
     private static function removeMatchingImportsAndAddNamespacePrefixImport(
         Node $containerNode,
         NamespacePrefix $namespacePrefix,
-        bool $hasPrefixImport,
+        bool $hasNamespacePrefixImport,
         array $moreSpecificNamespacePrefixes,
         ?NamespacePrefix $namespacePrefixOfContainingFile
     ): void {
@@ -1733,7 +1733,7 @@ CODE_SAMPLE
             return;
         }
 
-        if (!$hasPrefixImport && null !== $firstMatchIndex) {
+        if (!$hasNamespacePrefixImport && null !== $firstMatchIndex) {
             $firstMatchNode = $containerNode->stmts[(int) $firstMatchIndex];
 
             if (\in_array($firstMatchIndex, $indicesToRemove, true)) {
@@ -1776,7 +1776,7 @@ CODE_SAMPLE
         }
 
         if (
-            !$hasPrefixImport
+            !$hasNamespacePrefixImport
             && null === $firstMatchIndex
         ) {
             /** @var ?int $parentImportIndex */

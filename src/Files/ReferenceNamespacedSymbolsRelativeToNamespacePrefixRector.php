@@ -627,7 +627,7 @@ CODE_SAMPLE
             $moreSpecificNamespacePrefixes,
         );
 
-        $hasParentImport = self::hasParentImport(
+        $hasParentImport = self::hasParentNamespacePrefixImport(
             $containerNode,
             $namespacePrefix,
         );
@@ -751,7 +751,7 @@ CODE_SAMPLE
     /**
      * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
      */
-    private static function hasParentImport(
+    private static function hasParentNamespacePrefixImport(
         Node $containerNode,
         NamespacePrefix $namespacePrefix
     ): bool {

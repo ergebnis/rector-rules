@@ -23,21 +23,21 @@ composer require --dev ergebnis/rector-rules
 
 ## Rules
 
+<!-- BEGIN RULES -->
+
 This project provides the following rules for [`rector/rector`](https://github.com/rectorphp/rector):
 
-- [`Ergebnis\Rector\Rules\Arrays\SortAssociativeArrayByKeyRector`](https://github.com/ergebnis/rector-rules#arrayssortassociativearraybykeyrector)
-- [`Ergebnis\Rector\Rules\Faker\GeneratorPropertyFetchToMethodCallRector`](https://github.com/ergebnis/rector-rules#fakergeneratorpropertyfetchtomethodcallrector)
-- [`Ergebnis\Rector\Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector`](https://github.com/ergebnis/rector-rules#filesreferencenamespacedsymbolsrelativetonamespaceprefixrector)
+- [`Ergebnis\Rector\Rules\Arrays\SortAssociativeArrayByKeyRector`](#arrayssortassociativearraybykeyrector)
+- [`Ergebnis\Rector\Rules\Faker\GeneratorPropertyFetchToMethodCallRector`](#fakergeneratorpropertyfetchtomethodcallrector)
+- [`Ergebnis\Rector\Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector`](#filesreferencenamespacedsymbolsrelativetonamespaceprefixrector)
 
 ### Arrays
 
 #### `Arrays\SortAssociativeArrayByKeyRector`
 
-This rule sorts associative arrays by key.
+Sorts associative arrays by key.
 
 ```diff
- <?php
-
  $data = [
 +    'bar' => [
 +        'quux' => 'quuz',
@@ -47,64 +47,49 @@ This rule sorts associative arrays by key.
          'foo',
          'bar',
          'baz',
-     ],
+-    ],
 -    'bar' => [
 -        'quz' => 'qux',
 -        'quux' => 'quuz',
--    ],
+     ],
  ];
 ```
-##### Configuration
 
-- `comparison_function`: the comparison function, one of ([`'strcasecmp'`](https://www.php.net/manual/en/function.strcasecmp.php), [`'strcmp'`](https://www.php.net/manual/en/function.strcmp.php), [`'strnatcasecmp'`](https://www.php.net/manual/en/function.strnatcasecmp.php), or [`'strnatcmp'`](https://www.php.net/manual/en/function.strnatcmp.php)), defaults to `'strcmp'`
-- `direction`: the sorting direction (one of `'asc'`, `'desc'`), defaults to `asc`
+💡 Find out more in the rule documentation for [`Arrays\SortAssociativeArrayByKeyRector`](doc/rules/Arrays/SortAssociativeArrayByKeyRector.md).
 
 ### Faker
 
 #### `Faker\GeneratorPropertyFetchToMethodCallRector`
 
-This rule replaces references to deprecated properties of `Faker\Generator` with method calls.
+Replaces references to deprecated properties of Faker\Generator with method calls.
 
 ```diff
- <?php
-
- use Faker\Factory;
-
- $faker = Factory::create();
-
-- $faker->boolean;
-+ $faker->boolean();
+-$faker->address;
++$faker->address();
 ```
+
+💡 Find out more in the rule documentation for [`Faker\GeneratorPropertyFetchToMethodCallRector`](doc/rules/Faker/GeneratorPropertyFetchToMethodCallRector.md).
 
 ### Files
 
 #### `Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector`
 
-This rule replaces references to namespaced symbols (classes, functions, constants) whose fully-qualified name starts with a namespace prefix so they are relative to that prefix.
+Replaces references to namespaced symbols (classes, functions, constants) whose fully-qualified name starts with a namespace prefix so they are relative to that prefix.
 
 ```diff
- <?php
-
- namespace App;
-
 -use Foo\Bar;
 -use Foo\Bar\Baz\Qux;
 +use Foo\Bar\Baz;
-
+ 
 -new Bar\Baz\Qux\Quuz();
 -new Qux\Quuz\Grauply();
--new \Foo\Bar\Baz\Qux\Quuz();
 +new Baz\Qux\Quuz();
 +new Baz\Qux\Quuz\Grauply();
-+new Baz\Qux\Quuz();
 ```
 
-##### Configuration
+💡 Find out more in the rule documentation for [`Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector`](doc/rules/Files/ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector.md).
 
-- `discoverNamespacePrefixes`: a boolean (default `false`) that automatically discovers parent namespace prefixes by scanning the file's references (use statements, fully-qualified names, docblocks, namespace declaration) and extracting their first segment (e.g., `Symfony` from `Symfony\Component\HttpFoundation\Request`), then feeds them into the `parentNamespacePrefixes` discovery mechanism
-- `forceRelativeReferences`: a boolean (default `false`) that forces references to be expressed relative to the namespace prefix even when the file namespace matches the prefix
-- `namespacePrefixes`: a list of namespace prefixes to consolidate (e.g., `['Foo\Bar\Baz', 'Example\Domain']`)
-- `parentNamespacePrefixes`: a list of parent namespace prefixes for automatic discovery of namespace prefixes per file (e.g., `['Foo\Bar']` will discover `Foo\Bar\Baz` as a namespace prefix when a file references symbols under `Foo\Bar\Baz`)
+<!-- END RULES -->
 
 ## Changelog
 

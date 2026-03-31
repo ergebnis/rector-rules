@@ -13,6 +13,7 @@ declare(strict_types=1);
 
 namespace Ergebnis\Rector\Rules\Files;
 
+use Ergebnis\Rector\Rules;
 use PhpParser\Node;
 use PhpParser\NodeFinder;
 use PHPStan\PhpDocParser\Ast;
@@ -24,7 +25,9 @@ use Rector\PhpParser;
 use Rector\Rector;
 use Symplify\RuleDocGenerator;
 
-final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Rector\AbstractRector implements Contract\Rector\ConfigurableRectorInterface
+final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Rector\AbstractRector implements
+    Contract\Rector\ConfigurableRectorInterface,
+    Rules\Configuration\HasConfigurationOptions
 {
     private const CONFIGURATION_KEY_DISCOVER_NAMESPACE_PREFIXES = 'discoverNamespacePrefixes';
     private const CONFIGURATION_KEY_FORCE_RELATIVE_REFERENCES = 'forceRelativeReferences';
@@ -62,170 +65,93 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
 
     public function configure(array $configuration): void
     {
-        $configurationKeys = [
-            self::CONFIGURATION_KEY_DISCOVER_NAMESPACE_PREFIXES,
-            self::CONFIGURATION_KEY_FORCE_RELATIVE_REFERENCES,
-            self::CONFIGURATION_KEY_NAMESPACE_PREFIXES,
-            self::CONFIGURATION_KEY_PARENT_NAMESPACE_PREFIXES,
-        ];
+        $resolvedConfiguration = $this->configurationOptions()->resolveConfigurationFrom($configuration);
 
-        $unknownConfigurationKeys = \array_diff(
-            \array_keys($configuration),
-            $configurationKeys,
-        );
+        /** @var bool $discoverNamespacePrefixes */
+        $discoverNamespacePrefixes = $resolvedConfiguration->get(Rules\Configuration\OptionName::fromString(self::CONFIGURATION_KEY_DISCOVER_NAMESPACE_PREFIXES));
 
-        if (\count($unknownConfigurationKeys) > 0) {
-            throw new \InvalidArgumentException(\sprintf(
-                'Configuration contains unknown keys: "%s".',
-                \implode('", "', $unknownConfigurationKeys),
-            ));
-        }
-
-        $discoverNamespacePrefixes = false;
-
-        if (\array_key_exists(self::CONFIGURATION_KEY_DISCOVER_NAMESPACE_PREFIXES, $configuration)) {
-            if (!\is_bool($configuration[self::CONFIGURATION_KEY_DISCOVER_NAMESPACE_PREFIXES])) {
-                throw new \InvalidArgumentException(\sprintf(
-                    'Value for configuration option "%s" needs to be a boolean.',
-                    self::CONFIGURATION_KEY_DISCOVER_NAMESPACE_PREFIXES,
-                ));
-            }
-
-            $discoverNamespacePrefixes = $configuration[self::CONFIGURATION_KEY_DISCOVER_NAMESPACE_PREFIXES];
-        }
-
-        $forceRelativeReferences = false;
-
-        if (\array_key_exists(self::CONFIGURATION_KEY_FORCE_RELATIVE_REFERENCES, $configuration)) {
-            if (!\is_bool($configuration[self::CONFIGURATION_KEY_FORCE_RELATIVE_REFERENCES])) {
-                throw new \InvalidArgumentException(\sprintf(
-                    'Value for configuration option "%s" needs to be a boolean.',
-                    self::CONFIGURATION_KEY_FORCE_RELATIVE_REFERENCES,
-                ));
-            }
-
-            $forceRelativeReferences = $configuration[self::CONFIGURATION_KEY_FORCE_RELATIVE_REFERENCES];
-        }
+        /** @var bool $forceRelativeReferences */
+        $forceRelativeReferences = $resolvedConfiguration->get(Rules\Configuration\OptionName::fromString(self::CONFIGURATION_KEY_FORCE_RELATIVE_REFERENCES));
 
         $namespacePrefixes = [];
 
-        if (\array_key_exists(self::CONFIGURATION_KEY_NAMESPACE_PREFIXES, $configuration)) {
-            if (!\is_array($configuration[self::CONFIGURATION_KEY_NAMESPACE_PREFIXES])) {
-                throw new \InvalidArgumentException(\sprintf(
-                    'Value for configuration option "%s" needs to be a list of strings.',
+        /** @var list<string> $namespacePrefixValues */
+        $namespacePrefixValues = $resolvedConfiguration->get(Rules\Configuration\OptionName::fromString(self::CONFIGURATION_KEY_NAMESPACE_PREFIXES));
+
+        foreach ($namespacePrefixValues as $value) {
+            try {
+                $namespacePrefix = Rules\Files\NamespacePrefix::fromString($value);
+            } catch (\InvalidArgumentException $exception) {
+                throw new Rules\Configuration\InvalidOptionValue(\sprintf(
+                    'Value for configuration option "%s" needs to be a list of strings where each string is a valid namespace with at least two segments, got "%s".',
                     self::CONFIGURATION_KEY_NAMESPACE_PREFIXES,
+                    $value,
                 ));
             }
 
-            if (\array_values($configuration[self::CONFIGURATION_KEY_NAMESPACE_PREFIXES]) !== $configuration[self::CONFIGURATION_KEY_NAMESPACE_PREFIXES]) {
-                throw new \InvalidArgumentException(\sprintf(
-                    'Value for configuration option "%s" needs to be a list of strings.',
+            if ($namespacePrefix->namespaceSegmentCount() < 2) {
+                throw new Rules\Configuration\InvalidOptionValue(\sprintf(
+                    'Value for configuration option "%s" needs to be a list of strings where each string is a valid namespace with at least two segments, got "%s".',
                     self::CONFIGURATION_KEY_NAMESPACE_PREFIXES,
+                    $value,
                 ));
             }
 
-            foreach ($configuration[self::CONFIGURATION_KEY_NAMESPACE_PREFIXES] as $value) {
-                if (!\is_string($value)) {
-                    throw new \InvalidArgumentException(\sprintf(
-                        'Value for configuration option "%s" needs to be a list of strings.',
-                        self::CONFIGURATION_KEY_NAMESPACE_PREFIXES,
-                    ));
-                }
-
-                try {
-                    $namespacePrefix = NamespacePrefix::fromString($value);
-                } catch (\InvalidArgumentException $exception) {
-                    throw new \InvalidArgumentException(\sprintf(
-                        'Value for configuration option "%s" needs to be a list of strings where each string is a valid namespace with at least two segments, got "%s".',
-                        self::CONFIGURATION_KEY_NAMESPACE_PREFIXES,
-                        $value,
-                    ));
-                }
-
-                if ($namespacePrefix->namespaceSegmentCount() < 2) {
-                    throw new \InvalidArgumentException(\sprintf(
-                        'Value for configuration option "%s" needs to be a list of strings where each string is a valid namespace with at least two segments, got "%s".',
-                        self::CONFIGURATION_KEY_NAMESPACE_PREFIXES,
-                        $value,
-                    ));
-                }
-
-                if (\array_key_exists($value, $namespacePrefixes)) {
-                    throw new \InvalidArgumentException(\sprintf(
-                        'Value for configuration option "%s" needs to be a list of unique strings, got duplicate "%s".',
-                        self::CONFIGURATION_KEY_NAMESPACE_PREFIXES,
-                        $value,
-                    ));
-                }
-
-                $namespacePrefixes[$value] = $namespacePrefix;
+            if (\array_key_exists($value, $namespacePrefixes)) {
+                throw new Rules\Configuration\InvalidOptionValue(\sprintf(
+                    'Value for configuration option "%s" needs to be a list of unique strings, got duplicate "%s".',
+                    self::CONFIGURATION_KEY_NAMESPACE_PREFIXES,
+                    $value,
+                ));
             }
 
-            $namespacePrefixes = \array_values($namespacePrefixes);
+            $namespacePrefixes[$value] = $namespacePrefix;
         }
+
+        $namespacePrefixes = \array_values($namespacePrefixes);
 
         $parentNamespacePrefixes = [];
 
-        if (\array_key_exists(self::CONFIGURATION_KEY_PARENT_NAMESPACE_PREFIXES, $configuration)) {
-            if (!\is_array($configuration[self::CONFIGURATION_KEY_PARENT_NAMESPACE_PREFIXES])) {
-                throw new \InvalidArgumentException(\sprintf(
-                    'Value for configuration option "%s" needs to be a list of strings.',
+        /** @var list<string> $parentNamespacePrefixValues */
+        $parentNamespacePrefixValues = $resolvedConfiguration->get(Rules\Configuration\OptionName::fromString(self::CONFIGURATION_KEY_PARENT_NAMESPACE_PREFIXES));
+
+        foreach ($parentNamespacePrefixValues as $value) {
+            try {
+                $parentNamespacePrefix = Rules\Files\NamespacePrefix::fromString($value);
+            } catch (\InvalidArgumentException $exception) {
+                throw new Rules\Configuration\InvalidOptionValue(\sprintf(
+                    'Value for configuration option "%s" needs to be a list of strings where each string is a valid namespace with at least one segment, got "%s".',
                     self::CONFIGURATION_KEY_PARENT_NAMESPACE_PREFIXES,
+                    $value,
                 ));
             }
 
-            if (\array_values($configuration[self::CONFIGURATION_KEY_PARENT_NAMESPACE_PREFIXES]) !== $configuration[self::CONFIGURATION_KEY_PARENT_NAMESPACE_PREFIXES]) {
-                throw new \InvalidArgumentException(\sprintf(
-                    'Value for configuration option "%s" needs to be a list of strings.',
+            if (\array_key_exists($value, $parentNamespacePrefixes)) {
+                throw new Rules\Configuration\InvalidOptionValue(\sprintf(
+                    'Value for configuration option "%s" needs to be a list of unique strings, got duplicate "%s".',
                     self::CONFIGURATION_KEY_PARENT_NAMESPACE_PREFIXES,
+                    $value,
                 ));
             }
 
-            foreach ($configuration[self::CONFIGURATION_KEY_PARENT_NAMESPACE_PREFIXES] as $value) {
-                if (!\is_string($value)) {
-                    throw new \InvalidArgumentException(\sprintf(
-                        'Value for configuration option "%s" needs to be a list of strings.',
-                        self::CONFIGURATION_KEY_PARENT_NAMESPACE_PREFIXES,
-                    ));
+            $parentNamespacePrefixes[$value] = $parentNamespacePrefix;
+        }
+
+        $parentNamespacePrefixes = \array_values($parentNamespacePrefixes);
+
+        foreach ($parentNamespacePrefixes as $parentNamespacePrefix) {
+            foreach ($parentNamespacePrefixes as $otherNamespacePrefix) {
+                if ($parentNamespacePrefix->toString() === $otherNamespacePrefix->toString()) {
+                    continue;
                 }
 
-                try {
-                    $parentNamespacePrefix = NamespacePrefix::fromString($value);
-                } catch (\InvalidArgumentException $exception) {
-                    throw new \InvalidArgumentException(\sprintf(
-                        'Value for configuration option "%s" needs to be a list of strings where each string is a valid namespace with at least one segment, got "%s".',
+                if ($parentNamespacePrefix->isNamespacePrefixOf($otherNamespacePrefix)) {
+                    throw new Rules\Configuration\InvalidOptionValue(\sprintf(
+                        'Value for configuration option "%s" needs to be a list of strings where no string is a namespace prefix of another, got "%s" and "%s".',
                         self::CONFIGURATION_KEY_PARENT_NAMESPACE_PREFIXES,
-                        $value,
+                        $parentNamespacePrefix->toString(),
+                        $otherNamespacePrefix->toString(),
                     ));
-                }
-
-                if (\array_key_exists($value, $parentNamespacePrefixes)) {
-                    throw new \InvalidArgumentException(\sprintf(
-                        'Value for configuration option "%s" needs to be a list of unique strings, got duplicate "%s".',
-                        self::CONFIGURATION_KEY_PARENT_NAMESPACE_PREFIXES,
-                        $value,
-                    ));
-                }
-
-                $parentNamespacePrefixes[$value] = $parentNamespacePrefix;
-            }
-
-            $parentNamespacePrefixes = \array_values($parentNamespacePrefixes);
-
-            foreach ($parentNamespacePrefixes as $parentNamespacePrefix) {
-                foreach ($parentNamespacePrefixes as $otherNamespacePrefix) {
-                    if ($parentNamespacePrefix->toString() === $otherNamespacePrefix->toString()) {
-                        continue;
-                    }
-
-                    if ($parentNamespacePrefix->isNamespacePrefixOf($otherNamespacePrefix)) {
-                        throw new \InvalidArgumentException(\sprintf(
-                            'Value for configuration option "%s" needs to be a list of strings where no string is a namespace prefix of another, got "%s" and "%s".',
-                            self::CONFIGURATION_KEY_PARENT_NAMESPACE_PREFIXES,
-                            $parentNamespacePrefix->toString(),
-                            $otherNamespacePrefix->toString(),
-                        ));
-                    }
                 }
             }
         }
@@ -236,10 +162,36 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
         $this->parentNamespacePrefixes = $parentNamespacePrefixes;
     }
 
+    public function configurationOptions(): Rules\Configuration\Options
+    {
+        return Rules\Configuration\Options::create(
+            Rules\Configuration\Option::create(
+                Rules\Configuration\OptionName::fromString(self::CONFIGURATION_KEY_DISCOVER_NAMESPACE_PREFIXES),
+                Rules\Configuration\OptionDescription::fromString('Automatically discover namespace prefixes by scanning the file\'s references and extracting their first segment.'),
+                Rules\Configuration\OptionValue::booleanDefaultingTo(false),
+            ),
+            Rules\Configuration\Option::create(
+                Rules\Configuration\OptionName::fromString(self::CONFIGURATION_KEY_FORCE_RELATIVE_REFERENCES),
+                Rules\Configuration\OptionDescription::fromString('Force references to be expressed relative to the namespace prefix even when the file namespace matches the prefix.'),
+                Rules\Configuration\OptionValue::booleanDefaultingTo(false),
+            ),
+            Rules\Configuration\Option::create(
+                Rules\Configuration\OptionName::fromString(self::CONFIGURATION_KEY_NAMESPACE_PREFIXES),
+                Rules\Configuration\OptionDescription::fromString('A list of namespace prefixes to consolidate.'),
+                Rules\Configuration\OptionValue::listOfStringsDefaultingTo([]),
+            ),
+            Rules\Configuration\Option::create(
+                Rules\Configuration\OptionName::fromString(self::CONFIGURATION_KEY_PARENT_NAMESPACE_PREFIXES),
+                Rules\Configuration\OptionDescription::fromString('A list of parent namespace prefixes for automatic discovery of namespace prefixes per file.'),
+                Rules\Configuration\OptionValue::listOfStringsDefaultingTo([]),
+            ),
+        );
+    }
+
     public function getRuleDefinition(): RuleDocGenerator\ValueObject\RuleDefinition
     {
         return new RuleDocGenerator\ValueObject\RuleDefinition(
-            'Replace references to namespaced symbols whose fully-qualified name starts with a namespace prefix so they are relative to that prefix.',
+            'Replaces references to namespaced symbols (classes, functions, constants) whose fully-qualified name starts with a namespace prefix so they are relative to that prefix.',
             [
                 new RuleDocGenerator\ValueObject\CodeSample\ConfiguredCodeSample(
                     <<<'CODE_SAMPLE'
@@ -575,7 +527,7 @@ CODE_SAMPLE
      */
     private function processNamespacePrefix(
         Node $containerNode,
-        NamespacePrefix $namespacePrefix,
+        Rules\Files\NamespacePrefix $namespacePrefix,
         array $moreSpecificNamespacePrefixes
     ): bool {
         /** @var array<string, Reference> $aliasesToReferences */
@@ -589,7 +541,7 @@ CODE_SAMPLE
                     foreach ($statement->uses as $use) {
                         $alias = $use->getAlias()->toString();
 
-                        $reference = Reference::fromString($use->name->toString());
+                        $reference = Rules\Files\Reference::fromString($use->name->toString());
 
                         $aliasesToReferences[$alias] = $reference;
 
@@ -605,7 +557,7 @@ CODE_SAMPLE
                     foreach ($statement->uses as $use) {
                         $alias = $use->getAlias()->toString();
 
-                        $reference = Reference::fromString(\sprintf(
+                        $reference = Rules\Files\Reference::fromString(\sprintf(
                             '%s\\%s',
                             $prefix,
                             $use->name->toString(),
@@ -655,14 +607,14 @@ CODE_SAMPLE
         }
 
         if (
-            !$namespacePrefixOfContainingFile instanceof NamespacePrefix
+            !$namespacePrefixOfContainingFile instanceof Rules\Files\NamespacePrefix
             && self::lastNamespaceSegmentOfNamespacePrefixCollidesWithExistingImport($containerNode, $namespacePrefix)
         ) {
             return false;
         }
 
         if (
-            !$namespacePrefixOfContainingFile instanceof NamespacePrefix
+            !$namespacePrefixOfContainingFile instanceof Rules\Files\NamespacePrefix
             && self::lastNamespaceSegmentOfNamespacePrefixCollidesWithDeclaredSymbol($containerNode, $namespacePrefix)
         ) {
             return false;
@@ -708,13 +660,13 @@ CODE_SAMPLE
      */
     private static function hasMatchingNamespacePrefixImports(
         Node $containerNode,
-        NamespacePrefix $namespacePrefix,
+        Rules\Files\NamespacePrefix $namespacePrefix,
         array $moreSpecificNamespacePrefixes
     ): bool {
         foreach ($containerNode->stmts as $statement) {
             if ($statement instanceof Node\Stmt\Use_) {
                 foreach ($statement->uses as $use) {
-                    $reference = Reference::fromString($use->name->toString());
+                    $reference = Rules\Files\Reference::fromString($use->name->toString());
 
                     if (
                         !$reference->is($namespacePrefix)
@@ -728,7 +680,7 @@ CODE_SAMPLE
                 $prefix = $statement->prefix->toString();
 
                 foreach ($statement->uses as $use) {
-                    $reference = Reference::fromString(\sprintf(
+                    $reference = Rules\Files\Reference::fromString(\sprintf(
                         '%s\\%s',
                         $prefix,
                         $use->name->toString(),
@@ -753,7 +705,7 @@ CODE_SAMPLE
      */
     private static function hasParentNamespacePrefixImport(
         Node $containerNode,
-        NamespacePrefix $namespacePrefix
+        Rules\Files\NamespacePrefix $namespacePrefix
     ): bool {
         foreach ($containerNode->stmts as $statement) {
             if ($statement instanceof Node\Stmt\Use_) {
@@ -762,7 +714,7 @@ CODE_SAMPLE
                 }
 
                 foreach ($statement->uses as $use) {
-                    $namespacePrefixFromUse = NamespacePrefix::fromString($use->name->toString());
+                    $namespacePrefixFromUse = Rules\Files\NamespacePrefix::fromString($use->name->toString());
 
                     if ($namespacePrefixFromUse->isNamespacePrefixOf($namespacePrefix)) {
                         return true;
@@ -776,7 +728,7 @@ CODE_SAMPLE
                 $prefix = $statement->prefix->toString();
 
                 foreach ($statement->uses as $use) {
-                    $namespacePrefixFromUse = NamespacePrefix::fromString(\sprintf(
+                    $namespacePrefixFromUse = Rules\Files\NamespacePrefix::fromString(\sprintf(
                         '%s\\%s',
                         $prefix,
                         $use->name->toString(),
@@ -798,7 +750,7 @@ CODE_SAMPLE
      */
     private static function hasSourceWrittenFullyQualifiedReferencesMatchingPrefix(
         Node $containerNode,
-        NamespacePrefix $namespacePrefix,
+        Rules\Files\NamespacePrefix $namespacePrefix,
         array $moreSpecificNamespacePrefixes
     ): bool {
         $nodeFinder = new NodeFinder();
@@ -819,7 +771,7 @@ CODE_SAMPLE
                     return false;
                 }
 
-                $reference = Reference::fromString($node->toString());
+                $reference = Rules\Files\Reference::fromString($node->toString());
 
                 return $reference->isOrIsDeclaredInOneOf($namespacePrefix)
                     && !$reference->isOrIsDeclaredInOneOf(...$moreSpecificNamespacePrefixes);
@@ -857,7 +809,7 @@ CODE_SAMPLE
      */
     private static function hasPartiallyQualifiedReferencesMatchingNamespacePrefix(
         Node $containerNode,
-        NamespacePrefix $namespacePrefix,
+        Rules\Files\NamespacePrefix $namespacePrefix,
         array $moreSpecificNamespacePrefixes
     ): bool {
         $nodeFinder = new NodeFinder();
@@ -883,7 +835,7 @@ CODE_SAMPLE
                     return false;
                 }
 
-                $reference = Reference::fromString($node->toString());
+                $reference = Rules\Files\Reference::fromString($node->toString());
 
                 return $reference->isOrIsDeclaredInOneOf($namespacePrefix)
                     && !$reference->isOrIsDeclaredInOneOf(...$moreSpecificNamespacePrefixes);
@@ -928,7 +880,7 @@ CODE_SAMPLE
                 foreach ($matches[1] as $partialName) {
                     $fullyQualified = $fileNamespace . '\\' . $partialName;
 
-                    $reference = Reference::fromString($fullyQualified);
+                    $reference = Rules\Files\Reference::fromString($fullyQualified);
 
                     if (
                         $reference->isOrIsDeclaredInOneOf($namespacePrefix)
@@ -951,9 +903,9 @@ CODE_SAMPLE
      */
     private function rewriteNamesInStatements(
         Node $containerNode,
-        NamespacePrefix $namespacePrefix,
+        Rules\Files\NamespacePrefix $namespacePrefix,
         array $moreSpecificNamespacePrefixes,
-        ?NamespacePrefix $namespacePrefixOfContainingFile
+        ?Rules\Files\NamespacePrefix $namespacePrefixOfContainingFile
     ): bool {
         $lastNamespaceSegmentOfNamespacePrefix = $namespacePrefix->lastNamespaceSegment();
 
@@ -964,7 +916,7 @@ CODE_SAMPLE
                 return null;
             }
 
-            $reference = Reference::fromString($node->toString());
+            $reference = Rules\Files\Reference::fromString($node->toString());
 
             if (
                 !$reference->is($namespacePrefix)
@@ -977,7 +929,7 @@ CODE_SAMPLE
                 return null;
             }
 
-            if ($namespacePrefixOfContainingFile instanceof NamespacePrefix) {
+            if ($namespacePrefixOfContainingFile instanceof Rules\Files\NamespacePrefix) {
                 if ($reference->is($namespacePrefixOfContainingFile)) {
                     return null;
                 }
@@ -1033,9 +985,9 @@ CODE_SAMPLE
     private function rewriteNamesInDocBlocks(
         Node $containerNode,
         array $aliasesToReferences,
-        NamespacePrefix $namespacePrefix,
+        Rules\Files\NamespacePrefix $namespacePrefix,
         array $moreSpecificNamespacePrefixes,
-        ?NamespacePrefix $namespacePrefixOfContainingFile
+        ?Rules\Files\NamespacePrefix $namespacePrefixOfContainingFile
     ): bool {
         $anyDocBlockChanged = false;
 
@@ -1063,7 +1015,7 @@ CODE_SAMPLE
                     $phpDocNode instanceof BetterPhpDocParser\ValueObject\Type\FullyQualifiedIdentifierTypeNode
                     || \strpos($phpDocNode->name, '\\') === 0
                 ) {
-                    $reference = Reference::fromString(\ltrim($phpDocNode->name, '\\'));
+                    $reference = Rules\Files\Reference::fromString(\ltrim($phpDocNode->name, '\\'));
 
                     if (
                         !$reference->is($namespacePrefix)
@@ -1078,7 +1030,7 @@ CODE_SAMPLE
 
                     $hasChanged = true;
 
-                    if ($namespacePrefixOfContainingFile instanceof NamespacePrefix) {
+                    if ($namespacePrefixOfContainingFile instanceof Rules\Files\NamespacePrefix) {
                         if ($reference->is($namespacePrefixOfContainingFile)) {
                             return null;
                         }
@@ -1115,7 +1067,7 @@ CODE_SAMPLE
 
                     $fullyQualifiedName = $containerNode->name->toString() . '\\' . $phpDocNode->name;
 
-                    $reference = Reference::fromString($fullyQualifiedName);
+                    $reference = Rules\Files\Reference::fromString($fullyQualifiedName);
 
                     if (
                         !$reference->is($namespacePrefix)
@@ -1128,7 +1080,7 @@ CODE_SAMPLE
                         return null;
                     }
 
-                    if ($namespacePrefixOfContainingFile instanceof NamespacePrefix) {
+                    if ($namespacePrefixOfContainingFile instanceof Rules\Files\NamespacePrefix) {
                         if ($reference->is($namespacePrefixOfContainingFile)) {
                             return null;
                         }
@@ -1177,7 +1129,7 @@ CODE_SAMPLE
                     return null;
                 }
 
-                if ($namespacePrefixOfContainingFile instanceof NamespacePrefix) {
+                if ($namespacePrefixOfContainingFile instanceof Rules\Files\NamespacePrefix) {
                     if ($reference->is($namespacePrefixOfContainingFile)) {
                         return null;
                     }
@@ -1219,7 +1171,7 @@ CODE_SAMPLE
      */
     private static function lastNamespaceSegmentOfNamespacePrefixCollidesWithExistingImport(
         Node $containerNode,
-        NamespacePrefix $namespacePrefix
+        Rules\Files\NamespacePrefix $namespacePrefix
     ): bool {
         $lastNamespaceSegment = $namespacePrefix->lastNamespaceSegment();
 
@@ -1230,7 +1182,7 @@ CODE_SAMPLE
                 }
 
                 foreach ($statement->uses as $useStatement) {
-                    $reference = Reference::fromString($useStatement->name->toString());
+                    $reference = Rules\Files\Reference::fromString($useStatement->name->toString());
 
                     if (
                         $reference->is($namespacePrefix)
@@ -1251,7 +1203,7 @@ CODE_SAMPLE
                 $prefix = $statement->prefix->toString();
 
                 foreach ($statement->uses as $useStatement) {
-                    $reference = Reference::fromString(\sprintf(
+                    $reference = Rules\Files\Reference::fromString(\sprintf(
                         '%s\\%s',
                         $prefix,
                         $useStatement->name->toString(),
@@ -1279,7 +1231,7 @@ CODE_SAMPLE
      */
     private static function lastNamespaceSegmentOfNamespacePrefixCollidesWithDeclaredSymbol(
         Node $containerNode,
-        NamespacePrefix $namespacePrefix
+        Rules\Files\NamespacePrefix $namespacePrefix
     ): bool {
         $lastNamespaceSegmentOfNamespacePrefix = $namespacePrefix->lastNamespaceSegment();
 
@@ -1310,8 +1262,8 @@ CODE_SAMPLE
      */
     private static function namespacePrefixOfContainingFile(
         Node $containerNode,
-        NamespacePrefix $namespacePrefix
-    ): ?NamespacePrefix {
+        Rules\Files\NamespacePrefix $namespacePrefix
+    ): ?Rules\Files\NamespacePrefix {
         if (!$containerNode instanceof Node\Stmt\Namespace_) {
             return null;
         }
@@ -1323,11 +1275,11 @@ CODE_SAMPLE
         $fileNamespace = $containerNode->name->toString();
 
         if ($namespacePrefix->toString() === $fileNamespace) {
-            return NamespacePrefix::fromString($fileNamespace);
+            return Rules\Files\NamespacePrefix::fromString($fileNamespace);
         }
 
         if (\strpos($namespacePrefix->toString(), $fileNamespace . '\\') === 0) {
-            return NamespacePrefix::fromString($fileNamespace);
+            return Rules\Files\NamespacePrefix::fromString($fileNamespace);
         }
 
         return null;
@@ -1362,7 +1314,7 @@ CODE_SAMPLE
             }
 
             try {
-                $discovered[$firstSegment] = NamespacePrefix::fromString($firstSegment);
+                $discovered[$firstSegment] = Rules\Files\NamespacePrefix::fromString($firstSegment);
             } catch (\InvalidArgumentException $exception) {
                 return;
             }
@@ -1436,7 +1388,7 @@ CODE_SAMPLE
                         }
 
                         try {
-                            $discovered[$segmentString] = NamespacePrefix::fromString($segmentString);
+                            $discovered[$segmentString] = Rules\Files\NamespacePrefix::fromString($segmentString);
                         } catch (\InvalidArgumentException $exception) {
                             continue;
                         }
@@ -1582,7 +1534,7 @@ CODE_SAMPLE
 
                     if (\preg_match_all($pattern, $text, $matches) > 0) {
                         foreach ($matches[1] as $segmentString) {
-                            $segment = NamespaceSegment::fromString($segmentString);
+                            $segment = Rules\Files\NamespaceSegment::fromString($segmentString);
                             $childPrefix = $parentNamespacePrefix->append($segment);
                             $childKey = $childPrefix->toString();
 
@@ -1621,7 +1573,7 @@ CODE_SAMPLE
             $remaining = \substr($reference, \strlen($parentString) + 1);
             $parts = \explode('\\', $remaining);
 
-            $segment = NamespaceSegment::fromString($parts[0]);
+            $segment = Rules\Files\NamespaceSegment::fromString($parts[0]);
             $childPrefix = $parentNamespacePrefix->append($segment);
             $childKey = $childPrefix->toString();
 
@@ -1637,10 +1589,10 @@ CODE_SAMPLE
      */
     private static function removeMatchingImportsAndAddNamespacePrefixImport(
         Node $containerNode,
-        NamespacePrefix $namespacePrefix,
+        Rules\Files\NamespacePrefix $namespacePrefix,
         bool $hasNamespacePrefixImport,
         array $moreSpecificNamespacePrefixes,
-        ?NamespacePrefix $namespacePrefixOfContainingFile
+        ?Rules\Files\NamespacePrefix $namespacePrefixOfContainingFile
     ): void {
         /** @var ?int $firstMatchIndex */
         $firstMatchIndex = null;
@@ -1653,14 +1605,14 @@ CODE_SAMPLE
                 $remainingUses = [];
 
                 foreach ($stmt->uses as $use) {
-                    $reference = Reference::fromString($use->name->toString());
+                    $reference = Rules\Files\Reference::fromString($use->name->toString());
 
                     if ($reference->is($namespacePrefix)) {
                         if (null === $firstMatchIndex) {
                             $firstMatchIndex = $index;
                         }
 
-                        if (!$namespacePrefixOfContainingFile instanceof NamespacePrefix) {
+                        if (!$namespacePrefixOfContainingFile instanceof Rules\Files\NamespacePrefix) {
                             $remainingUses[] = $use;
                         }
 
@@ -1692,7 +1644,7 @@ CODE_SAMPLE
                 $remainingUses = [];
 
                 foreach ($stmt->uses as $use) {
-                    $reference = Reference::fromString(\sprintf(
+                    $reference = Rules\Files\Reference::fromString(\sprintf(
                         '%s\\%s',
                         $prefix,
                         $use->name->toString(),
@@ -1703,7 +1655,7 @@ CODE_SAMPLE
                             $firstMatchIndex = $index;
                         }
 
-                        if (!$namespacePrefixOfContainingFile instanceof NamespacePrefix) {
+                        if (!$namespacePrefixOfContainingFile instanceof Rules\Files\NamespacePrefix) {
                             $remainingUses[] = $use;
                         }
 
@@ -1732,7 +1684,7 @@ CODE_SAMPLE
             }
         }
 
-        if ($namespacePrefixOfContainingFile instanceof NamespacePrefix) {
+        if ($namespacePrefixOfContainingFile instanceof Rules\Files\NamespacePrefix) {
             foreach (\array_reverse($indicesToRemove) as $index) {
                 \array_splice(
                     $containerNode->stmts,
@@ -1800,7 +1752,7 @@ CODE_SAMPLE
                     }
 
                     foreach ($statement->uses as $use) {
-                        $namespacePrefixFromUse = NamespacePrefix::fromString($use->name->toString());
+                        $namespacePrefixFromUse = Rules\Files\NamespacePrefix::fromString($use->name->toString());
 
                         if ($namespacePrefixFromUse->isNamespacePrefixOf($namespacePrefix)) {
                             $parentImportIndex = $index;
@@ -1816,7 +1768,7 @@ CODE_SAMPLE
                     $prefix = $statement->prefix->toString();
 
                     foreach ($statement->uses as $use) {
-                        $namespacePrefixFromUse = NamespacePrefix::fromString(\sprintf(
+                        $namespacePrefixFromUse = Rules\Files\NamespacePrefix::fromString(\sprintf(
                             '%s\\%s',
                             $prefix,
                             $use->name->toString(),

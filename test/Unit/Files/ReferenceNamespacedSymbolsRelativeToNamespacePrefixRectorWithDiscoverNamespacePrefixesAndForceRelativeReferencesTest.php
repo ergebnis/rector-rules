@@ -18,6 +18,12 @@ use Rector\Testing;
 /**
  * @covers \Ergebnis\Rector\Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector
  *
+ * @uses \Ergebnis\Rector\Rules\Configuration\Configuration
+ * @uses \Ergebnis\Rector\Rules\Configuration\Option
+ * @uses \Ergebnis\Rector\Rules\Configuration\OptionDescription
+ * @uses \Ergebnis\Rector\Rules\Configuration\OptionName
+ * @uses \Ergebnis\Rector\Rules\Configuration\Options
+ * @uses \Ergebnis\Rector\Rules\Configuration\OptionValue
  * @uses \Ergebnis\Rector\Rules\Files\NamespacePrefix
  * @uses \Ergebnis\Rector\Rules\Files\NamespaceSegment
  * @uses \Ergebnis\Rector\Rules\Files\NamespaceSegments

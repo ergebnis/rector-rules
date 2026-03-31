@@ -19,6 +19,14 @@ use Rector\Testing;
 /**
  * @covers \Ergebnis\Rector\Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector
  *
+ * @uses \Ergebnis\Rector\Rules\Configuration\Configuration
+ * @uses \Ergebnis\Rector\Rules\Configuration\InvalidOptionValue
+ * @uses \Ergebnis\Rector\Rules\Configuration\Option
+ * @uses \Ergebnis\Rector\Rules\Configuration\OptionDescription
+ * @uses \Ergebnis\Rector\Rules\Configuration\OptionName
+ * @uses \Ergebnis\Rector\Rules\Configuration\Options
+ * @uses \Ergebnis\Rector\Rules\Configuration\OptionValue
+ * @uses \Ergebnis\Rector\Rules\Configuration\UnknownOptionName
  * @uses \Ergebnis\Rector\Rules\Files\NamespacePrefix
  * @uses \Ergebnis\Rector\Rules\Files\NamespaceSegment
  * @uses \Ergebnis\Rector\Rules\Files\NamespaceSegments
@@ -29,8 +37,7 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorConfigureTe
     {
         $rector = $this->make(Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class);
 
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Configuration contains unknown keys: "foo".');
+        $this->expectException(Rules\Configuration\UnknownOptionName::class);
 
         $rector->configure([
             'foo' => 'bar',
@@ -41,8 +48,7 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorConfigureTe
     {
         $rector = $this->make(Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class);
 
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Value for configuration option "forceRelativeReferences" needs to be a boolean.');
+        $this->expectException(Rules\Configuration\InvalidOptionValue::class);
 
         $rector->configure([
             'forceRelativeReferences' => 'not-a-bool',
@@ -67,8 +73,7 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorConfigureTe
     {
         $rector = $this->make(Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class);
 
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Value for configuration option "namespacePrefixes" needs to be a list of strings.');
+        $this->expectException(Rules\Configuration\InvalidOptionValue::class);
 
         $rector->configure([
             'namespacePrefixes' => 'not-an-array',
@@ -82,8 +87,7 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorConfigureTe
     {
         $rector = $this->make(Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class);
 
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Value for configuration option "namespacePrefixes" needs to be a list of strings.');
+        $this->expectException(Rules\Configuration\InvalidOptionValue::class);
 
         $rector->configure([
             'namespacePrefixes' => $value,
@@ -118,11 +122,7 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorConfigureTe
     {
         $rector = $this->make(Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class);
 
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage(\sprintf(
-            'Value for configuration option "namespacePrefixes" needs to be a list of strings where each string is a valid namespace with at least two segments, got "%s".',
-            $namespacePrefix,
-        ));
+        $this->expectException(Rules\Configuration\InvalidOptionValue::class);
 
         $rector->configure([
             'namespacePrefixes' => [
@@ -155,8 +155,7 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorConfigureTe
     {
         $rector = $this->make(Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class);
 
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Value for configuration option "namespacePrefixes" needs to be a list of unique strings, got duplicate "Example\Core".');
+        $this->expectException(Rules\Configuration\InvalidOptionValue::class);
 
         $rector->configure([
             'namespacePrefixes' => [
@@ -193,8 +192,7 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorConfigureTe
     {
         $rector = $this->make(Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class);
 
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Value for configuration option "parentNamespacePrefixes" needs to be a list of strings.');
+        $this->expectException(Rules\Configuration\InvalidOptionValue::class);
 
         $rector->configure([
             'parentNamespacePrefixes' => 'not-an-array',
@@ -208,8 +206,7 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorConfigureTe
     {
         $rector = $this->make(Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class);
 
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Value for configuration option "parentNamespacePrefixes" needs to be a list of strings.');
+        $this->expectException(Rules\Configuration\InvalidOptionValue::class);
 
         $rector->configure([
             'parentNamespacePrefixes' => $value,
@@ -244,11 +241,7 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorConfigureTe
     {
         $rector = $this->make(Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class);
 
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage(\sprintf(
-            'Value for configuration option "parentNamespacePrefixes" needs to be a list of strings where each string is a valid namespace with at least one segment, got "%s".',
-            $parentNamespacePrefix,
-        ));
+        $this->expectException(Rules\Configuration\InvalidOptionValue::class);
 
         $rector->configure([
             'parentNamespacePrefixes' => [
@@ -280,8 +273,7 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorConfigureTe
     {
         $rector = $this->make(Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class);
 
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Value for configuration option "parentNamespacePrefixes" needs to be a list of unique strings, got duplicate "Example".');
+        $this->expectException(Rules\Configuration\InvalidOptionValue::class);
 
         $rector->configure([
             'parentNamespacePrefixes' => [
@@ -295,8 +287,7 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorConfigureTe
     {
         $rector = $this->make(Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class);
 
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Value for configuration option "parentNamespacePrefixes" needs to be a list of strings where no string is a namespace prefix of another, got "Example" and "Example\Core".');
+        $this->expectException(Rules\Configuration\InvalidOptionValue::class);
 
         $rector->configure([
             'parentNamespacePrefixes' => [
@@ -310,8 +301,7 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorConfigureTe
     {
         $rector = $this->make(Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class);
 
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Value for configuration option "parentNamespacePrefixes" needs to be a list of strings where no string is a namespace prefix of another, got "Example" and "Example\Core".');
+        $this->expectException(Rules\Configuration\InvalidOptionValue::class);
 
         $rector->configure([
             'parentNamespacePrefixes' => [
@@ -384,8 +374,7 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorConfigureTe
     {
         $rector = $this->make(Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class);
 
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Value for configuration option "discoverNamespacePrefixes" needs to be a boolean.');
+        $this->expectException(Rules\Configuration\InvalidOptionValue::class);
 
         $rector->configure([
             'discoverNamespacePrefixes' => 'not-a-bool',

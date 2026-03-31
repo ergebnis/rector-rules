@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9d511556ef5d990f62f4853dda136340",
+    "content-hash": "2af7dccfade92ae59b55d78e4c4e3f80",
     "packages": [
         {
             "name": "nikic/php-parser",
@@ -534,6 +534,80 @@
                 }
             ],
             "time": "2022-12-30T00:15:36+00:00"
+        },
+        {
+            "name": "ergebnis/classy",
+            "version": "3.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ergebnis/classy.git",
+                "reference": "4db37da2a67dc261b6f371e9fbe75f8e718c3b35"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ergebnis/classy/zipball/4db37da2a67dc261b6f371e9fbe75f8e718c3b35",
+                "reference": "4db37da2a67dc261b6f371e9fbe75f8e718c3b35",
+                "shasum": ""
+            },
+            "require": {
+                "ext-tokenizer": "*",
+                "php": "~7.4.0 || ~8.0.0 || ~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0 || ~8.5.0"
+            },
+            "require-dev": {
+                "ergebnis/composer-normalize": "^2.48.2",
+                "ergebnis/data-provider": "^3.6.0",
+                "ergebnis/license": "^2.7.0",
+                "ergebnis/php-cs-fixer-config": "^6.58.0",
+                "ergebnis/phpstan-rules": "^2.12.0",
+                "ergebnis/phpunit-slow-test-detector": "^2.20.0",
+                "ergebnis/rector-rules": "^1.9.0",
+                "fakerphp/faker": "^1.24.1",
+                "infection/infection": "~0.26.6",
+                "phpstan/extension-installer": "^1.4.3",
+                "phpstan/phpstan": "^2.1.33",
+                "phpstan/phpstan-deprecation-rules": "^2.0.3",
+                "phpstan/phpstan-phpunit": "^2.0.11",
+                "phpstan/phpstan-strict-rules": "^2.0.7",
+                "phpunit/phpunit": "^9.6.19",
+                "rector/rector": "^2.2.14",
+                "symfony/filesystem": "^5.4.45",
+                "symfony/finder": "^5.4.45"
+            },
+            "suggest": {
+                "symfony/finder": "If you want to collect constructs from a finder."
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Ergebnis\\Classy\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Andreas Möller",
+                    "email": "am@localheinz.com",
+                    "homepage": "https://localheinz.com"
+                }
+            ],
+            "description": "Provides collectors for classy constructs (classes, enums, interfaces, and traits).",
+            "homepage": "https://github.com/ergebnis/classy",
+            "keywords": [
+                "classes",
+                "classy",
+                "constructs",
+                "finder",
+                "interfaces",
+                "traits"
+            ],
+            "support": {
+                "issues": "https://github.com/ergebnis/classy/issues",
+                "source": "https://github.com/ergebnis/classy"
+            },
+            "time": "2025-12-25T17:32:19+00:00"
         },
         {
             "name": "ergebnis/composer-normalize",

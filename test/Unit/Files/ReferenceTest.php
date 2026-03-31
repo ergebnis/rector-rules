@@ -151,9 +151,10 @@ final class ReferenceTest extends Framework\TestCase
 
         $reference = Rules\Files\Reference::fromString('Example\Core\Controller');
 
-        $relativeReference = $reference->relativeTo($namespacePrefix);
+        $mutated = $reference->relativeTo($namespacePrefix);
 
-        self::assertEquals(Rules\Files\Reference::fromString('Controller'), $relativeReference);
+        self::assertNotSame($reference, $mutated);
+        self::assertEquals(Rules\Files\Reference::fromString('Controller'), $mutated);
     }
 
     public function testRelativeToReturnsReferenceWhenReferenceIsIndirectChildOfNamespacePrefix(): void
@@ -162,8 +163,9 @@ final class ReferenceTest extends Framework\TestCase
 
         $reference = Rules\Files\Reference::fromString('Example\Core\Controller\AbstractController');
 
-        $relativeReference = $reference->relativeTo($namespacePrefix);
+        $mutated = $reference->relativeTo($namespacePrefix);
 
-        self::assertEquals(Rules\Files\Reference::fromString('Controller\AbstractController'), $relativeReference);
+        self::assertNotSame($reference, $mutated);
+        self::assertEquals(Rules\Files\Reference::fromString('Controller\AbstractController'), $mutated);
     }
 }

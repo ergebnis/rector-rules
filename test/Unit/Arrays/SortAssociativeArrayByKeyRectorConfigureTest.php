@@ -18,6 +18,15 @@ use Rector\Testing;
 
 /**
  * @covers \Ergebnis\Rector\Rules\Arrays\SortAssociativeArrayByKeyRector
+ *
+ * @uses \Ergebnis\Rector\Rules\Configuration\Configuration
+ * @uses \Ergebnis\Rector\Rules\Configuration\InvalidOptionValue
+ * @uses \Ergebnis\Rector\Rules\Configuration\Option
+ * @uses \Ergebnis\Rector\Rules\Configuration\OptionDescription
+ * @uses \Ergebnis\Rector\Rules\Configuration\OptionName
+ * @uses \Ergebnis\Rector\Rules\Configuration\Options
+ * @uses \Ergebnis\Rector\Rules\Configuration\OptionValue
+ * @uses \Ergebnis\Rector\Rules\Configuration\UnknownOptionName
  */
 final class SortAssociativeArrayByKeyRectorConfigureTest extends Testing\PHPUnit\AbstractLazyTestCase
 {
@@ -25,8 +34,7 @@ final class SortAssociativeArrayByKeyRectorConfigureTest extends Testing\PHPUnit
     {
         $rector = $this->make(Rules\Arrays\SortAssociativeArrayByKeyRector::class);
 
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Configuration contains unknown keys: "foo".');
+        $this->expectException(Rules\Configuration\UnknownOptionName::class);
 
         $rector->configure([
             'foo' => 'bar',
@@ -37,8 +45,7 @@ final class SortAssociativeArrayByKeyRectorConfigureTest extends Testing\PHPUnit
     {
         $rector = $this->make(Rules\Arrays\SortAssociativeArrayByKeyRector::class);
 
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Value for configuration option "comparison_function" needs to be one of "strcasecmp", "strcmp", "strnatcasecmp", "strnatcmp".');
+        $this->expectException(Rules\Configuration\InvalidOptionValue::class);
 
         $rector->configure([
             'comparison_function' => 123,
@@ -49,8 +56,7 @@ final class SortAssociativeArrayByKeyRectorConfigureTest extends Testing\PHPUnit
     {
         $rector = $this->make(Rules\Arrays\SortAssociativeArrayByKeyRector::class);
 
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Value for configuration option "comparison_function" needs to be one of "strcasecmp", "strcmp", "strnatcasecmp", "strnatcmp", got "invalid" instead.');
+        $this->expectException(Rules\Configuration\InvalidOptionValue::class);
 
         $rector->configure([
             'comparison_function' => 'invalid',
@@ -61,8 +67,7 @@ final class SortAssociativeArrayByKeyRectorConfigureTest extends Testing\PHPUnit
     {
         $rector = $this->make(Rules\Arrays\SortAssociativeArrayByKeyRector::class);
 
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Value for configuration option "direction" needs to be one of "asc", "desc".');
+        $this->expectException(Rules\Configuration\InvalidOptionValue::class);
 
         $rector->configure([
             'direction' => 123,
@@ -73,8 +78,7 @@ final class SortAssociativeArrayByKeyRectorConfigureTest extends Testing\PHPUnit
     {
         $rector = $this->make(Rules\Arrays\SortAssociativeArrayByKeyRector::class);
 
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Value for configuration option "direction" needs to be one of "asc", "desc", got "invalid" instead.');
+        $this->expectException(Rules\Configuration\InvalidOptionValue::class);
 
         $rector->configure([
             'direction' => 'invalid',

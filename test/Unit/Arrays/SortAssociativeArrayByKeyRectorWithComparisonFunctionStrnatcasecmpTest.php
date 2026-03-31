@@ -20,6 +20,12 @@ use Rector\Testing;
  *
  * @uses \Ergebnis\Rector\Rules\Arrays\ArrayItemWithKey
  * @uses \Ergebnis\Rector\Rules\Arrays\Key
+ * @uses \Ergebnis\Rector\Rules\Configuration\Configuration
+ * @uses \Ergebnis\Rector\Rules\Configuration\Option
+ * @uses \Ergebnis\Rector\Rules\Configuration\OptionDescription
+ * @uses \Ergebnis\Rector\Rules\Configuration\OptionName
+ * @uses \Ergebnis\Rector\Rules\Configuration\Options
+ * @uses \Ergebnis\Rector\Rules\Configuration\OptionValue
  */
 final class SortAssociativeArrayByKeyRectorWithComparisonFunctionStrnatcasecmpTest extends Testing\PHPUnit\AbstractRectorTestCase
 {

@@ -13,12 +13,15 @@ declare(strict_types=1);
 
 namespace Ergebnis\Rector\Rules\Arrays;
 
+use Ergebnis\Rector\Rules;
 use PhpParser\Node;
 use Rector\Contract;
 use Rector\Rector;
 use Symplify\RuleDocGenerator;
 
-final class SortAssociativeArrayByKeyRector extends Rector\AbstractRector implements Contract\Rector\ConfigurableRectorInterface
+final class SortAssociativeArrayByKeyRector extends Rector\AbstractRector implements
+    Contract\Rector\ConfigurableRectorInterface,
+    Rules\Configuration\HasConfigurationOptions
 {
     private const COMPARISON_FUNCTIONS_TO_DOCUMENTATION_URL = [
         'strcasecmp' => 'https://www.php.net/manual/en/function.strcasecmp.php',
@@ -43,74 +46,41 @@ final class SortAssociativeArrayByKeyRector extends Rector\AbstractRector implem
         $this->configure([]);
     }
 
+    public function configurationOptions(): Rules\Configuration\Options
+    {
+        return Rules\Configuration\Options::create(
+            Rules\Configuration\Option::create(
+                Rules\Configuration\OptionName::fromString(self::CONFIGURATION_KEY_COMPARISON_FUNCTION),
+                Rules\Configuration\OptionDescription::fromString('The comparison function to use for sorting keys.'),
+                Rules\Configuration\OptionValue::oneOf(
+                    \array_keys(self::COMPARISON_FUNCTIONS_TO_DOCUMENTATION_URL),
+                    'strcmp',
+                ),
+            ),
+            Rules\Configuration\Option::create(
+                Rules\Configuration\OptionName::fromString(self::CONFIGURATION_KEY_DIRECTION),
+                Rules\Configuration\OptionDescription::fromString('The sorting direction.'),
+                Rules\Configuration\OptionValue::oneOf(
+                    \array_keys(self::DIRECTION_TO_MULTIPLIER),
+                    'asc',
+                ),
+            ),
+        );
+    }
+
     public function configure(array $configuration): void
     {
-        $configurationKeys = [
-            self::CONFIGURATION_KEY_COMPARISON_FUNCTION,
-            self::CONFIGURATION_KEY_DIRECTION,
-        ];
+        $resolvedConfiguration = $this->configurationOptions()->resolveConfigurationFrom($configuration);
 
-        $unknownConfigurationKeys = \array_diff(
-            \array_keys($configuration),
-            $configurationKeys,
-        );
+        /** @var callable(string, string): int $comparisonFunction */
+        $comparisonFunction = $resolvedConfiguration->get(Rules\Configuration\OptionName::fromString(self::CONFIGURATION_KEY_COMPARISON_FUNCTION));
 
-        if (\count($unknownConfigurationKeys) > 0) {
-            throw new \InvalidArgumentException(\sprintf(
-                'Configuration contains unknown keys: "%s".',
-                \implode('", "', $unknownConfigurationKeys),
-            ));
-        }
-
-        $comparisonFunction = 'strcmp';
-
-        if (\array_key_exists(self::CONFIGURATION_KEY_COMPARISON_FUNCTION, $configuration)) {
-            if (!\is_string($configuration[self::CONFIGURATION_KEY_COMPARISON_FUNCTION])) {
-                throw new \InvalidArgumentException(\sprintf(
-                    'Value for configuration option "%s" needs to be one of "%s".',
-                    self::CONFIGURATION_KEY_COMPARISON_FUNCTION,
-                    \implode('", "', \array_keys(self::COMPARISON_FUNCTIONS_TO_DOCUMENTATION_URL)),
-                ));
-            }
-
-            if (!\array_key_exists($configuration[self::CONFIGURATION_KEY_COMPARISON_FUNCTION], self::COMPARISON_FUNCTIONS_TO_DOCUMENTATION_URL)) {
-                throw new \InvalidArgumentException(\sprintf(
-                    'Value for configuration option "%s" needs to be one of "%s", got "%s" instead.',
-                    self::CONFIGURATION_KEY_COMPARISON_FUNCTION,
-                    \implode('", "', \array_keys(self::COMPARISON_FUNCTIONS_TO_DOCUMENTATION_URL)),
-                    $configuration[self::CONFIGURATION_KEY_COMPARISON_FUNCTION],
-                ));
-            }
-
-            $comparisonFunction = $configuration[self::CONFIGURATION_KEY_COMPARISON_FUNCTION];
-        }
-
-        $direction = 'asc';
-
-        if (\array_key_exists(self::CONFIGURATION_KEY_DIRECTION, $configuration)) {
-            if (!\is_string($configuration[self::CONFIGURATION_KEY_DIRECTION])) {
-                throw new \InvalidArgumentException(\sprintf(
-                    'Value for configuration option "%s" needs to be one of "%s".',
-                    self::CONFIGURATION_KEY_DIRECTION,
-                    \implode('", "', \array_keys(self::DIRECTION_TO_MULTIPLIER)),
-                ));
-            }
-
-            if (!\array_key_exists($configuration[self::CONFIGURATION_KEY_DIRECTION], self::DIRECTION_TO_MULTIPLIER)) {
-                throw new \InvalidArgumentException(\sprintf(
-                    'Value for configuration option "%s" needs to be one of "%s", got "%s" instead.',
-                    self::CONFIGURATION_KEY_DIRECTION,
-                    \implode('", "', \array_keys(self::DIRECTION_TO_MULTIPLIER)),
-                    $configuration[self::CONFIGURATION_KEY_DIRECTION],
-                ));
-            }
-
-            $direction = $configuration[self::CONFIGURATION_KEY_DIRECTION];
-        }
+        /** @var string $direction */
+        $direction = $resolvedConfiguration->get(Rules\Configuration\OptionName::fromString(self::CONFIGURATION_KEY_DIRECTION));
 
         $multiplier = self::DIRECTION_TO_MULTIPLIER[$direction];
 
-        $this->comparator = static function (Key $a, Key $b) use ($comparisonFunction, $multiplier): int {
+        $this->comparator = static function (Rules\Arrays\Key $a, Rules\Arrays\Key $b) use ($comparisonFunction, $multiplier): int {
             return $multiplier * ($comparisonFunction)(
                 $a->toString(),
                 $b->toString()
@@ -121,7 +91,7 @@ final class SortAssociativeArrayByKeyRector extends Rector\AbstractRector implem
     public function getRuleDefinition(): RuleDocGenerator\ValueObject\RuleDefinition
     {
         return new RuleDocGenerator\ValueObject\RuleDefinition(
-            'Sort associative arrays by key.',
+            'Sorts associative arrays by key.',
             [
                 new RuleDocGenerator\ValueObject\CodeSample\CodeSample(
                     <<<'CODE_SAMPLE'
@@ -155,14 +125,14 @@ CODE_SAMPLE
                 new RuleDocGenerator\ValueObject\CodeSample\ConfiguredCodeSample(
                     <<<'CODE_SAMPLE'
 $data = [
+    'bar' => [
+        'quux' => 'quuz',
+        'quz' => 'qux',
+    ],
     'foo' => [
         'foo',
         'bar',
         'baz',
-    ],
-    'bar' => [
-        'quz' => 'qux',
-        'quux' => 'quuz',
     ],
 ];
 CODE_SAMPLE
@@ -281,7 +251,7 @@ CODE_SAMPLE,
             static function (array $arrayItemsWithKeys, $arrayItem): array {
                 $arrayItemWithKey = self::arrayItemWithKeyFrom($arrayItem);
 
-                if (!$arrayItemWithKey instanceof ArrayItemWithKey) {
+                if (!$arrayItemWithKey instanceof Rules\Arrays\ArrayItemWithKey) {
                     return $arrayItemsWithKeys;
                 }
 
@@ -298,21 +268,21 @@ CODE_SAMPLE,
 
         $comparator = $this->comparator;
 
-        \usort($arrayItemsWithKeys, static function (ArrayItemWithKey $a, ArrayItemWithKey $b) use ($comparator): int {
+        \usort($arrayItemsWithKeys, static function (Rules\Arrays\ArrayItemWithKey $a, Rules\Arrays\ArrayItemWithKey $b) use ($comparator): int {
             return $comparator(
                 $a->key(),
                 $b->key(),
             );
         });
 
-        $node->items = \array_map(static function (ArrayItemWithKey $arrayItemWithKey): Node\Expr\ArrayItem {
+        $node->items = \array_map(static function (Rules\Arrays\ArrayItemWithKey $arrayItemWithKey): Node\Expr\ArrayItem {
             return $arrayItemWithKey->arrayItem();
         }, $arrayItemsWithKeys);
 
         return $node;
     }
 
-    private static function arrayItemWithKeyFrom(Node\Expr\ArrayItem $arrayItem): ?ArrayItemWithKey
+    private static function arrayItemWithKeyFrom(Node\Expr\ArrayItem $arrayItem): ?Rules\Arrays\ArrayItemWithKey
     {
         $key = $arrayItem->key;
 
@@ -332,16 +302,16 @@ CODE_SAMPLE,
                 }
             }
 
-            return ArrayItemWithKey::create(
+            return Rules\Arrays\ArrayItemWithKey::create(
                 $arrayItem,
-                Key::fromString($name->toString()),
+                Rules\Arrays\Key::fromString($name->toString()),
             );
         }
 
         if ($key instanceof Node\Scalar\String_) {
-            return ArrayItemWithKey::create(
+            return Rules\Arrays\ArrayItemWithKey::create(
                 $arrayItem,
-                Key::fromString($key->value),
+                Rules\Arrays\Key::fromString($key->value),
             );
         }
 

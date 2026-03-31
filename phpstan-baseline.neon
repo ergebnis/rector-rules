@@ -1,10 +1,40 @@
 parameters:
 	ignoreErrors:
 		-
+			message: '#^Parameter \#1 \$configuration of method Ergebnis\\Rector\\Rules\\Configuration\\Options\:\:resolveConfigurationFrom\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Arrays/SortAssociativeArrayByKeyRector.php
+
+		-
+			message: '#^Call to function is_string\(\) with string will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: src/Configuration/Configuration.php
+
+		-
+			message: '#^Strict comparison using \!\=\= between array\{\} and array\{\} will always evaluate to false\.$#'
+			identifier: notIdentical.alwaysFalse
+			count: 1
+			path: src/Configuration/Configuration.php
+
+		-
+			message: '#^Parameter \#1 \$values of class Ergebnis\\Rector\\Rules\\Configuration\\Options constructor expects array\<string, Ergebnis\\Rector\\Rules\\Configuration\\Option\>, array\<string, Ergebnis\\Rector\\Rules\\Configuration\\Option\>\|false given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Configuration/Options.php
+
+		-
 			message: '#^Parameter \#1 \$node \(PhpParser\\Node\\Expr\\PropertyFetch\) of method Ergebnis\\Rector\\Rules\\Faker\\GeneratorPropertyFetchToMethodCallRector\:\:refactor\(\) should be contravariant with parameter \$node \(PhpParser\\Node\) of method Rector\\Contract\\Rector\\RectorInterface\:\:refactor\(\)$#'
 			identifier: method.childParameterType
 			count: 2
 			path: src/Faker/GeneratorPropertyFetchToMethodCallRector.php
+
+		-
+			message: '#^Parameter \#1 \$configuration of method Ergebnis\\Rector\\Rules\\Configuration\\Options\:\:resolveConfigurationFrom\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Files/ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector.php
 
 		-
 			message: '#^Parameter \#1 \$node \(Rector\\PhpParser\\Node\\FileNode\) of method Ergebnis\\Rector\\Rules\\Files\\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector\:\:refactor\(\) should be contravariant with parameter \$node \(PhpParser\\Node\) of method Rector\\Contract\\Rector\\RectorInterface\:\:refactor\(\)$#'
@@ -95,6 +125,12 @@ parameters:
 			identifier: missingType.iterableValue
 			count: 1
 			path: test/Unit/Arrays/SortAssociativeArrayByKeyRectorWithDirectionDescTest.php
+
+		-
+			message: '#^Parameter \#1 \$values of static method Ergebnis\\Rector\\Rules\\Configuration\\Configuration\:\:fromArray\(\) expects array\<string, mixed\>, array\<int, string\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: test/Unit/Configuration/ConfigurationTest.php
 
 		-
 			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Faker\\GeneratorPropertyFetchToMethodCallRectorTest\:\:provideData\(\) return type has no value type specified in iterable type iterable\.$#'

@@ -123,6 +123,8 @@ final class ListAction extends AbstractAction implements Arrayable, Jsonable
 namespace App\Controller\User;
 
 use App\Controller;
+use function App\Controller\Helper\resolve_path;
+use const App\Controller\Config\DEFAULT_TIMEOUT;
 use Other\Foo\Repository\DepartmentRepository;
 use Psr\Http\Message\ResponseInterface;
 
@@ -170,8 +172,8 @@ final class ListAction extends Controller\AbstractAction implements Controller\C
         $obj,
         $fqn
     ): ResponseInterface {
-        $path = Controller\Helper\resolve_path('/users');
-        $timeout = Controller\Config\DEFAULT_TIMEOUT;
+        $path = resolve_path('/users');
+        $timeout = DEFAULT_TIMEOUT;
 
         $class = Controller\Event\UserEvent::class;
         $middleware = new Controller\Middleware\AuthMiddleware();

@@ -665,6 +665,13 @@ CODE_SAMPLE
     ): bool {
         foreach ($containerNode->stmts as $statement) {
             if ($statement instanceof Node\Stmt\Use_) {
+                if (
+                    Node\Stmt\Use_::TYPE_FUNCTION === $statement->type
+                    || Node\Stmt\Use_::TYPE_CONSTANT === $statement->type
+                ) {
+                    continue;
+                }
+
                 foreach ($statement->uses as $use) {
                     $reference = Rules\Files\Reference::fromString($use->name->toString());
 
@@ -677,6 +684,13 @@ CODE_SAMPLE
                     }
                 }
             } elseif ($statement instanceof Node\Stmt\GroupUse) {
+                if (
+                    Node\Stmt\Use_::TYPE_FUNCTION === $statement->type
+                    || Node\Stmt\Use_::TYPE_CONSTANT === $statement->type
+                ) {
+                    continue;
+                }
+
                 $prefix = $statement->prefix->toString();
 
                 foreach ($statement->uses as $use) {
@@ -755,10 +769,16 @@ CODE_SAMPLE
     ): bool {
         $nodeFinder = new NodeFinder();
 
+        $functionAndConstantNodeIdentifiers = self::functionAndConstantNodeIdentifiers($containerNode->stmts);
+
         $match = $nodeFinder->findFirst(
             $containerNode->stmts,
-            static function (Node $node) use ($namespacePrefix, $moreSpecificNamespacePrefixes): bool {
+            static function (Node $node) use ($namespacePrefix, $moreSpecificNamespacePrefixes, $functionAndConstantNodeIdentifiers): bool {
                 if (!$node instanceof Node\Name\FullyQualified) {
+                    return false;
+                }
+
+                if (\in_array(\spl_object_id($node), $functionAndConstantNodeIdentifiers, true)) {
                     return false;
                 }
 
@@ -814,10 +834,16 @@ CODE_SAMPLE
     ): bool {
         $nodeFinder = new NodeFinder();
 
+        $functionAndConstantNodeIdentifiers = self::functionAndConstantNodeIdentifiers($containerNode->stmts);
+
         $match = $nodeFinder->findFirst(
             $containerNode->stmts,
-            static function (Node $node) use ($namespacePrefix, $moreSpecificNamespacePrefixes): bool {
+            static function (Node $node) use ($namespacePrefix, $moreSpecificNamespacePrefixes, $functionAndConstantNodeIdentifiers): bool {
                 if (!$node instanceof Node\Name\FullyQualified) {
+                    return false;
+                }
+
+                if (\in_array(\spl_object_id($node), $functionAndConstantNodeIdentifiers, true)) {
                     return false;
                 }
 
@@ -911,8 +937,14 @@ CODE_SAMPLE
 
         $hasChanged = false;
 
-        $this->traverseNodesWithCallable($containerNode->stmts, static function (Node $node) use ($namespacePrefix, $lastNamespaceSegmentOfNamespacePrefix, $moreSpecificNamespacePrefixes, $namespacePrefixOfContainingFile, &$hasChanged): ?Node {
+        $functionAndConstantNodeIdentifiers = self::functionAndConstantNodeIdentifiers($containerNode->stmts);
+
+        $this->traverseNodesWithCallable($containerNode->stmts, static function (Node $node) use ($namespacePrefix, $lastNamespaceSegmentOfNamespacePrefix, $moreSpecificNamespacePrefixes, $namespacePrefixOfContainingFile, $functionAndConstantNodeIdentifiers, &$hasChanged): ?Node {
             if (!$node instanceof Node\Name\FullyQualified) {
+                return null;
+            }
+
+            if (\in_array(\spl_object_id($node), $functionAndConstantNodeIdentifiers, true)) {
                 return null;
             }
 
@@ -1355,10 +1387,16 @@ CODE_SAMPLE
 
         $nodeFinder = new NodeFinder();
 
+        $functionAndConstantNodeIdentifiers = self::functionAndConstantNodeIdentifiers($containerNode->stmts);
+
         $nodeFinder->find(
             $containerNode->stmts,
-            static function (Node $node) use ($collectFirstSegment): bool {
+            static function (Node $node) use ($collectFirstSegment, $functionAndConstantNodeIdentifiers): bool {
                 if (!$node instanceof Node\Name\FullyQualified) {
+                    return false;
+                }
+
+                if (\in_array(\spl_object_id($node), $functionAndConstantNodeIdentifiers, true)) {
                     return false;
                 }
 
@@ -1497,10 +1535,16 @@ CODE_SAMPLE
 
         $nodeFinder = new NodeFinder();
 
+        $functionAndConstantNodeIdentifiers = self::functionAndConstantNodeIdentifiers($containerNode->stmts);
+
         $nodeFinder->find(
             $containerNode->stmts,
-            static function (Node $node) use ($parentNamespacePrefixes, &$existingKeys, &$discoveredNamespacePrefixes): bool {
+            static function (Node $node) use ($parentNamespacePrefixes, &$existingKeys, &$discoveredNamespacePrefixes, $functionAndConstantNodeIdentifiers): bool {
                 if (!$node instanceof Node\Name\FullyQualified) {
+                    return false;
+                }
+
+                if (\in_array(\spl_object_id($node), $functionAndConstantNodeIdentifiers, true)) {
                     return false;
                 }
 
@@ -1584,6 +1628,39 @@ CODE_SAMPLE
     }
 
     /**
+     * @param list<Node\Stmt> $statements
+     *
+     * @return list<int>
+     */
+    private static function functionAndConstantNodeIdentifiers(array $statements): array
+    {
+        $nodeFinder = new NodeFinder();
+
+        $nodes = $nodeFinder->find($statements, static function (Node $node): bool {
+            if (
+                $node instanceof Node\Expr\ConstFetch
+                && $node->name instanceof Node\Name\FullyQualified
+            ) {
+                return true;
+            }
+
+            if (
+                $node instanceof Node\Expr\FuncCall
+                && $node->name instanceof Node\Name\FullyQualified
+            ) {
+                return true;
+            }
+
+            return false;
+        });
+
+        return \array_values(\array_unique(\array_map(static function (Node $node): int {
+            /** @var Node\Expr\ConstFetch|Node\Expr\FuncCall $node */
+            return \spl_object_id($node->name);
+        }, $nodes)));
+    }
+
+    /**
      * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
      * @param list<NamespacePrefix>                        $moreSpecificNamespacePrefixes
      */
@@ -1602,6 +1679,13 @@ CODE_SAMPLE
 
         foreach ($containerNode->stmts as $index => $stmt) {
             if ($stmt instanceof Node\Stmt\Use_) {
+                if (
+                    Node\Stmt\Use_::TYPE_FUNCTION === $stmt->type
+                    || Node\Stmt\Use_::TYPE_CONSTANT === $stmt->type
+                ) {
+                    continue;
+                }
+
                 $remainingUses = [];
 
                 foreach ($stmt->uses as $use) {
@@ -1639,6 +1723,13 @@ CODE_SAMPLE
                     $stmt->uses = $remainingUses;
                 }
             } elseif ($stmt instanceof Node\Stmt\GroupUse) {
+                if (
+                    Node\Stmt\Use_::TYPE_FUNCTION === $stmt->type
+                    || Node\Stmt\Use_::TYPE_CONSTANT === $stmt->type
+                ) {
+                    continue;
+                }
+
                 $prefix = $stmt->prefix->toString();
 
                 $remainingUses = [];

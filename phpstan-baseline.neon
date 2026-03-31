@@ -49,6 +49,12 @@ parameters:
 			path: src/Files/ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector.php
 
 		-
+			message: '#^Parameter \#1 \$statements of static method Ergebnis\\Rector\\Rules\\Files\\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector\:\:functionAndConstantNodeIdentifiers\(\) expects list\<PhpParser\\Node\\Stmt\>, array\<PhpParser\\Node\\Stmt\> given\.$#'
+			identifier: argument.type
+			count: 5
+			path: src/Files/ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector.php
+
+		-
 			message: '#^Parameter \#1 \$node \(Rector\\PhpParser\\Node\\FileNode\) of method Ergebnis\\Rector\\Rules\\Files\\UseImportRelativeToNamespacePrefixRector\:\:refactor\(\) should be contravariant with parameter \$node \(PhpParser\\Node\) of method Rector\\Contract\\Rector\\RectorInterface\:\:refactor\(\)$#'
 			identifier: method.childParameterType
 			count: 3

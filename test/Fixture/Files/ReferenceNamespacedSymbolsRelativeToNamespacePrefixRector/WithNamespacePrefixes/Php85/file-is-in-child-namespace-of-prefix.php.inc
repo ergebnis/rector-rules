@@ -45,6 +45,7 @@ final class EditAction
 namespace App\Controller\User;
 
 use App\Controller;
+use function App\Controller\Helper\resolve_path;
 use Psr\Http\Message\ResponseInterface;
 
 final class EditAction
@@ -64,7 +65,7 @@ final class EditAction
     )]
     public function __invoke(string $id): Controller\DashboardAction|ResponseInterface
     {
-        $result = $id |> Controller\Helper\resolve_path(...);
+        $result = $id |> resolve_path(...);
 
         $clone = clone($this->dashboard, []);
 

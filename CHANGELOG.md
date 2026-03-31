@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 For a full diff see [`1.15.2...main`][1.15.2...main].
 
+### Added
+
+- Added `Rules\Expressions\Matches\SortMatchArmsByConditionalRector` ([#333]), by [@localheinz]
+
 ## [`1.15.2`][1.15.2]
 
 For a full diff see [`1.15.1...1.15.2`][1.15.1...1.15.2].
@@ -417,5 +421,6 @@ For a full diff see [`fd198f0...0.1.0`][fd198f0...0.1.0].
 [#324]: https://github.com/ergebnis/rector-rules/pull/324
 [#326]: https://github.com/ergebnis/rector-rules/pull/326
 [#327]: https://github.com/ergebnis/rector-rules/pull/327
+[#333]: https://github.com/ergebnis/rector-rules/pull/333
 
 [@localheinz]: https://github.com/localheinz

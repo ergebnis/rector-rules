@@ -1,0 +1,32 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * Copyright (c) 2023-2026 Andreas Möller
+ *
+ * For the full copyright and license information, please view
+ * the LICENSE.md file that was distributed with this source code.
+ *
+ * @see https://github.com/ergebnis/rector-rules
+ */
+
+namespace Ergebnis\Rector\Rules\Test\Unit\Expressions\Matches;
+
+use Ergebnis\Rector\Rules;
+use Rector\Testing;
+
+/**
+ * @covers \Ergebnis\Rector\Rules\Expressions\Matches\StringConditional
+ */
+final class StringConditionalTest extends Testing\PHPUnit\AbstractLazyTestCase
+{
+    public function testFromStringReturnsStringConditional(): void
+    {
+        $value = 'foo';
+
+        $stringConditional = Rules\Expressions\Matches\StringConditional::fromString($value);
+
+        self::assertSame($value, $stringConditional->toString());
+    }
+}

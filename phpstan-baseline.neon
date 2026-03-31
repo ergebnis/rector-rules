@@ -25,6 +25,12 @@ parameters:
 			path: src/Configuration/Options.php
 
 		-
+			message: '#^Parameter \#1 \$configuration of method Ergebnis\\Rector\\Rules\\Configuration\\Options\:\:resolveConfigurationFrom\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
+			path: src/Expressions/Matches/SortMatchArmsByConditionalRector.php
+
+		-
 			message: '#^Parameter \#1 \$node \(PhpParser\\Node\\Expr\\PropertyFetch\) of method Ergebnis\\Rector\\Rules\\Faker\\GeneratorPropertyFetchToMethodCallRector\:\:refactor\(\) should be contravariant with parameter \$node \(PhpParser\\Node\) of method Rector\\Contract\\Rector\\RectorInterface\:\:refactor\(\)$#'
 			identifier: method.childParameterType
 			count: 2
@@ -131,6 +137,48 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: test/Unit/Configuration/ConfigurationTest.php
+
+		-
+			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Expressions\\Matches\\SortMatchArmsByConditionalRectorWithComparisonFunctionStrcasecmpTest\:\:provideData\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: test/Unit/Expressions/Matches/SortMatchArmsByConditionalRectorWithComparisonFunctionStrcasecmpTest.php
+
+		-
+			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Expressions\\Matches\\SortMatchArmsByConditionalRectorWithComparisonFunctionStrcmpTest\:\:provideData\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: test/Unit/Expressions/Matches/SortMatchArmsByConditionalRectorWithComparisonFunctionStrcmpTest.php
+
+		-
+			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Expressions\\Matches\\SortMatchArmsByConditionalRectorWithComparisonFunctionStrnatcasecmpTest\:\:provideData\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: test/Unit/Expressions/Matches/SortMatchArmsByConditionalRectorWithComparisonFunctionStrnatcasecmpTest.php
+
+		-
+			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Expressions\\Matches\\SortMatchArmsByConditionalRectorWithComparisonFunctionStrnatcmpTest\:\:provideData\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: test/Unit/Expressions/Matches/SortMatchArmsByConditionalRectorWithComparisonFunctionStrnatcmpTest.php
+
+		-
+			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Expressions\\Matches\\SortMatchArmsByConditionalRectorWithDefaultConfigurationTest\:\:provideData\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: test/Unit/Expressions/Matches/SortMatchArmsByConditionalRectorWithDefaultConfigurationTest.php
+
+		-
+			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Expressions\\Matches\\SortMatchArmsByConditionalRectorWithDirectionAscTest\:\:provideData\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: test/Unit/Expressions/Matches/SortMatchArmsByConditionalRectorWithDirectionAscTest.php
+
+		-
+			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Expressions\\Matches\\SortMatchArmsByConditionalRectorWithDirectionDescTest\:\:provideData\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: test/Unit/Expressions/Matches/SortMatchArmsByConditionalRectorWithDirectionDescTest.php
 
 		-
 			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Faker\\GeneratorPropertyFetchToMethodCallRectorTest\:\:provideData\(\) return type has no value type specified in iterable type iterable\.$#'

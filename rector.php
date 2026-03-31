@@ -31,6 +31,7 @@ return static function (Config\RectorConfig $rectorConfig): void {
 
     $rectorConfig->rules([
         Rules\Arrays\SortAssociativeArrayByKeyRector::class,
+        Rules\Expressions\Matches\SortMatchArmsByConditionalRector::class,
         Rules\Faker\GeneratorPropertyFetchToMethodCallRector::class,
     ]);
 

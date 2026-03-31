@@ -145,6 +145,29 @@ final class ReferenceTest extends Framework\TestCase
         self::assertTrue($isOrIsDeclaredInOneOf);
     }
 
+    public function testAppendReturnsReferenceWhenSingleSegmentIsSpecified(): void
+    {
+        $reference = Rules\Files\Reference::fromString('Example\Core');
+
+        $mutated = $reference->append('Controller');
+
+        self::assertNotSame($reference, $mutated);
+        self::assertEquals(Rules\Files\Reference::fromString('Example\Core\Controller'), $mutated);
+    }
+
+    public function testAppendReturnsReferenceWhenMultipleSegmentsAreSpecified(): void
+    {
+        $reference = Rules\Files\Reference::fromString('Example\Core');
+
+        $mutated = $reference->append(
+            'Controller',
+            'AbstractController',
+        );
+
+        self::assertNotSame($reference, $mutated);
+        self::assertEquals(Rules\Files\Reference::fromString('Example\Core\Controller\AbstractController'), $mutated);
+    }
+
     public function testRelativeToReturnsReferenceWhenReferenceIsDirectChildOfNamespacePrefix(): void
     {
         $namespacePrefix = Rules\Files\NamespacePrefix::fromString('Example\Core');

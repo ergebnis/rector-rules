@@ -998,17 +998,28 @@ CODE_SAMPLE
                 return new Node\Name($rewrittenName);
             }
 
-            $hasChanged = true;
-
             if ($reference->is($namespacePrefix)) {
-                return new Node\Name($lastNamespaceSegmentOfNamespacePrefix->toString());
+                $rewrittenName = $lastNamespaceSegmentOfNamespacePrefix->toString();
+            } else {
+                $rewrittenName = \sprintf(
+                    '%s\\%s',
+                    $lastNamespaceSegmentOfNamespacePrefix->toString(),
+                    $reference->relativeTo($namespacePrefix)->toString(),
+                );
             }
 
-            return new Node\Name(\sprintf(
-                '%s\\%s',
-                $lastNamespaceSegmentOfNamespacePrefix->toString(),
-                $reference->relativeTo($namespacePrefix)->toString(),
-            ));
+            $originalName = $node->getAttribute('originalName');
+
+            if (
+                $originalName instanceof Node\Name
+                && $originalName->toString() === $rewrittenName
+            ) {
+                return null;
+            }
+
+            $hasChanged = true;
+
+            return new Node\Name($rewrittenName);
         });
 
         return $hasChanged;

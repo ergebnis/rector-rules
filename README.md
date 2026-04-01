@@ -27,14 +27,14 @@ composer require --dev ergebnis/rector-rules
 
 This project provides the following rules for [`rector/rector`](https://github.com/rectorphp/rector):
 
-- [`Ergebnis\Rector\Rules\Arrays\SortAssociativeArrayByKeyRector`](#arrayssortassociativearraybykeyrector)
+- [`Ergebnis\Rector\Rules\Expressions\Arrays\SortAssociativeArrayByKeyRector`](#expressionsarrayssortassociativearraybykeyrector)
 - [`Ergebnis\Rector\Rules\Expressions\Matches\SortMatchArmsByConditionalRector`](#expressionsmatchessortmatcharmsbyconditionalrector)
 - [`Ergebnis\Rector\Rules\Faker\GeneratorPropertyFetchToMethodCallRector`](#fakergeneratorpropertyfetchtomethodcallrector)
 - [`Ergebnis\Rector\Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector`](#filesreferencenamespacedsymbolsrelativetonamespaceprefixrector)
 
-### Arrays
+### Expressions\Arrays
 
-#### `Arrays\SortAssociativeArrayByKeyRector`
+#### `Expressions\Arrays\SortAssociativeArrayByKeyRector`
 
 Sorts associative arrays by key.
 
@@ -56,7 +56,7 @@ Sorts associative arrays by key.
  ];
 ```
 
-💡 Find out more in the rule documentation for [`Arrays\SortAssociativeArrayByKeyRector`](doc/rules/Arrays/SortAssociativeArrayByKeyRector.md).
+💡 Find out more in the rule documentation for [`Expressions\Arrays\SortAssociativeArrayByKeyRector`](doc/rules/Expressions/Arrays/SortAssociativeArrayByKeyRector.md).
 
 ### Expressions\Matches
 

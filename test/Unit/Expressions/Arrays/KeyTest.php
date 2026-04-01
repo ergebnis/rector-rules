@@ -11,14 +11,14 @@ declare(strict_types=1);
  * @see https://github.com/ergebnis/rector-rules
  */
 
-namespace Ergebnis\Rector\Rules\Test\Unit\Arrays;
+namespace Ergebnis\Rector\Rules\Test\Unit\Expressions\Arrays;
 
 use Ergebnis\DataProvider;
 use Ergebnis\Rector\Rules;
 use PHPUnit\Framework;
 
 /**
- * @covers \Ergebnis\Rector\Rules\Arrays\Key
+ * @covers \Ergebnis\Rector\Rules\Expressions\Arrays\Key
  */
 final class KeyTest extends Framework\TestCase
 {
@@ -27,7 +27,7 @@ final class KeyTest extends Framework\TestCase
      */
     public function testFromStringReturnsKey(string $value): void
     {
-        $key = Rules\Arrays\Key::fromString($value);
+        $key = Rules\Expressions\Arrays\Key::fromString($value);
 
         self::assertSame($value, $key->toString());
     }

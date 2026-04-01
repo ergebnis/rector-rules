@@ -11,12 +11,12 @@ declare(strict_types=1);
  * @see https://github.com/ergebnis/rector-rules
  */
 
-namespace Ergebnis\Rector\Rules\Test\Unit\Arrays;
+namespace Ergebnis\Rector\Rules\Test\Unit\Expressions\Arrays;
 
 use Rector\Testing;
 
 /**
- * @covers \Ergebnis\Rector\Rules\Arrays\SortAssociativeArrayByKeyRector
+ * @covers \Ergebnis\Rector\Rules\Expressions\Arrays\SortAssociativeArrayByKeyRector
  *
  * @uses \Ergebnis\Rector\Rules\Configuration\Configuration
  * @uses \Ergebnis\Rector\Rules\Configuration\Option
@@ -27,7 +27,7 @@ use Rector\Testing;
  * @uses \Ergebnis\Rector\Rules\Expressions\Arrays\ArrayItemWithKey
  * @uses \Ergebnis\Rector\Rules\Expressions\Arrays\Key
  */
-final class SortAssociativeArrayByKeyRectorWithComparisonFunctionStrnatcmpTest extends Testing\PHPUnit\AbstractRectorTestCase
+final class SortAssociativeArrayByKeyRectorWithDirectionDescTest extends Testing\PHPUnit\AbstractRectorTestCase
 {
     /**
      * @dataProvider provideData
@@ -39,11 +39,11 @@ final class SortAssociativeArrayByKeyRectorWithComparisonFunctionStrnatcmpTest e
 
     public static function provideData(): iterable
     {
-        return self::yieldFilesFromDirectory(__DIR__ . '/../../Fixture/Arrays/SortAssociativeArrayByKeyRector/WithComparisonFunctionStrnatcmp');
+        return self::yieldFilesFromDirectory(__DIR__ . '/../../../Fixture/Expressions/Arrays/SortAssociativeArrayByKeyRector/WithDirectionDesc');
     }
 
     public function provideConfigFilePath(): string
     {
-        return __DIR__ . '/../../Fixture/Arrays/SortAssociativeArrayByKeyRector/WithComparisonFunctionStrnatcmp/config.php';
+        return __DIR__ . '/../../../Fixture/Expressions/Arrays/SortAssociativeArrayByKeyRector/WithDirectionDesc/config.php';
     }
 }

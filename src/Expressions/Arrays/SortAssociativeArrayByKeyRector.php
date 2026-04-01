@@ -11,7 +11,7 @@ declare(strict_types=1);
  * @see https://github.com/ergebnis/rector-rules
  */
 
-namespace Ergebnis\Rector\Rules\Arrays;
+namespace Ergebnis\Rector\Rules\Expressions\Arrays;
 
 use Ergebnis\Rector\Rules;
 use PhpParser\Node;
@@ -19,9 +19,6 @@ use Rector\Contract;
 use Rector\Rector;
 use Symplify\RuleDocGenerator;
 
-/**
- * @deprecated use Ergebnis\Rector\Rules\Expressions\Arrays\SortAssociativeArrayByKeyRector instead
- */
 final class SortAssociativeArrayByKeyRector extends Rector\AbstractRector implements
     Contract\Rector\ConfigurableRectorInterface,
     Rules\Configuration\HasConfigurationOptions
@@ -244,15 +241,6 @@ CODE_SAMPLE,
 
     public function refactor(Node $node): ?Node
     {
-        @\trigger_error(
-            \sprintf(
-                '%s is deprecated, use %s instead.',
-                self::class,
-                Rules\Expressions\Arrays\SortAssociativeArrayByKeyRector::class,
-            ),
-            \E_USER_DEPRECATED,
-        );
-
         if (!$node instanceof Node\Expr\Array_) {
             return null;
         }

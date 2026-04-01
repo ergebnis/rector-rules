@@ -18,14 +18,14 @@ use Rector\Testing;
 /**
  * @covers \Ergebnis\Rector\Rules\Arrays\SortAssociativeArrayByKeyRector
  *
- * @uses \Ergebnis\Rector\Rules\Arrays\ArrayItemWithKey
- * @uses \Ergebnis\Rector\Rules\Arrays\Key
  * @uses \Ergebnis\Rector\Rules\Configuration\Configuration
  * @uses \Ergebnis\Rector\Rules\Configuration\Option
  * @uses \Ergebnis\Rector\Rules\Configuration\OptionDescription
  * @uses \Ergebnis\Rector\Rules\Configuration\OptionName
  * @uses \Ergebnis\Rector\Rules\Configuration\Options
  * @uses \Ergebnis\Rector\Rules\Configuration\OptionValue
+ * @uses \Ergebnis\Rector\Rules\Expressions\Arrays\ArrayItemWithKey
+ * @uses \Ergebnis\Rector\Rules\Expressions\Arrays\Key
  */
 final class SortAssociativeArrayByKeyRectorWithComparisonFunctionStrcmpTest extends Testing\PHPUnit\AbstractRectorTestCase
 {

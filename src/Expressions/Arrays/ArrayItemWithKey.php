@@ -11,7 +11,7 @@ declare(strict_types=1);
  * @see https://github.com/ergebnis/rector-rules
  */
 
-namespace Ergebnis\Rector\Rules\Arrays;
+namespace Ergebnis\Rector\Rules\Expressions\Arrays;
 
 use PhpParser\Node;
 

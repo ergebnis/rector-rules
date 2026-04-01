@@ -30,7 +30,7 @@ return static function (Config\RectorConfig $rectorConfig): void {
     $rectorConfig->phpVersion(ValueObject\PhpVersion::PHP_74);
 
     $rectorConfig->rules([
-        Rules\Arrays\SortAssociativeArrayByKeyRector::class,
+        Rules\Expressions\Arrays\SortAssociativeArrayByKeyRector::class,
         Rules\Expressions\Matches\SortMatchArmsByConditionalRector::class,
         Rules\Faker\GeneratorPropertyFetchToMethodCallRector::class,
     ]);

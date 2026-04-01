@@ -1,4 +1,4 @@
-# `Arrays\SortAssociativeArrayByKeyRector`
+# `Expressions\Arrays\SortAssociativeArrayByKeyRector`
 
 Sorts associative arrays by key.
 

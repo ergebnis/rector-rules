@@ -11,12 +11,12 @@ declare(strict_types=1);
  * @see https://github.com/ergebnis/rector-rules
  */
 
-namespace Ergebnis\Rector\Rules\Test\Unit\Arrays;
+namespace Ergebnis\Rector\Rules\Test\Unit\Expressions\Arrays;
 
 use Rector\Testing;
 
 /**
- * @covers \Ergebnis\Rector\Rules\Arrays\SortAssociativeArrayByKeyRector
+ * @covers \Ergebnis\Rector\Rules\Expressions\Arrays\SortAssociativeArrayByKeyRector
  *
  * @uses \Ergebnis\Rector\Rules\Configuration\Configuration
  * @uses \Ergebnis\Rector\Rules\Configuration\Option
@@ -27,7 +27,7 @@ use Rector\Testing;
  * @uses \Ergebnis\Rector\Rules\Expressions\Arrays\ArrayItemWithKey
  * @uses \Ergebnis\Rector\Rules\Expressions\Arrays\Key
  */
-final class SortAssociativeArrayByKeyRectorWithComparisonFunctionStrnatcasecmpTest extends Testing\PHPUnit\AbstractRectorTestCase
+final class SortAssociativeArrayByKeyRectorWithDefaultConfigurationTest extends Testing\PHPUnit\AbstractRectorTestCase
 {
     /**
      * @dataProvider provideFilePathsPhp74
@@ -43,7 +43,7 @@ final class SortAssociativeArrayByKeyRectorWithComparisonFunctionStrnatcasecmpTe
 
     public static function provideFilePathsPhp74(): iterable
     {
-        return self::yieldFilesFromDirectory(__DIR__ . '/../../Fixture/Arrays/SortAssociativeArrayByKeyRector/WithComparisonFunctionStrnatcasecmp/Php74');
+        return self::yieldFilesFromDirectory(__DIR__ . '/../../../Fixture/Expressions/Arrays/SortAssociativeArrayByKeyRector/WithDefaultConfiguration/Php74');
     }
 
     /**
@@ -60,11 +60,11 @@ final class SortAssociativeArrayByKeyRectorWithComparisonFunctionStrnatcasecmpTe
 
     public static function provideFilePathsPhp80(): iterable
     {
-        return self::yieldFilesFromDirectory(__DIR__ . '/../../Fixture/Arrays/SortAssociativeArrayByKeyRector/WithComparisonFunctionStrnatcasecmp/Php80');
+        return self::yieldFilesFromDirectory(__DIR__ . '/../../../Fixture/Expressions/Arrays/SortAssociativeArrayByKeyRector/WithDefaultConfiguration/Php80');
     }
 
     public function provideConfigFilePath(): string
     {
-        return __DIR__ . '/../../Fixture/Arrays/SortAssociativeArrayByKeyRector/WithComparisonFunctionStrnatcasecmp/config.php';
+        return __DIR__ . '/../../../Fixture/Expressions/Arrays/SortAssociativeArrayByKeyRector/WithDefaultConfiguration/config.php';
     }
 }

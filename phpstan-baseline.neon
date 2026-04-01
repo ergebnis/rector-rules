@@ -28,6 +28,12 @@ parameters:
 			message: '#^Parameter \#1 \$configuration of method Ergebnis\\Rector\\Rules\\Configuration\\Options\:\:resolveConfigurationFrom\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
 			identifier: argument.type
 			count: 1
+			path: src/Expressions/Arrays/SortAssociativeArrayByKeyRector.php
+
+		-
+			message: '#^Parameter \#1 \$configuration of method Ergebnis\\Rector\\Rules\\Configuration\\Options\:\:resolveConfigurationFrom\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
+			identifier: argument.type
+			count: 1
 			path: src/Expressions/Matches/SortMatchArmsByConditionalRector.php
 
 		-
@@ -62,6 +68,69 @@ parameters:
 
 		-
 			message: '''
+				#^Access to constant on deprecated class Ergebnis\\Rector\\Rules\\Arrays\\SortAssociativeArrayByKeyRector\:
+				use Ergebnis\\Rector\\Rules\\Expressions\\Arrays\\SortAssociativeArrayByKeyRector instead$#
+			'''
+			identifier: classConstant.deprecatedClass
+			count: 1
+			path: test/Fixture/Arrays/SortAssociativeArrayByKeyRector/WithComparisonFunctionStrcasecmp/config.php
+
+		-
+			message: '''
+				#^Access to constant on deprecated class Ergebnis\\Rector\\Rules\\Arrays\\SortAssociativeArrayByKeyRector\:
+				use Ergebnis\\Rector\\Rules\\Expressions\\Arrays\\SortAssociativeArrayByKeyRector instead$#
+			'''
+			identifier: classConstant.deprecatedClass
+			count: 1
+			path: test/Fixture/Arrays/SortAssociativeArrayByKeyRector/WithComparisonFunctionStrcmp/config.php
+
+		-
+			message: '''
+				#^Access to constant on deprecated class Ergebnis\\Rector\\Rules\\Arrays\\SortAssociativeArrayByKeyRector\:
+				use Ergebnis\\Rector\\Rules\\Expressions\\Arrays\\SortAssociativeArrayByKeyRector instead$#
+			'''
+			identifier: classConstant.deprecatedClass
+			count: 1
+			path: test/Fixture/Arrays/SortAssociativeArrayByKeyRector/WithComparisonFunctionStrnatcasecmp/config.php
+
+		-
+			message: '''
+				#^Access to constant on deprecated class Ergebnis\\Rector\\Rules\\Arrays\\SortAssociativeArrayByKeyRector\:
+				use Ergebnis\\Rector\\Rules\\Expressions\\Arrays\\SortAssociativeArrayByKeyRector instead$#
+			'''
+			identifier: classConstant.deprecatedClass
+			count: 1
+			path: test/Fixture/Arrays/SortAssociativeArrayByKeyRector/WithComparisonFunctionStrnatcmp/config.php
+
+		-
+			message: '''
+				#^Access to constant on deprecated class Ergebnis\\Rector\\Rules\\Arrays\\SortAssociativeArrayByKeyRector\:
+				use Ergebnis\\Rector\\Rules\\Expressions\\Arrays\\SortAssociativeArrayByKeyRector instead$#
+			'''
+			identifier: classConstant.deprecatedClass
+			count: 1
+			path: test/Fixture/Arrays/SortAssociativeArrayByKeyRector/WithDefaultConfiguration/config.php
+
+		-
+			message: '''
+				#^Access to constant on deprecated class Ergebnis\\Rector\\Rules\\Arrays\\SortAssociativeArrayByKeyRector\:
+				use Ergebnis\\Rector\\Rules\\Expressions\\Arrays\\SortAssociativeArrayByKeyRector instead$#
+			'''
+			identifier: classConstant.deprecatedClass
+			count: 1
+			path: test/Fixture/Arrays/SortAssociativeArrayByKeyRector/WithDirectionAsc/config.php
+
+		-
+			message: '''
+				#^Access to constant on deprecated class Ergebnis\\Rector\\Rules\\Arrays\\SortAssociativeArrayByKeyRector\:
+				use Ergebnis\\Rector\\Rules\\Expressions\\Arrays\\SortAssociativeArrayByKeyRector instead$#
+			'''
+			identifier: classConstant.deprecatedClass
+			count: 1
+			path: test/Fixture/Arrays/SortAssociativeArrayByKeyRector/WithDirectionDesc/config.php
+
+		-
+			message: '''
 				#^Access to constant on deprecated class Ergebnis\\Rector\\Rules\\Files\\UseImportRelativeToNamespacePrefixRector\:
 				use ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector instead$#
 			'''
@@ -77,6 +146,24 @@ parameters:
 			identifier: classConstant.deprecatedClass
 			count: 1
 			path: test/Fixture/Files/UseImportRelativeToNamespacePrefixRector/WithSingleNamespacePrefix/config.php
+
+		-
+			message: '''
+				#^Access to constant on deprecated class Ergebnis\\Rector\\Rules\\Arrays\\SortAssociativeArrayByKeyRector\:
+				use Ergebnis\\Rector\\Rules\\Expressions\\Arrays\\SortAssociativeArrayByKeyRector instead$#
+			'''
+			identifier: classConstant.deprecatedClass
+			count: 7
+			path: test/Unit/Arrays/SortAssociativeArrayByKeyRectorConfigureTest.php
+
+		-
+			message: '''
+				#^Call to method configure\(\) of deprecated class Ergebnis\\Rector\\Rules\\Arrays\\SortAssociativeArrayByKeyRector\:
+				use Ergebnis\\Rector\\Rules\\Expressions\\Arrays\\SortAssociativeArrayByKeyRector instead$#
+			'''
+			identifier: method.deprecatedClass
+			count: 7
+			path: test/Unit/Arrays/SortAssociativeArrayByKeyRectorConfigureTest.php
 
 		-
 			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Arrays\\SortAssociativeArrayByKeyRectorWithComparisonFunctionStrcasecmpTest\:\:provideFilePathsPhp74\(\) return type has no value type specified in iterable type iterable\.$#'
@@ -143,6 +230,66 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: test/Unit/Configuration/ConfigurationTest.php
+
+		-
+			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Expressions\\Arrays\\SortAssociativeArrayByKeyRectorWithComparisonFunctionStrcasecmpTest\:\:provideFilePathsPhp74\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: test/Unit/Expressions/Arrays/SortAssociativeArrayByKeyRectorWithComparisonFunctionStrcasecmpTest.php
+
+		-
+			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Expressions\\Arrays\\SortAssociativeArrayByKeyRectorWithComparisonFunctionStrcasecmpTest\:\:provideFilePathsPhp80\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: test/Unit/Expressions/Arrays/SortAssociativeArrayByKeyRectorWithComparisonFunctionStrcasecmpTest.php
+
+		-
+			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Expressions\\Arrays\\SortAssociativeArrayByKeyRectorWithComparisonFunctionStrcmpTest\:\:provideData\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: test/Unit/Expressions/Arrays/SortAssociativeArrayByKeyRectorWithComparisonFunctionStrcmpTest.php
+
+		-
+			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Expressions\\Arrays\\SortAssociativeArrayByKeyRectorWithComparisonFunctionStrnatcasecmpTest\:\:provideFilePathsPhp74\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: test/Unit/Expressions/Arrays/SortAssociativeArrayByKeyRectorWithComparisonFunctionStrnatcasecmpTest.php
+
+		-
+			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Expressions\\Arrays\\SortAssociativeArrayByKeyRectorWithComparisonFunctionStrnatcasecmpTest\:\:provideFilePathsPhp80\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: test/Unit/Expressions/Arrays/SortAssociativeArrayByKeyRectorWithComparisonFunctionStrnatcasecmpTest.php
+
+		-
+			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Expressions\\Arrays\\SortAssociativeArrayByKeyRectorWithComparisonFunctionStrnatcmpTest\:\:provideData\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: test/Unit/Expressions/Arrays/SortAssociativeArrayByKeyRectorWithComparisonFunctionStrnatcmpTest.php
+
+		-
+			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Expressions\\Arrays\\SortAssociativeArrayByKeyRectorWithDefaultConfigurationTest\:\:provideFilePathsPhp74\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: test/Unit/Expressions/Arrays/SortAssociativeArrayByKeyRectorWithDefaultConfigurationTest.php
+
+		-
+			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Expressions\\Arrays\\SortAssociativeArrayByKeyRectorWithDefaultConfigurationTest\:\:provideFilePathsPhp80\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: test/Unit/Expressions/Arrays/SortAssociativeArrayByKeyRectorWithDefaultConfigurationTest.php
+
+		-
+			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Expressions\\Arrays\\SortAssociativeArrayByKeyRectorWithDirectionAscTest\:\:provideData\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: test/Unit/Expressions/Arrays/SortAssociativeArrayByKeyRectorWithDirectionAscTest.php
+
+		-
+			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Expressions\\Arrays\\SortAssociativeArrayByKeyRectorWithDirectionDescTest\:\:provideData\(\) return type has no value type specified in iterable type iterable\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: test/Unit/Expressions/Arrays/SortAssociativeArrayByKeyRectorWithDirectionDescTest.php
 
 		-
 			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Expressions\\Matches\\SortMatchArmsByConditionalRectorWithComparisonFunctionStrcasecmpTest\:\:provideData\(\) return type has no value type specified in iterable type iterable\.$#'

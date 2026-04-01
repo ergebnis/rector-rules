@@ -11,16 +11,16 @@ declare(strict_types=1);
  * @see https://github.com/ergebnis/rector-rules
  */
 
-namespace Arrays;
+namespace Ergebnis\Rector\Rules\Test\Unit\Expressions\Arrays;
 
 use Ergebnis\Rector\Rules;
 use PhpParser\Node;
 use PHPUnit\Framework;
 
 /**
- * @covers \Ergebnis\Rector\Rules\Arrays\ArrayItemWithKey
+ * @covers \Ergebnis\Rector\Rules\Expressions\Arrays\ArrayItemWithKey
  *
- * @uses \Ergebnis\Rector\Rules\Arrays\Key
+ * @uses \Ergebnis\Rector\Rules\Expressions\Arrays\Key
  */
 final class ArrayItemWithKeyTest extends Framework\TestCase
 {
@@ -31,9 +31,9 @@ final class ArrayItemWithKeyTest extends Framework\TestCase
             new Node\Scalar\String_('bar'),
         );
 
-        $key = Rules\Arrays\Key::fromString('baz');
+        $key = Rules\Expressions\Arrays\Key::fromString('baz');
 
-        $arrayItemWithKey = Rules\Arrays\ArrayItemWithKey::create(
+        $arrayItemWithKey = Rules\Expressions\Arrays\ArrayItemWithKey::create(
             $arrayItem,
             $key,
         );

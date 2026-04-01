@@ -12,6 +12,10 @@ For a full diff see [`1.15.2...main`][1.15.2...main].
 
 - Added `Rules\Expressions\Matches\SortMatchArmsByConditionalRector` ([#333]), by [@localheinz]
 
+### Deprecated
+
+- Deprecated `Arrays\SortAssociativeArrayByKeyRector` in favor of `Expressions\Arrays\SortAssociativeArrayByKeyRector` ([#335]), by [@localheinz]
+
 ### Fixed
 
 - Adjusted `Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector` to skip fully-qualified function calls and constant references ([#334]), by [@localheinz]
@@ -427,5 +431,6 @@ For a full diff see [`fd198f0...0.1.0`][fd198f0...0.1.0].
 [#327]: https://github.com/ergebnis/rector-rules/pull/327
 [#333]: https://github.com/ergebnis/rector-rules/pull/333
 [#334]: https://github.com/ergebnis/rector-rules/pull/334
+[#335]: https://github.com/ergebnis/rector-rules/pull/335
 
 [@localheinz]: https://github.com/localheinz

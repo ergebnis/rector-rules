@@ -28,6 +28,7 @@ composer require --dev ergebnis/rector-rules
 This project provides the following rules for [`rector/rector`](https://github.com/rectorphp/rector):
 
 - [`Ergebnis\Rector\Rules\Arrays\SortAssociativeArrayByKeyRector`](#arrayssortassociativearraybykeyrector)
+- [`Ergebnis\Rector\Rules\Expressions\Matches\SortMatchArmsByConditionalRector`](#expressionsmatchessortmatcharmsbyconditionalrector)
 - [`Ergebnis\Rector\Rules\Faker\GeneratorPropertyFetchToMethodCallRector`](#fakergeneratorpropertyfetchtomethodcallrector)
 - [`Ergebnis\Rector\Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector`](#filesreferencenamespacedsymbolsrelativetonamespaceprefixrector)
 
@@ -56,6 +57,23 @@ Sorts associative arrays by key.
 ```
 
 💡 Find out more in the rule documentation for [`Arrays\SortAssociativeArrayByKeyRector`](doc/rules/Arrays/SortAssociativeArrayByKeyRector.md).
+
+### Expressions\Matches
+
+#### `Expressions\Matches\SortMatchArmsByConditionalRector`
+
+Sorts match arms by conditional when the conditionals are all integers or all strings.
+
+```diff
+ match ($status) {
+-    'pending' => handlePending(),
+     'active' => handleActive(),
+     'closed' => handleClosed(),
++    'pending' => handlePending(),
+ };
+```
+
+💡 Find out more in the rule documentation for [`Expressions\Matches\SortMatchArmsByConditionalRector`](doc/rules/Expressions/Matches/SortMatchArmsByConditionalRector.md).
 
 ### Faker
 

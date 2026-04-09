@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 For a full diff see [`1.16.0...main`][1.16.0...main].
 
+### Added
+
+- Added `Rules\PHPUnit\ReplaceTestAttributeWithTestPrefixRector` ([#336]), by [@localheinz]
+
 ## [`1.16.0`][1.16.0]
 
 For a full diff see [`1.15.2...1.16.0`][1.15.2...1.16.0].
@@ -438,5 +442,6 @@ For a full diff see [`fd198f0...0.1.0`][fd198f0...0.1.0].
 [#333]: https://github.com/ergebnis/rector-rules/pull/333
 [#334]: https://github.com/ergebnis/rector-rules/pull/334
 [#335]: https://github.com/ergebnis/rector-rules/pull/335
+[#336]: https://github.com/ergebnis/rector-rules/pull/336
 
 [@localheinz]: https://github.com/localheinz

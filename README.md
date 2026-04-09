@@ -31,6 +31,7 @@ This project provides the following rules for [`rector/rector`](https://github.c
 - [`Ergebnis\Rector\Rules\Expressions\Matches\SortMatchArmsByConditionalRector`](#expressionsmatchessortmatcharmsbyconditionalrector)
 - [`Ergebnis\Rector\Rules\Faker\GeneratorPropertyFetchToMethodCallRector`](#fakergeneratorpropertyfetchtomethodcallrector)
 - [`Ergebnis\Rector\Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector`](#filesreferencenamespacedsymbolsrelativetonamespaceprefixrector)
+- [`Ergebnis\Rector\Rules\PHPUnit\ReplaceTestAttributeWithTestPrefixRector`](#phpunitreplacetestattributewithtestprefixrector)
 
 ### Expressions\Arrays
 
@@ -106,6 +107,28 @@ Replaces references to namespaced symbols (classes, functions, constants) whose 
 ```
 
 💡 Find out more in the rule documentation for [`Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector`](doc/rules/Files/ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector.md).
+
+### PHPUnit
+
+#### `PHPUnit\ReplaceTestAttributeWithTestPrefixRector`
+
+Replaces #[Test] attributes with test method prefixes.
+
+```diff
+ use PHPUnit\Framework;
+ 
+ final class SomeTest extends Framework\TestCase
+ {
+-    #[Framework\Attributes\Test]
+-    public function onePlusOneShouldBeTwo(): void
++    public function testOnePlusOneShouldBeTwo(): void
+     {
+         self::assertSame(2, 1 + 1);
+     }
+ }
+```
+
+💡 Find out more in the rule documentation for [`PHPUnit\ReplaceTestAttributeWithTestPrefixRector`](doc/rules/PHPUnit/ReplaceTestAttributeWithTestPrefixRector.md).
 
 <!-- END RULES -->
 

@@ -16,6 +16,7 @@
     "Rector\\Contract\\Rector\\ConfigurableRectorInterface",
     "Rector\\PhpDocParser\\PhpDocParser\\PhpDocNodeTraverser",
     "Rector\\PhpParser\\Node\\FileNode",
+    "Rector\\PHPUnit\\NodeAnalyzer\\TestsNodeAnalyzer",
     "Rector\\Rector\\AbstractRector",
     "Rector\\Reflection\\ReflectionResolver",
     "self",

@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 For a full diff see [`1.17.0...main`][1.17.0...main].
 
+### Added
+
+- Added `Rules\Expressions\CallLikes\RemoveNamedArgumentForSingleParameterRector` ([#337]), by [@localheinz]
+
 ## [`1.17.0`][1.17.0]
 
 For a full diff see [`1.16.0...1.17.0`][1.16.0...1.17.0].
@@ -449,5 +453,6 @@ For a full diff see [`fd198f0...0.1.0`][fd198f0...0.1.0].
 [#334]: https://github.com/ergebnis/rector-rules/pull/334
 [#335]: https://github.com/ergebnis/rector-rules/pull/335
 [#336]: https://github.com/ergebnis/rector-rules/pull/336
+[#337]: https://github.com/ergebnis/rector-rules/pull/337
 
 [@localheinz]: https://github.com/localheinz

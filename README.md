@@ -28,6 +28,7 @@ composer require --dev ergebnis/rector-rules
 This project provides the following rules for [`rector/rector`](https://github.com/rectorphp/rector):
 
 - [`Ergebnis\Rector\Rules\Expressions\Arrays\SortAssociativeArrayByKeyRector`](#expressionsarrayssortassociativearraybykeyrector)
+- [`Ergebnis\Rector\Rules\Expressions\CallLikes\RemoveNamedArgumentForSingleParameterRector`](#expressionscalllikesremovenamedargumentforsingleparameterrector)
 - [`Ergebnis\Rector\Rules\Expressions\Matches\SortMatchArmsByConditionalRector`](#expressionsmatchessortmatcharmsbyconditionalrector)
 - [`Ergebnis\Rector\Rules\Faker\GeneratorPropertyFetchToMethodCallRector`](#fakergeneratorpropertyfetchtomethodcallrector)
 - [`Ergebnis\Rector\Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector`](#filesreferencenamespacedsymbolsrelativetonamespaceprefixrector)
@@ -58,6 +59,19 @@ Sorts associative arrays by key.
 ```
 
 💡 Find out more in the rule documentation for [`Expressions\Arrays\SortAssociativeArrayByKeyRector`](doc/rules/Expressions/Arrays/SortAssociativeArrayByKeyRector.md).
+
+### Expressions\CallLikes
+
+#### `Expressions\CallLikes\RemoveNamedArgumentForSingleParameterRector`
+
+Removes named arguments for single-parameter function and method calls.
+
+```diff
+-strlen(string: 'hello');
++strlen('hello');
+```
+
+💡 Find out more in the rule documentation for [`Expressions\CallLikes\RemoveNamedArgumentForSingleParameterRector`](doc/rules/Expressions/CallLikes/RemoveNamedArgumentForSingleParameterRector.md).
 
 ### Expressions\Matches
 

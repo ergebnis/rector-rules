@@ -60,6 +60,10 @@ CODE_SAMPLE
      */
     public function refactor(Node $node): ?Node
     {
+        if ($node->isFirstClassCallable()) {
+            return null;
+        }
+
         $namedArguments = \array_filter($node->getArgs(), static function ($argument): bool {
             return $argument->name instanceof Node\Identifier;
         });

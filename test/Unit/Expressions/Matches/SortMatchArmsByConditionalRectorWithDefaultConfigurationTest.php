@@ -33,7 +33,7 @@ final class SortMatchArmsByConditionalRectorWithDefaultConfigurationTest extends
     /**
      * @dataProvider provideData
      *
-     * @requires PHP >= 8.0
+     * @requires PHP >= 8.0.0
      */
     public function test(string $filePath): void
     {

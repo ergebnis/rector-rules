@@ -23,7 +23,7 @@ final class UseImportRelativeToNamespacePrefixRectorWithSingleNamespacePrefixTes
     /**
      * @dataProvider provideDataOnPhp7
      *
-     * @requires PHP < 8.0
+     * @requires PHP < 8.0.0
      */
     public function testOnPhp7(string $filePath): void
     {
@@ -38,7 +38,7 @@ final class UseImportRelativeToNamespacePrefixRectorWithSingleNamespacePrefixTes
     /**
      * @dataProvider provideDataOnPhp8
      *
-     * @requires PHP >= 8.0
+     * @requires PHP >= 8.0.0
      */
     public function testOnPhp8(string $filePath): void
     {

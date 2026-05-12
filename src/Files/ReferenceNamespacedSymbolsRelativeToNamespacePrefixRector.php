@@ -589,10 +589,7 @@ CODE_SAMPLE
             && !$parentNamespacePrefixImport
             && !$hasNamespacePrefixImport
             && !self::hasSourceWrittenFullyQualifiedReferencesMatchingPrefix($containerNode, $namespacePrefix, $moreSpecificNamespacePrefixes)
-            && !(
-                $this->forceRelativeReferences
-                && self::hasPartiallyQualifiedReferencesMatchingNamespacePrefix($containerNode, $namespacePrefix, $moreSpecificNamespacePrefixes)
-            )
+            && !($this->forceRelativeReferences && self::hasPartiallyQualifiedReferencesMatchingNamespacePrefix($containerNode, $namespacePrefix, $moreSpecificNamespacePrefixes))
         ) {
             return false;
         }

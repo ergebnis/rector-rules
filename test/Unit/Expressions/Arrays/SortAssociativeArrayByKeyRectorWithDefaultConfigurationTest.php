@@ -32,7 +32,7 @@ final class SortAssociativeArrayByKeyRectorWithDefaultConfigurationTest extends 
     /**
      * @dataProvider provideFilePathsPhp74
      *
-     * @requires PHP < 8.0
+     * @requires PHP < 8.0.0
      *
      * @see https://www.php.net/manual/en/migration80.incompatible.php#migration80.incompatible.core.string-number-comparision
      */
@@ -49,7 +49,7 @@ final class SortAssociativeArrayByKeyRectorWithDefaultConfigurationTest extends 
     /**
      * @dataProvider provideFilePathsPhp80
      *
-     * @requires PHP >= 8.0
+     * @requires PHP >= 8.0.0
      *
      * @see https://www.php.net/manual/en/migration80.incompatible.php#migration80.incompatible.core.string-number-comparision
      */

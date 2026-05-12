@@ -47,7 +47,7 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorWithNamespa
     /**
      * @dataProvider provideDataOnPhp80
      *
-     * @requires PHP >= 8.0
+     * @requires PHP >= 8.0.0
      */
     public function testOnPhp80(string $filePath): void
     {
@@ -62,7 +62,7 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorWithNamespa
     /**
      * @dataProvider provideDataOnPhp81
      *
-     * @requires PHP >= 8.1
+     * @requires PHP >= 8.1.0
      */
     public function testOnPhp81(string $filePath): void
     {
@@ -77,7 +77,7 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorWithNamespa
     /**
      * @dataProvider provideDataOnPhp82
      *
-     * @requires PHP >= 8.2
+     * @requires PHP >= 8.2.0
      */
     public function testOnPhp82(string $filePath): void
     {
@@ -92,7 +92,7 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorWithNamespa
     /**
      * @dataProvider provideDataOnPhp83
      *
-     * @requires PHP >= 8.3
+     * @requires PHP >= 8.3.0
      */
     public function testOnPhp83(string $filePath): void
     {
@@ -107,7 +107,7 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorWithNamespa
     /**
      * @dataProvider provideDataOnPhp84
      *
-     * @requires PHP >= 8.4
+     * @requires PHP >= 8.4.0
      */
     public function testOnPhp84(string $filePath): void
     {
@@ -122,7 +122,7 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorWithNamespa
     /**
      * @dataProvider provideDataOnPhp85
      *
-     * @requires PHP >= 8.5
+     * @requires PHP >= 8.5.0
      */
     public function testOnPhp85(string $filePath): void
     {

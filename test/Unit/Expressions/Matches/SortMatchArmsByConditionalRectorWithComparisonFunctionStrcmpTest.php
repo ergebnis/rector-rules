@@ -32,7 +32,7 @@ final class SortMatchArmsByConditionalRectorWithComparisonFunctionStrcmpTest ext
     /**
      * @dataProvider provideData
      *
-     * @requires PHP >= 8.0
+     * @requires PHP >= 8.0.0
      */
     public function test(string $filePath): void
     {

@@ -287,9 +287,15 @@ CODE_SAMPLE,
             );
         });
 
-        $node->items = \array_map(static function (Rules\Expressions\Arrays\ArrayItemWithKey $arrayItemWithKey): Node\Expr\ArrayItem {
+        $sortedItems = \array_map(static function (Rules\Expressions\Arrays\ArrayItemWithKey $arrayItemWithKey): Node\Expr\ArrayItem {
             return $arrayItemWithKey->arrayItem();
         }, $arrayItemsWithKeys);
+
+        if ($sortedItems === $node->items) {
+            return null;
+        }
+
+        $node->items = $sortedItems;
 
         return $node;
     }

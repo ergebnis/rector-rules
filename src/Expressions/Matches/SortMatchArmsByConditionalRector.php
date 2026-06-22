@@ -353,6 +353,10 @@ CODE_SAMPLE,
             $sortedArms[] = $defaultArm;
         }
 
+        if ($sortedArms === $node->arms) {
+            return null;
+        }
+
         $node->arms = $sortedArms;
 
         return $node;

@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 For a full diff see [`1.18.1...main`][1.18.1...main].
 
+### Fixed
+
+- Adjusted `Rules\Expressions\Arrays\SortAssociativeArrayByKeyRector` and `Rules\Expressions\Matches\SortMatchArmsByConditionalRector` to return `null` when they do not modify a node to avoid cache invalidation ([#355]), by [@localheinz]
+
 ## [`1.18.1`][1.18.1]
 
 For a full diff see [`1.18.0...1.18.1`][1.18.0...1.18.1].
@@ -471,5 +475,6 @@ For a full diff see [`fd198f0...0.1.0`][fd198f0...0.1.0].
 [#336]: https://github.com/ergebnis/rector-rules/pull/336
 [#337]: https://github.com/ergebnis/rector-rules/pull/337
 [#339]: https://github.com/ergebnis/rector-rules/pull/339
+[#355]: https://github.com/ergebnis/rector-rules/pull/355
 
 [@localheinz]: https://github.com/localheinz

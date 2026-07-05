@@ -39,12 +39,12 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
     private bool $forceRelativeReferences = false;
 
     /**
-     * @var list<NamespacePrefix>
+     * @var list<Rules\Files\NamespacePrefix>
      */
     private array $namespacePrefixes = [];
 
     /**
-     * @var list<NamespacePrefix>
+     * @var list<Rules\Files\NamespacePrefix>
      */
     private array $parentNamespacePrefixes = [];
 
@@ -525,7 +525,7 @@ CODE_SAMPLE
 
     /**
      * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
-     * @param list<NamespacePrefix>                        $moreSpecificNamespacePrefixes
+     * @param list<Rules\Files\NamespacePrefix>            $moreSpecificNamespacePrefixes
      * @param array<string, true>                          $classReferences
      */
     private function processNamespacePrefix(
@@ -534,7 +534,7 @@ CODE_SAMPLE
         array $moreSpecificNamespacePrefixes,
         array $classReferences
     ): bool {
-        /** @var array<string, Reference> $aliasesToReferences */
+        /** @var array<string, Rules\Files\Reference> $aliasesToReferences */
         $aliasesToReferences = [];
 
         $hasNamespacePrefixImport = false;
@@ -658,7 +658,7 @@ CODE_SAMPLE
 
     /**
      * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
-     * @param list<NamespacePrefix>                        $moreSpecificNamespacePrefixes
+     * @param list<Rules\Files\NamespacePrefix>            $moreSpecificNamespacePrefixes
      */
     private static function hasMatchingNamespacePrefixImports(
         Node $containerNode,
@@ -762,7 +762,7 @@ CODE_SAMPLE
 
     /**
      * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
-     * @param list<NamespacePrefix>                        $moreSpecificNamespacePrefixes
+     * @param list<Rules\Files\NamespacePrefix>            $moreSpecificNamespacePrefixes
      */
     private static function hasSourceWrittenFullyQualifiedReferencesMatchingPrefix(
         Node $containerNode,
@@ -827,7 +827,7 @@ CODE_SAMPLE
 
     /**
      * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
-     * @param list<NamespacePrefix>                        $moreSpecificNamespacePrefixes
+     * @param list<Rules\Files\NamespacePrefix>            $moreSpecificNamespacePrefixes
      */
     private static function hasPartiallyQualifiedReferencesMatchingNamespacePrefix(
         Node $containerNode,
@@ -927,7 +927,7 @@ CODE_SAMPLE
 
     /**
      * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
-     * @param list<NamespacePrefix>                        $moreSpecificNamespacePrefixes
+     * @param list<Rules\Files\NamespacePrefix>            $moreSpecificNamespacePrefixes
      */
     private function rewriteNamesInStatements(
         Node $containerNode,
@@ -1013,8 +1013,8 @@ CODE_SAMPLE
 
     /**
      * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
-     * @param array<string, Reference>                     $aliasesToReferences
-     * @param list<NamespacePrefix>                        $moreSpecificNamespacePrefixes
+     * @param array<string, Rules\Files\Reference>         $aliasesToReferences
+     * @param list<Rules\Files\NamespacePrefix>            $moreSpecificNamespacePrefixes
      * @param array<string, true>                          $classReferences
      */
     private function rewriteNamesInDocBlocks(
@@ -1329,17 +1329,17 @@ CODE_SAMPLE
 
     /**
      * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
-     * @param list<NamespacePrefix>                        $existingParentNamespacePrefixes
-     * @param list<NamespacePrefix>                        $existingNamespacePrefixes
+     * @param list<Rules\Files\NamespacePrefix>            $existingParentNamespacePrefixes
+     * @param list<Rules\Files\NamespacePrefix>            $existingNamespacePrefixes
      *
-     * @return list<NamespacePrefix>
+     * @return list<Rules\Files\NamespacePrefix>
      */
     private static function discoverParentNamespacePrefixesFromFile(
         Node $containerNode,
         array $existingParentNamespacePrefixes,
         array $existingNamespacePrefixes
     ): array {
-        /** @var array<string, NamespacePrefix> $discovered */
+        /** @var array<string, Rules\Files\NamespacePrefix> $discovered */
         $discovered = [];
 
         $collectFirstSegment = static function (string $reference) use (&$discovered): void {
@@ -1480,10 +1480,10 @@ CODE_SAMPLE
 
     /**
      * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
-     * @param list<NamespacePrefix>                        $parentNamespacePrefixes
-     * @param list<NamespacePrefix>                        $namespacePrefixes
+     * @param list<Rules\Files\NamespacePrefix>            $parentNamespacePrefixes
+     * @param list<Rules\Files\NamespacePrefix>            $namespacePrefixes
      *
-     * @return list<NamespacePrefix>
+     * @return list<Rules\Files\NamespacePrefix>
      */
     private static function discoverNamespacePrefixesFromParentNamespacePrefixes(
         Node $containerNode,
@@ -1494,7 +1494,7 @@ CODE_SAMPLE
             return [];
         }
 
-        /** @var array<string, NamespacePrefix> $discoveredNamespacePrefixes */
+        /** @var array<string, Rules\Files\NamespacePrefix> $discoveredNamespacePrefixes */
         $discoveredNamespacePrefixes = [];
 
         $existingKeys = [];
@@ -1607,9 +1607,9 @@ CODE_SAMPLE
     }
 
     /**
-     * @param list<NamespacePrefix>          $parentNamespacePrefixes
-     * @param array<string, true>            $existingKeys
-     * @param array<string, NamespacePrefix> $discovered
+     * @param list<Rules\Files\NamespacePrefix>          $parentNamespacePrefixes
+     * @param array<string, true>                        $existingKeys
+     * @param array<string, Rules\Files\NamespacePrefix> $discovered
      */
     private static function discoverChildPrefix(
         string $reference,
@@ -1701,7 +1701,7 @@ CODE_SAMPLE
 
     /**
      * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
-     * @param list<NamespacePrefix>                        $moreSpecificNamespacePrefixes
+     * @param list<Rules\Files\NamespacePrefix>            $moreSpecificNamespacePrefixes
      */
     private static function removeMatchingImportsAndAddNamespacePrefixImport(
         Node $containerNode,

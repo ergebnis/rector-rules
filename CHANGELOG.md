@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 For a full diff see [`1.18.2...main`][1.18.2...main].
 
+### Fixed
+
+- Adjusted `Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector` to reference namespaced symbols in doc blocks consistently with code ([#361]), by [@localheinz]
+
 ## [`1.18.2`][1.18.2]
 
 For a full diff see [`1.18.1...1.18.2`][1.18.1...1.18.2].
@@ -482,5 +486,6 @@ For a full diff see [`fd198f0...0.1.0`][fd198f0...0.1.0].
 [#337]: https://github.com/ergebnis/rector-rules/pull/337
 [#339]: https://github.com/ergebnis/rector-rules/pull/339
 [#355]: https://github.com/ergebnis/rector-rules/pull/355
+[#361]: https://github.com/ergebnis/rector-rules/pull/361
 
 [@localheinz]: https://github.com/localheinz

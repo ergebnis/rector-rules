@@ -37,12 +37,12 @@ final class SortMatchArmsByConditionalRector extends Rector\AbstractRector imple
     private const CONFIGURATION_KEY_DIRECTION = 'direction';
 
     /**
-     * @var \Closure(IntConditional, IntConditional): int
+     * @var \Closure(Rules\Expressions\Matches\IntConditional, Rules\Expressions\Matches\IntConditional):int
      */
     private \Closure $intConditionalComparator;
 
     /**
-     * @var \Closure(StringConditional, StringConditional): int
+     * @var \Closure(Rules\Expressions\Matches\StringConditional, Rules\Expressions\Matches\StringConditional):int
      */
     private \Closure $stringConditionalComparator;
     private int $multiplier;
@@ -297,7 +297,7 @@ CODE_SAMPLE,
 
         $defaultArm = null;
 
-        /** @var list<MatchArmWithConditional> $matchArmsWithConditionals */
+        /** @var list<Rules\Expressions\Matches\MatchArmWithConditional> $matchArmsWithConditionals */
         $matchArmsWithConditionals = [];
 
         foreach ($node->arms as $arm) {

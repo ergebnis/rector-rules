@@ -26,7 +26,7 @@ final class Options
     private array $values;
 
     /**
-     * @param array<string, Option> $values
+     * @param array<string, Rules\Configuration\Option> $values
      */
     private function __construct(array $values)
     {

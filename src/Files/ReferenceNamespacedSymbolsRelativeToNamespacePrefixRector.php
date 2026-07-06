@@ -39,12 +39,12 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
     private bool $forceRelativeReferences = false;
 
     /**
-     * @var list<NamespacePrefix>
+     * @var list<Rules\Files\NamespacePrefix>
      */
     private array $namespacePrefixes = [];
 
     /**
-     * @var list<NamespacePrefix>
+     * @var list<Rules\Files\NamespacePrefix>
      */
     private array $parentNamespacePrefixes = [];
 
@@ -500,6 +500,8 @@ CODE_SAMPLE
 
         $changed = false;
 
+        $classReferences = self::fullyQualifiedReferences(\array_values($containerNode->stmts));
+
         foreach ($namespacePrefixes as $namespacePrefix) {
             $moreSpecificNamespacePrefixes = [];
 
@@ -509,7 +511,7 @@ CODE_SAMPLE
                 }
             }
 
-            if ($this->processNamespacePrefix($containerNode, $namespacePrefix, $moreSpecificNamespacePrefixes)) {
+            if ($this->processNamespacePrefix($containerNode, $namespacePrefix, $moreSpecificNamespacePrefixes, $classReferences)) {
                 $changed = true;
             }
         }
@@ -523,14 +525,16 @@ CODE_SAMPLE
 
     /**
      * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
-     * @param list<NamespacePrefix>                        $moreSpecificNamespacePrefixes
+     * @param list<Rules\Files\NamespacePrefix>            $moreSpecificNamespacePrefixes
+     * @param array<string, true>                          $classReferences
      */
     private function processNamespacePrefix(
         Node $containerNode,
         Rules\Files\NamespacePrefix $namespacePrefix,
-        array $moreSpecificNamespacePrefixes
+        array $moreSpecificNamespacePrefixes,
+        array $classReferences
     ): bool {
-        /** @var array<string, Reference> $aliasesToReferences */
+        /** @var array<string, Rules\Files\Reference> $aliasesToReferences */
         $aliasesToReferences = [];
 
         $hasNamespacePrefixImport = false;
@@ -630,6 +634,7 @@ CODE_SAMPLE
             $namespacePrefix,
             $moreSpecificNamespacePrefixes,
             $namespacePrefixOfContainingFile,
+            $classReferences,
         );
 
         if (
@@ -653,7 +658,7 @@ CODE_SAMPLE
 
     /**
      * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
-     * @param list<NamespacePrefix>                        $moreSpecificNamespacePrefixes
+     * @param list<Rules\Files\NamespacePrefix>            $moreSpecificNamespacePrefixes
      */
     private static function hasMatchingNamespacePrefixImports(
         Node $containerNode,
@@ -757,7 +762,7 @@ CODE_SAMPLE
 
     /**
      * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
-     * @param list<NamespacePrefix>                        $moreSpecificNamespacePrefixes
+     * @param list<Rules\Files\NamespacePrefix>            $moreSpecificNamespacePrefixes
      */
     private static function hasSourceWrittenFullyQualifiedReferencesMatchingPrefix(
         Node $containerNode,
@@ -822,7 +827,7 @@ CODE_SAMPLE
 
     /**
      * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
-     * @param list<NamespacePrefix>                        $moreSpecificNamespacePrefixes
+     * @param list<Rules\Files\NamespacePrefix>            $moreSpecificNamespacePrefixes
      */
     private static function hasPartiallyQualifiedReferencesMatchingNamespacePrefix(
         Node $containerNode,
@@ -922,7 +927,7 @@ CODE_SAMPLE
 
     /**
      * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
-     * @param list<NamespacePrefix>                        $moreSpecificNamespacePrefixes
+     * @param list<Rules\Files\NamespacePrefix>            $moreSpecificNamespacePrefixes
      */
     private function rewriteNamesInStatements(
         Node $containerNode,
@@ -1008,19 +1013,21 @@ CODE_SAMPLE
 
     /**
      * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
-     * @param array<string, Reference>                     $aliasesToReferences
-     * @param list<NamespacePrefix>                        $moreSpecificNamespacePrefixes
+     * @param array<string, Rules\Files\Reference>         $aliasesToReferences
+     * @param list<Rules\Files\NamespacePrefix>            $moreSpecificNamespacePrefixes
+     * @param array<string, true>                          $classReferences
      */
     private function rewriteNamesInDocBlocks(
         Node $containerNode,
         array $aliasesToReferences,
         Rules\Files\NamespacePrefix $namespacePrefix,
         array $moreSpecificNamespacePrefixes,
-        ?Rules\Files\NamespacePrefix $namespacePrefixOfContainingFile
+        ?Rules\Files\NamespacePrefix $namespacePrefixOfContainingFile,
+        array $classReferences
     ): bool {
         $anyDocBlockChanged = false;
 
-        $this->traverseNodesWithCallable($containerNode->stmts, function (Node $node) use (&$anyDocBlockChanged, $aliasesToReferences, $containerNode, $namespacePrefix, $moreSpecificNamespacePrefixes, $namespacePrefixOfContainingFile): ?Node {
+        $this->traverseNodesWithCallable($containerNode->stmts, function (Node $node) use (&$anyDocBlockChanged, $aliasesToReferences, $classReferences, $containerNode, $namespacePrefix, $moreSpecificNamespacePrefixes, $namespacePrefixOfContainingFile): ?Node {
             if ($node instanceof Node\Stmt\Use_) {
                 return null;
             }
@@ -1035,7 +1042,7 @@ CODE_SAMPLE
 
             $phpDocNodeTraverser = new PhpDocParser\PhpDocParser\PhpDocNodeTraverser();
 
-            $phpDocNodeTraverser->traverseWithCallable($phpDocInfo->getPhpDocNode(), '', static function (Ast\Node $phpDocNode) use ($aliasesToReferences, $containerNode, $namespacePrefix, $moreSpecificNamespacePrefixes, $namespacePrefixOfContainingFile, &$hasChanged): ?Ast\Type\IdentifierTypeNode {
+            $phpDocNodeTraverser->traverseWithCallable($phpDocInfo->getPhpDocNode(), '', static function (Ast\Node $phpDocNode) use ($aliasesToReferences, $classReferences, $containerNode, $namespacePrefix, $moreSpecificNamespacePrefixes, $namespacePrefixOfContainingFile, &$hasChanged): ?Ast\Type\IdentifierTypeNode {
                 if (!$phpDocNode instanceof Ast\Type\IdentifierTypeNode) {
                     return null;
                 }
@@ -1087,14 +1094,20 @@ CODE_SAMPLE
 
                 if (!\array_key_exists($firstName, $aliasesToReferences)) {
                     if (
-                        \count($nameParts) < 2
-                        || !$containerNode instanceof Node\Stmt\Namespace_
+                        !$containerNode instanceof Node\Stmt\Namespace_
                         || null === $containerNode->name
                     ) {
                         return null;
                     }
 
                     $fullyQualifiedName = $containerNode->name->toString() . '\\' . $phpDocNode->name;
+
+                    if (
+                        \count($nameParts) < 2
+                        && !\array_key_exists($fullyQualifiedName, $classReferences)
+                    ) {
+                        return null;
+                    }
 
                     $reference = Rules\Files\Reference::fromString($fullyQualifiedName);
 
@@ -1316,17 +1329,17 @@ CODE_SAMPLE
 
     /**
      * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
-     * @param list<NamespacePrefix>                        $existingParentNamespacePrefixes
-     * @param list<NamespacePrefix>                        $existingNamespacePrefixes
+     * @param list<Rules\Files\NamespacePrefix>            $existingParentNamespacePrefixes
+     * @param list<Rules\Files\NamespacePrefix>            $existingNamespacePrefixes
      *
-     * @return list<NamespacePrefix>
+     * @return list<Rules\Files\NamespacePrefix>
      */
     private static function discoverParentNamespacePrefixesFromFile(
         Node $containerNode,
         array $existingParentNamespacePrefixes,
         array $existingNamespacePrefixes
     ): array {
-        /** @var array<string, NamespacePrefix> $discovered */
+        /** @var array<string, Rules\Files\NamespacePrefix> $discovered */
         $discovered = [];
 
         $collectFirstSegment = static function (string $reference) use (&$discovered): void {
@@ -1467,10 +1480,10 @@ CODE_SAMPLE
 
     /**
      * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
-     * @param list<NamespacePrefix>                        $parentNamespacePrefixes
-     * @param list<NamespacePrefix>                        $namespacePrefixes
+     * @param list<Rules\Files\NamespacePrefix>            $parentNamespacePrefixes
+     * @param list<Rules\Files\NamespacePrefix>            $namespacePrefixes
      *
-     * @return list<NamespacePrefix>
+     * @return list<Rules\Files\NamespacePrefix>
      */
     private static function discoverNamespacePrefixesFromParentNamespacePrefixes(
         Node $containerNode,
@@ -1481,7 +1494,7 @@ CODE_SAMPLE
             return [];
         }
 
-        /** @var array<string, NamespacePrefix> $discoveredNamespacePrefixes */
+        /** @var array<string, Rules\Files\NamespacePrefix> $discoveredNamespacePrefixes */
         $discoveredNamespacePrefixes = [];
 
         $existingKeys = [];
@@ -1594,9 +1607,9 @@ CODE_SAMPLE
     }
 
     /**
-     * @param list<NamespacePrefix>          $parentNamespacePrefixes
-     * @param array<string, true>            $existingKeys
-     * @param array<string, NamespacePrefix> $discovered
+     * @param list<Rules\Files\NamespacePrefix>          $parentNamespacePrefixes
+     * @param array<string, true>                        $existingKeys
+     * @param array<string, Rules\Files\NamespacePrefix> $discovered
      */
     private static function discoverChildPrefix(
         string $reference,
@@ -1622,6 +1635,35 @@ CODE_SAMPLE
                 $discovered[$childKey] = $childPrefix;
             }
         }
+    }
+
+    /**
+     * @param list<Node\Stmt> $statements
+     *
+     * @return array<string, true>
+     */
+    private static function fullyQualifiedReferences(array $statements): array
+    {
+        $nodeFinder = new NodeFinder();
+
+        $functionAndConstantNodeIdentifiers = self::functionAndConstantNodeIdentifiers($statements);
+
+        $nodes = $nodeFinder->find($statements, static function (Node $node) use ($functionAndConstantNodeIdentifiers): bool {
+            if (!$node instanceof Node\Name\FullyQualified) {
+                return false;
+            }
+
+            return !\in_array(\spl_object_id($node), $functionAndConstantNodeIdentifiers, true);
+        });
+
+        $references = [];
+
+        foreach ($nodes as $node) {
+            /** @var Node\Name\FullyQualified $node */
+            $references[$node->toString()] = true;
+        }
+
+        return $references;
     }
 
     /**
@@ -1659,7 +1701,7 @@ CODE_SAMPLE
 
     /**
      * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
-     * @param list<NamespacePrefix>                        $moreSpecificNamespacePrefixes
+     * @param list<Rules\Files\NamespacePrefix>            $moreSpecificNamespacePrefixes
      */
     private static function removeMatchingImportsAndAddNamespacePrefixImport(
         Node $containerNode,

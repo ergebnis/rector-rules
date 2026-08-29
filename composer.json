@@ -30,7 +30,7 @@
     "ergebnis/php-cs-fixer-config": "^6.63.1",
     "ergebnis/phpunit-slow-test-detector": "^2.24.0",
     "phpstan/extension-installer": "^1.4.3",
-    "phpstan/phpstan-deprecation-rules": "^2.0.4",
+    "phpstan/phpstan-deprecation-rules": "^2.0.5",
     "phpstan/phpstan-phpunit": "^2.0.18",
     "phpstan/phpstan-strict-rules": "^2.0.11",
     "phpunit/phpunit": "^9.6.33",

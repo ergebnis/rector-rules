@@ -65,6 +65,9 @@
     "sort-packages": true
   },
   "extra": {
+    "branch-alias": {
+      "dev-main": "1.18-dev"
+    },
     "composer-normalize": {
       "indent-size": 2,
       "indent-style": "space"

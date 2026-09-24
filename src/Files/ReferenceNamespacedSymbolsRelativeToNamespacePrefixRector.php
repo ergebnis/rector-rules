@@ -676,6 +676,26 @@ CODE_SAMPLE
             return false;
         }
 
+        if (
+            !$namespacePrefixOfContainingFile instanceof NamespacePrefix
+            && self::lastNamespaceSegmentOfNamespacePrefixCollidesWithRelativeReference($containerNode, $namespacePrefix)
+        ) {
+            return false;
+        }
+
+        if (
+            $namespacePrefixOfContainingFile instanceof NamespacePrefix
+            && self::referenceRelativeToNamespacePrefixOfContainingFileCollidesWithExistingImport(
+                $containerNode,
+                $aliasesToReferences,
+                $namespacePrefix,
+                $moreSpecificNamespacePrefixes,
+                $namespacePrefixOfContainingFile,
+            )
+        ) {
+            return false;
+        }
+
         $statementsRewritten = $this->rewriteNamesInStatements(
             $containerNode,
             $namespacePrefix,
@@ -1359,6 +1379,175 @@ CODE_SAMPLE
                     continue;
                 }
 
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Returns whether the file already references a symbol with a partially qualified name whose first namespace segment
+     * matches the last namespace segment of the namespace prefix, but which is not declared in the namespace prefix, for
+     * example, Exception\SchemaUriCouldNotBeRead declared in the namespace of the file, since an import of the namespace
+     * prefix would change what that name resolves to.
+     *
+     * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
+     */
+    private static function lastNamespaceSegmentOfNamespacePrefixCollidesWithRelativeReference(
+        Node $containerNode,
+        NamespacePrefix $namespacePrefix
+    ): bool {
+        $lastNamespaceSegment = \strtolower($namespacePrefix->lastNamespaceSegment()->toString());
+
+        $nodeFinder = new NodeFinder();
+
+        $functionAndConstantNodeIdentifiers = self::functionAndConstantNodeIdentifiers(\array_values($containerNode->stmts));
+
+        $match = $nodeFinder->findFirst(
+            $containerNode->stmts,
+            static function (Node $node) use ($functionAndConstantNodeIdentifiers, $lastNamespaceSegment, $namespacePrefix): bool {
+                if (!$node instanceof Node\Name\FullyQualified) {
+                    return false;
+                }
+
+                if (\in_array(\spl_object_id($node), $functionAndConstantNodeIdentifiers, true)) {
+                    return false;
+                }
+
+                $originalName = $node->getAttribute('originalName');
+
+                if (!$originalName instanceof Node\Name) {
+                    return false;
+                }
+
+                if ($originalName instanceof Node\Name\FullyQualified) {
+                    return false;
+                }
+
+                $originalNamespaceSegments = \explode(
+                    '\\',
+                    $originalName->toString(),
+                );
+
+                if (\count($originalNamespaceSegments) < 2) {
+                    return false;
+                }
+
+                if (\strtolower($originalNamespaceSegments[0]) !== $lastNamespaceSegment) {
+                    return false;
+                }
+
+                return !Reference::fromString($node->toString())->isOrIsDeclaredInOneOf($namespacePrefix);
+            },
+        );
+
+        if (null !== $match) {
+            return true;
+        }
+
+        foreach ($containerNode->stmts as $statement) {
+            if (
+                !$statement instanceof Node\Stmt\Use_
+                && !$statement instanceof Node\Stmt\GroupUse
+            ) {
+                continue;
+            }
+
+            if (Node\Stmt\Use_::TYPE_NORMAL !== $statement->type) {
+                continue;
+            }
+
+            foreach ($statement->uses as $useStatement) {
+                if (\strtolower($useStatement->getAlias()->toString()) === $lastNamespaceSegment) {
+                    return false;
+                }
+            }
+        }
+
+        $pattern = \sprintf(
+            '/(?<![\\\\\w])%s\\\\\w/i',
+            \preg_quote($namespacePrefix->lastNamespaceSegment()->toString(), '/'),
+        );
+
+        $matchInDocBlock = $nodeFinder->findFirst(
+            $containerNode->stmts,
+            static function (Node $node) use ($pattern): bool {
+                $docComment = $node->getDocComment();
+
+                if (null === $docComment) {
+                    return false;
+                }
+
+                return 1 === \preg_match($pattern, $docComment->getText());
+            },
+        );
+
+        return null !== $matchInDocBlock;
+    }
+
+    /**
+     * Returns whether a symbol declared in the namespace prefix would be referenced relative to the namespace of the
+     * containing file with a name whose first namespace segment matches the alias of an import that remains, for
+     * example, Exception\CanNotResolve while the file imports JsonSchema\Exception, since that name would then resolve
+     * against the import.
+     *
+     * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
+     * @param array<string, Reference>                     $aliasesToReferences
+     * @param list<NamespacePrefix>                        $moreSpecificNamespacePrefixes
+     */
+    private static function referenceRelativeToNamespacePrefixOfContainingFileCollidesWithExistingImport(
+        Node $containerNode,
+        array $aliasesToReferences,
+        NamespacePrefix $namespacePrefix,
+        array $moreSpecificNamespacePrefixes,
+        NamespacePrefix $namespacePrefixOfContainingFile
+    ): bool {
+        $remainingAliases = [];
+
+        foreach ($aliasesToReferences as $alias => $reference) {
+            if (
+                $reference->isOrIsDeclaredInOneOf($namespacePrefix)
+                && !$reference->isOrIsDeclaredInOneOf(...$moreSpecificNamespacePrefixes)
+            ) {
+                continue;
+            }
+
+            $remainingAliases[] = \strtolower($alias);
+        }
+
+        if ([] === $remainingAliases) {
+            return false;
+        }
+
+        $references = \array_values($aliasesToReferences);
+
+        foreach (\array_keys(self::fullyQualifiedReferences(\array_values($containerNode->stmts))) as $fullyQualifiedReference) {
+            $references[] = Reference::fromString($fullyQualifiedReference);
+        }
+
+        foreach ($references as $reference) {
+            if (!$reference->isDeclaredIn($namespacePrefixOfContainingFile)) {
+                continue;
+            }
+
+            if (
+                !$reference->isOrIsDeclaredInOneOf($namespacePrefix)
+                || $reference->isOrIsDeclaredInOneOf(...$moreSpecificNamespacePrefixes)
+            ) {
+                continue;
+            }
+
+            $namespaceSegments = \explode(
+                '\\',
+                $reference->relativeTo($namespacePrefixOfContainingFile)->toString(),
+            );
+
+            if (\count($namespaceSegments) < 2) {
+                continue;
+            }
+
+            if (\in_array(\strtolower($namespaceSegments[0]), $remainingAliases, true)) {
                 return true;
             }
         }

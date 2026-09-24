@@ -12,6 +12,10 @@ For a full diff see [`1.18.4...main`][1.18.4...main].
 
 - Allowed installation on PHP 8.6 ([#412]), by [@localheinz]
 
+### Fixed
+
+- Adjusted `Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector` to skip a namespace prefix when a rewritten reference or an added import would collide with an existing import or a partially qualified reference ([#414]), by [@localheinz]
+
 ## [`1.18.4`][1.18.4]
 
 For a full diff see [`1.18.3...1.18.4`][1.18.3...1.18.4].
@@ -514,5 +518,6 @@ For a full diff see [`fd198f0...0.1.0`][fd198f0...0.1.0].
 [#408]: https://github.com/ergebnis/rector-rules/pull/408
 [#410]: https://github.com/ergebnis/rector-rules/pull/410
 [#412]: https://github.com/ergebnis/rector-rules/pull/412
+[#414]: https://github.com/ergebnis/rector-rules/pull/414
 
 [@localheinz]: https://github.com/localheinz

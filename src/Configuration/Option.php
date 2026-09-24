@@ -13,21 +13,19 @@ declare(strict_types=1);
 
 namespace Ergebnis\Rector\Rules\Configuration;
 
-use Ergebnis\Rector\Rules;
-
 /**
  * @internal
  */
 final class Option
 {
-    private Rules\Configuration\OptionName $name;
-    private Rules\Configuration\OptionDescription $description;
-    private Rules\Configuration\OptionValue $value;
+    private OptionName $name;
+    private OptionDescription $description;
+    private OptionValue $value;
 
     private function __construct(
-        Rules\Configuration\OptionName $name,
-        Rules\Configuration\OptionDescription $description,
-        Rules\Configuration\OptionValue $value
+        OptionName $name,
+        OptionDescription $description,
+        OptionValue $value
     ) {
         $this->name = $name;
         $this->description = $description;
@@ -35,9 +33,9 @@ final class Option
     }
 
     public static function create(
-        Rules\Configuration\OptionName $name,
-        Rules\Configuration\OptionDescription $description,
-        Rules\Configuration\OptionValue $value
+        OptionName $name,
+        OptionDescription $description,
+        OptionValue $value
     ): self {
         return new self(
             $name,
@@ -46,17 +44,17 @@ final class Option
         );
     }
 
-    public function name(): Rules\Configuration\OptionName
+    public function name(): OptionName
     {
         return $this->name;
     }
 
-    public function description(): Rules\Configuration\OptionDescription
+    public function description(): OptionDescription
     {
         return $this->description;
     }
 
-    public function value(): Rules\Configuration\OptionValue
+    public function value(): OptionValue
     {
         return $this->value;
     }

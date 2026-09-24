@@ -37,12 +37,12 @@ final class SortMatchArmsByConditionalRector extends Rector\AbstractRector imple
     private const CONFIGURATION_KEY_DIRECTION = 'direction';
 
     /**
-     * @var \Closure(Rules\Expressions\Matches\IntConditional, Rules\Expressions\Matches\IntConditional):int
+     * @var \Closure(IntConditional, IntConditional):int
      */
     private \Closure $intConditionalComparator;
 
     /**
-     * @var \Closure(Rules\Expressions\Matches\StringConditional, Rules\Expressions\Matches\StringConditional):int
+     * @var \Closure(StringConditional, StringConditional):int
      */
     private \Closure $stringConditionalComparator;
     private int $multiplier;
@@ -86,11 +86,11 @@ final class SortMatchArmsByConditionalRector extends Rector\AbstractRector imple
 
         $this->multiplier = self::DIRECTION_TO_MULTIPLIER[$direction];
 
-        $this->intConditionalComparator = static function (Rules\Expressions\Matches\IntConditional $a, Rules\Expressions\Matches\IntConditional $b): int {
+        $this->intConditionalComparator = static function (IntConditional $a, IntConditional $b): int {
             return $a->toInt() <=> $b->toInt();
         };
 
-        $this->stringConditionalComparator = static function (Rules\Expressions\Matches\StringConditional $a, Rules\Expressions\Matches\StringConditional $b) use ($comparisonFunction): int {
+        $this->stringConditionalComparator = static function (StringConditional $a, StringConditional $b) use ($comparisonFunction): int {
             return $comparisonFunction(
                 $a->toString(),
                 $b->toString(),
@@ -297,7 +297,7 @@ CODE_SAMPLE,
 
         $defaultArm = null;
 
-        /** @var list<Rules\Expressions\Matches\MatchArmWithConditional> $matchArmsWithConditionals */
+        /** @var list<MatchArmWithConditional> $matchArmsWithConditionals */
         $matchArmsWithConditionals = [];
 
         foreach ($node->arms as $arm) {
@@ -313,11 +313,11 @@ CODE_SAMPLE,
 
             $conditional = self::conditionalFrom($arm->conds[0]);
 
-            if (!$conditional instanceof Rules\Expressions\Matches\Conditional) {
+            if (!$conditional instanceof Conditional) {
                 return null;
             }
 
-            $matchArmsWithConditionals[] = Rules\Expressions\Matches\MatchArmWithConditional::create(
+            $matchArmsWithConditionals[] = MatchArmWithConditional::create(
                 $arm,
                 $conditional,
             );
@@ -335,7 +335,7 @@ CODE_SAMPLE,
 
         $multiplier = $this->multiplier;
 
-        \usort($matchArmsWithConditionals, static function (Rules\Expressions\Matches\MatchArmWithConditional $a, Rules\Expressions\Matches\MatchArmWithConditional $b) use ($conditionalComparator, $multiplier): int {
+        \usort($matchArmsWithConditionals, static function (MatchArmWithConditional $a, MatchArmWithConditional $b) use ($conditionalComparator, $multiplier): int {
             /** @var int $result */
             $result = $conditionalComparator(
                 $a->conditional(),
@@ -345,7 +345,7 @@ CODE_SAMPLE,
             return $multiplier * $result;
         });
 
-        $sortedArms = \array_map(static function (Rules\Expressions\Matches\MatchArmWithConditional $armWithConditional): Node\MatchArm {
+        $sortedArms = \array_map(static function (MatchArmWithConditional $armWithConditional): Node\MatchArm {
             return $armWithConditional->arm();
         }, $matchArmsWithConditionals);
 
@@ -362,14 +362,14 @@ CODE_SAMPLE,
         return $node;
     }
 
-    private static function conditionalFrom(Node\Expr $expr): ?Rules\Expressions\Matches\Conditional
+    private static function conditionalFrom(Node\Expr $expr): ?Conditional
     {
         if ($expr instanceof Node\Scalar\Int_) {
-            return Rules\Expressions\Matches\IntConditional::fromInt($expr->value);
+            return IntConditional::fromInt($expr->value);
         }
 
         if ($expr instanceof Node\Scalar\String_) {
-            return Rules\Expressions\Matches\StringConditional::fromString($expr->value);
+            return StringConditional::fromString($expr->value);
         }
 
         if (
@@ -388,24 +388,24 @@ CODE_SAMPLE,
                 }
             }
 
-            return Rules\Expressions\Matches\StringConditional::fromString($name->toString());
+            return StringConditional::fromString($name->toString());
         }
 
         return null;
     }
 
-    private function conditionalComparatorFor(Rules\Expressions\Matches\MatchArmWithConditional ...$matchArmsWithConditionals): ?\Closure
+    private function conditionalComparatorFor(MatchArmWithConditional ...$matchArmsWithConditionals): ?\Closure
     {
-        $matchArmsWithIntConditionals = \array_filter($matchArmsWithConditionals, static function (Rules\Expressions\Matches\MatchArmWithConditional $matchArmWithConditional): bool {
-            return $matchArmWithConditional->conditional() instanceof Rules\Expressions\Matches\IntConditional;
+        $matchArmsWithIntConditionals = \array_filter($matchArmsWithConditionals, static function (MatchArmWithConditional $matchArmWithConditional): bool {
+            return $matchArmWithConditional->conditional() instanceof IntConditional;
         });
 
         if ($matchArmsWithIntConditionals === $matchArmsWithConditionals) {
             return $this->intConditionalComparator;
         }
 
-        $matchArmsWithStringConditionals = \array_filter($matchArmsWithConditionals, static function (Rules\Expressions\Matches\MatchArmWithConditional $matchArmWithConditional): bool {
-            return $matchArmWithConditional->conditional() instanceof Rules\Expressions\Matches\StringConditional;
+        $matchArmsWithStringConditionals = \array_filter($matchArmsWithConditionals, static function (MatchArmWithConditional $matchArmWithConditional): bool {
+            return $matchArmWithConditional->conditional() instanceof StringConditional;
         });
 
         if ($matchArmsWithStringConditionals === $matchArmsWithConditionals) {

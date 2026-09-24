@@ -37,7 +37,7 @@ final class SortAssociativeArrayByKeyRector extends Rector\AbstractRector implem
     private const CONFIGURATION_KEY_DIRECTION = 'direction';
 
     /**
-     * @var \Closure(Rules\Expressions\Arrays\Key, Rules\Expressions\Arrays\Key):int
+     * @var \Closure(Key, Key):int
      */
     private \Closure $comparator;
 
@@ -80,7 +80,7 @@ final class SortAssociativeArrayByKeyRector extends Rector\AbstractRector implem
 
         $multiplier = self::DIRECTION_TO_MULTIPLIER[$direction];
 
-        $this->comparator = static function (Rules\Expressions\Arrays\Key $a, Rules\Expressions\Arrays\Key $b) use ($comparisonFunction, $multiplier): int {
+        $this->comparator = static function (Key $a, Key $b) use ($comparisonFunction, $multiplier): int {
             return $multiplier * ($comparisonFunction)(
                 $a->toString(),
                 $b->toString()
@@ -245,13 +245,13 @@ CODE_SAMPLE,
             return null;
         }
 
-        /** @var list<Rules\Expressions\Arrays\ArrayItemWithKey> $arrayItemsWithKeys */
+        /** @var list<ArrayItemWithKey> $arrayItemsWithKeys */
         $arrayItemsWithKeys = \array_reduce(
             $node->items,
             static function (array $arrayItemsWithKeys, $arrayItem): array {
                 $arrayItemWithKey = self::arrayItemWithKeyFrom($arrayItem);
 
-                if (!$arrayItemWithKey instanceof Rules\Expressions\Arrays\ArrayItemWithKey) {
+                if (!$arrayItemWithKey instanceof ArrayItemWithKey) {
                     return $arrayItemsWithKeys;
                 }
 
@@ -268,14 +268,14 @@ CODE_SAMPLE,
 
         $comparator = $this->comparator;
 
-        \usort($arrayItemsWithKeys, static function (Rules\Expressions\Arrays\ArrayItemWithKey $a, Rules\Expressions\Arrays\ArrayItemWithKey $b) use ($comparator): int {
+        \usort($arrayItemsWithKeys, static function (ArrayItemWithKey $a, ArrayItemWithKey $b) use ($comparator): int {
             return $comparator(
                 $a->key(),
                 $b->key(),
             );
         });
 
-        $sortedItems = \array_map(static function (Rules\Expressions\Arrays\ArrayItemWithKey $arrayItemWithKey): Node\Expr\ArrayItem {
+        $sortedItems = \array_map(static function (ArrayItemWithKey $arrayItemWithKey): Node\Expr\ArrayItem {
             return $arrayItemWithKey->arrayItem();
         }, $arrayItemsWithKeys);
 
@@ -288,7 +288,7 @@ CODE_SAMPLE,
         return $node;
     }
 
-    private static function arrayItemWithKeyFrom(Node\Expr\ArrayItem $arrayItem): ?Rules\Expressions\Arrays\ArrayItemWithKey
+    private static function arrayItemWithKeyFrom(Node\Expr\ArrayItem $arrayItem): ?ArrayItemWithKey
     {
         $key = $arrayItem->key;
 
@@ -308,16 +308,16 @@ CODE_SAMPLE,
                 }
             }
 
-            return Rules\Expressions\Arrays\ArrayItemWithKey::create(
+            return ArrayItemWithKey::create(
                 $arrayItem,
-                Rules\Expressions\Arrays\Key::fromString($name->toString()),
+                Key::fromString($name->toString()),
             );
         }
 
         if ($key instanceof Node\Scalar\String_) {
-            return Rules\Expressions\Arrays\ArrayItemWithKey::create(
+            return ArrayItemWithKey::create(
                 $arrayItem,
-                Rules\Expressions\Arrays\Key::fromString($key->value),
+                Key::fromString($key->value),
             );
         }
 

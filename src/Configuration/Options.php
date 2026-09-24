@@ -13,29 +13,27 @@ declare(strict_types=1);
 
 namespace Ergebnis\Rector\Rules\Configuration;
 
-use Ergebnis\Rector\Rules;
-
 /**
  * @internal
  */
 final class Options
 {
     /**
-     * @var array<string, Rules\Configuration\Option>
+     * @var array<string, Option>
      */
     private array $values;
 
     /**
-     * @param array<string, Rules\Configuration\Option> $values
+     * @param array<string, Option> $values
      */
     private function __construct(array $values)
     {
         $this->values = $values;
     }
 
-    public static function create(Rules\Configuration\Option ...$options): self
+    public static function create(Option ...$options): self
     {
-        $optionNames = \array_map(static function (Rules\Configuration\Option $option): string {
+        $optionNames = \array_map(static function (Option $option): string {
             return $option->name()->toString();
         }, $options);
 
@@ -45,7 +43,7 @@ final class Options
         )));
 
         if ([] !== $duplicateOptionNames) {
-            throw Rules\Configuration\DuplicateOptionName::create(...$duplicateOptionNames);
+            throw DuplicateOptionName::create(...$duplicateOptionNames);
         }
 
         return new self(\array_combine(
@@ -55,7 +53,7 @@ final class Options
     }
 
     /**
-     * @return list<Rules\Configuration\Option>
+     * @return list<Option>
      */
     public function toArray(): array
     {
@@ -65,7 +63,7 @@ final class Options
     /**
      * @param array<string, mixed> $configuration
      */
-    public function resolveConfigurationFrom(array $configuration): Rules\Configuration\Configuration
+    public function resolveConfigurationFrom(array $configuration): Configuration
     {
         $unknownOptionNames = \array_diff(
             \array_keys($configuration),
@@ -73,7 +71,7 @@ final class Options
         );
 
         if (\count($unknownOptionNames) > 0) {
-            throw Rules\Configuration\UnknownOptionName::create(...$unknownOptionNames);
+            throw UnknownOptionName::create(...$unknownOptionNames);
         }
 
         $resolved = [];
@@ -89,14 +87,14 @@ final class Options
 
             try {
                 $resolved[$optionName] = $option->value()->resolve($value);
-            } catch (Rules\Configuration\InvalidOptionValue $exception) {
-                throw Rules\Configuration\InvalidOptionValue::forOption(
+            } catch (InvalidOptionValue $exception) {
+                throw InvalidOptionValue::forOption(
                     $optionName,
                     $exception,
                 );
             }
         }
 
-        return Rules\Configuration\Configuration::fromArray($resolved);
+        return Configuration::fromArray($resolved);
     }
 }

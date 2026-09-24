@@ -9,7 +9,7 @@
 
 [![Latest Stable Version](https://poser.pugx.org/ergebnis/rector-rules/v/stable)](https://packagist.org/packages/ergebnis/rector-rules)
 [![Total Downloads](https://poser.pugx.org/ergebnis/rector-rules/downloads)](https://packagist.org/packages/ergebnis/rector-rules)
-[![Monthly Downloads](http://poser.pugx.org/ergebnis/rector-rules/d/monthly)](https://packagist.org/packages/ergebnis/rector-rules)
+[![Monthly Downloads](https://poser.pugx.org/ergebnis/rector-rules/d/monthly)](https://packagist.org/packages/ergebnis/rector-rules)
 
 This project provides a [`composer`](https://getcomposer.org) package with rules for [`rector/rector`](https://github.com/rectorphp/rector).
 

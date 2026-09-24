@@ -7,7 +7,7 @@
     beStrictAboutResourceUsageDuringSmallTests="true"
     beStrictAboutTestsThatDoNotTestAnything="true"
     beStrictAboutTodoAnnotatedTests="true"
-    bootstrap="../../vendor/autoload.php"
+    bootstrap="../../vendor/rector/rector/preload.php"
     cacheResult="true"
     cacheResultFile="../../.build/phpunit/unit.cache"
     colors="true"

@@ -13,7 +13,7 @@ Automatically discover namespace prefixes by scanning the file's references and 
 
 ### `forceRelativeReferences`
 
-Force references to be expressed relative to the namespace prefix even when the file namespace matches the prefix.
+Force references to be expressed relative to the namespace prefix even when they could be expressed relative to the namespace of the file.
 
 - type: `bool`
 - default value: `false`
@@ -158,6 +158,33 @@ Configuration:
 
 Configuration:
 
+- `namespacePrefixes`: `['Example\Core']`
+
+```diff
+ namespace Example\Core\Bar;
+ 
+-use Example\Core\Bar\Baz;
+-use Example\Core\Bar\Baz\Qux;
+-use Example\Core\Quz;
++use Example\Core;
+ 
+ final class ExampleService
+ {
+     public function __construct(
+         private Baz $baz,
+-        private Qux $qux,
+-        private Quz $quz,
++        private Baz\Qux $qux,
++        private Core\Quz $quz,
+     ) {
+     }
+ }
+```
+
+### Example 7
+
+Configuration:
+
 - `forceRelativeReferences`: `true`
 - `namespacePrefixes`: `['Example\Core']`
 
@@ -183,7 +210,7 @@ Configuration:
  }
 ```
 
-### Example 7
+### Example 8
 
 Configuration:
 

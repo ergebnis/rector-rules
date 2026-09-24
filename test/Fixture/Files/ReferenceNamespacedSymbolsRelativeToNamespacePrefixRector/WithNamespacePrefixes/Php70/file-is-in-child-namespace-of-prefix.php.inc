@@ -146,7 +146,7 @@ final class ListAction extends Controller\AbstractAction implements Controller\C
         Controller\DashboardAction $dashboard,
         DepartmentRepository $repository,
         Controller\Security\Voter $voter,
-        Controller\User\FindAction $findAction
+        FindAction $findAction
     ) {
         $this->dashboard = $dashboard;
         $this->voter = $voter;
@@ -177,7 +177,7 @@ final class ListAction extends Controller\AbstractAction implements Controller\C
 
         $class = Controller\Event\UserEvent::class;
         $middleware = new Controller\Middleware\AuthMiddleware();
-        $creator = new Controller\User\CreateAction();
+        $creator = new CreateAction();
 
         if ($dashboard instanceof Controller\DashboardAction) {
             return $dashboard->__invoke();

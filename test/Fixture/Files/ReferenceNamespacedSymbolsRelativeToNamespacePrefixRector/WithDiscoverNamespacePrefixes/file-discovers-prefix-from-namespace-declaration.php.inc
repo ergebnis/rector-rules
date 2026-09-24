@@ -22,16 +22,14 @@ final class RequestHandler
 
 namespace Symfony\Component\HttpFoundation;
 
-use Symfony\Component;
-
 final class RequestHandler
 {
     public function handle(
-        Component\HttpFoundation\Request $request,
-        Component\HttpFoundation\Session\Session $session,
-        Component\HttpFoundation\File\UploadedFile $file
-    ): Component\HttpFoundation\Response {
-        return new Component\HttpFoundation\Response();
+        Request $request,
+        Session\Session $session,
+        File\UploadedFile $file
+    ): Response {
+        return new Response();
     }
 }
 

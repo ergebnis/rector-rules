@@ -13,12 +13,10 @@ declare(strict_types=1);
 
 namespace Ergebnis\Rector\Rules\Configuration;
 
-use Ergebnis\Rector\Rules;
-
 /**
  * @internal
  */
 interface HasConfigurationOptions
 {
-    public function configurationOptions(): Rules\Configuration\Options;
+    public function configurationOptions(): Options;
 }

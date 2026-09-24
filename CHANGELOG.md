@@ -12,6 +12,10 @@ For a full diff see [`1.18.3...main`][1.18.3...main].
 
 - Required `rector/rector:^2.6.7` ([#408]), by [@localheinz]
 
+### Fixed
+
+- Adjusted `Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector` to reference namespaced symbols relative to the namespace of the file when the file is declared in a child namespace of a namespace prefix and the symbols are declared in the namespace of the file or one of its child namespaces ([#410]), by [@localheinz]
+
 ## [`1.18.3`][1.18.3]
 
 For a full diff see [`1.18.2...1.18.3`][1.18.2...1.18.3].
@@ -498,5 +502,6 @@ For a full diff see [`fd198f0...0.1.0`][fd198f0...0.1.0].
 [#355]: https://github.com/ergebnis/rector-rules/pull/355
 [#361]: https://github.com/ergebnis/rector-rules/pull/361
 [#408]: https://github.com/ergebnis/rector-rules/pull/408
+[#410]: https://github.com/ergebnis/rector-rules/pull/410
 
 [@localheinz]: https://github.com/localheinz

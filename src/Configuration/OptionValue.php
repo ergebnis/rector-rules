@@ -13,8 +13,6 @@ declare(strict_types=1);
 
 namespace Ergebnis\Rector\Rules\Configuration;
 
-use Ergebnis\Rector\Rules;
-
 /**
  * @internal
  */
@@ -58,7 +56,7 @@ final class OptionValue
             [],
             static function ($value): bool {
                 if (!\is_bool($value)) {
-                    throw Rules\Configuration\InvalidOptionValue::typeMismatch('a boolean');
+                    throw InvalidOptionValue::typeMismatch('a boolean');
                 }
 
                 return $value;
@@ -74,7 +72,7 @@ final class OptionValue
             [],
             static function ($value): string {
                 if (!\is_string($value)) {
-                    throw Rules\Configuration\InvalidOptionValue::typeMismatch('a string');
+                    throw InvalidOptionValue::typeMismatch('a string');
                 }
 
                 return $value;
@@ -95,11 +93,11 @@ final class OptionValue
             $allowedValues,
             static function ($value) use ($allowedValues): string {
                 if (!\is_string($value)) {
-                    throw Rules\Configuration\InvalidOptionValue::typeMismatchWithAllowedValues($allowedValues);
+                    throw InvalidOptionValue::typeMismatchWithAllowedValues($allowedValues);
                 }
 
                 if (!\in_array($value, $allowedValues, true)) {
-                    throw Rules\Configuration\InvalidOptionValue::notAllowed(
+                    throw InvalidOptionValue::notAllowed(
                         $value,
                         $allowedValues,
                     );
@@ -121,16 +119,16 @@ final class OptionValue
             [],
             static function ($value): array {
                 if (!\is_array($value)) {
-                    throw Rules\Configuration\InvalidOptionValue::typeMismatch('a list of strings');
+                    throw InvalidOptionValue::typeMismatch('a list of strings');
                 }
 
                 if (\array_values($value) !== $value) {
-                    throw Rules\Configuration\InvalidOptionValue::typeMismatch('a list of strings');
+                    throw InvalidOptionValue::typeMismatch('a list of strings');
                 }
 
                 foreach ($value as $item) {
                     if (!\is_string($item)) {
-                        throw Rules\Configuration\InvalidOptionValue::typeMismatch('a list of strings');
+                        throw InvalidOptionValue::typeMismatch('a list of strings');
                     }
                 }
 

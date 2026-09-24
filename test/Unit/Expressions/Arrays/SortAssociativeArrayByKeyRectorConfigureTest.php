@@ -85,6 +85,9 @@ final class SortAssociativeArrayByKeyRectorConfigureTest extends Testing\PHPUnit
         ]);
     }
 
+    /**
+     * @doesNotPerformAssertions
+     */
     public function testConfigureAcceptsValidConfiguration(): void
     {
         $rector = $this->make(Rules\Expressions\Arrays\SortAssociativeArrayByKeyRector::class);
@@ -93,16 +96,15 @@ final class SortAssociativeArrayByKeyRectorConfigureTest extends Testing\PHPUnit
             'comparison_function' => 'strnatcasecmp',
             'direction' => 'desc',
         ]);
-
-        $this->addToAssertionCount(1);
     }
 
+    /**
+     * @doesNotPerformAssertions
+     */
     public function testConfigureAcceptsEmptyConfiguration(): void
     {
         $rector = $this->make(Rules\Expressions\Arrays\SortAssociativeArrayByKeyRector::class);
 
         $rector->configure([]);
-
-        $this->addToAssertionCount(1);
     }
 }

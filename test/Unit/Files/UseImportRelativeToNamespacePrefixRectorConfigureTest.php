@@ -110,6 +110,9 @@ final class UseImportRelativeToNamespacePrefixRectorConfigureTest extends Testin
         ]);
     }
 
+    /**
+     * @doesNotPerformAssertions
+     */
     public function testConfigureAcceptsNamespacePrefixesWhenItIsAListOfValidNamespacePrefixes(): void
     {
         $rector = $this->make(Rules\Files\UseImportRelativeToNamespacePrefixRector::class);
@@ -120,16 +123,15 @@ final class UseImportRelativeToNamespacePrefixRectorConfigureTest extends Testin
                 'Example\Domain',
             ],
         ]);
-
-        $this->addToAssertionCount(1);
     }
 
+    /**
+     * @doesNotPerformAssertions
+     */
     public function testConfigureAcceptsNamespacePrefixesWhenItIsAnEmptyList(): void
     {
         $rector = $this->make(Rules\Files\UseImportRelativeToNamespacePrefixRector::class);
 
         $rector->configure([]);
-
-        $this->addToAssertionCount(1);
     }
 }

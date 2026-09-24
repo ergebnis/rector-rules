@@ -55,6 +55,9 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorConfigureTe
         ]);
     }
 
+    /**
+     * @doesNotPerformAssertions
+     */
     public function testConfigureAcceptsForceRelativeReferences(): void
     {
         $rector = $this->make(Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class);
@@ -65,8 +68,6 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorConfigureTe
                 'Example\Core',
             ],
         ]);
-
-        $this->addToAssertionCount(1);
     }
 
     public function testConfigureRejectsNamespacePrefixesWhenValueIsNotList(): void
@@ -165,6 +166,9 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorConfigureTe
         ]);
     }
 
+    /**
+     * @doesNotPerformAssertions
+     */
     public function testConfigureAcceptsNamespacePrefixesWhenItIsAListOfValidNamespacePrefixes(): void
     {
         $rector = $this->make(Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class);
@@ -175,17 +179,16 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorConfigureTe
                 'Example\Domain',
             ],
         ]);
-
-        $this->addToAssertionCount(1);
     }
 
+    /**
+     * @doesNotPerformAssertions
+     */
     public function testConfigureAcceptsNamespacePrefixesWhenItIsAnEmptyList(): void
     {
         $rector = $this->make(Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class);
 
         $rector->configure([]);
-
-        $this->addToAssertionCount(1);
     }
 
     public function testConfigureRejectsParentNamespacePrefixesWhenValueIsNotList(): void
@@ -311,6 +314,9 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorConfigureTe
         ]);
     }
 
+    /**
+     * @doesNotPerformAssertions
+     */
     public function testConfigureAcceptsParentNamespacePrefixesWhenItIsAListOfValidParentNamespacePrefixes(): void
     {
         $rector = $this->make(Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class);
@@ -321,10 +327,11 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorConfigureTe
                 'Symfony\Component',
             ],
         ]);
-
-        $this->addToAssertionCount(1);
     }
 
+    /**
+     * @doesNotPerformAssertions
+     */
     public function testConfigureAcceptsParentNamespacePrefixesWhenItIsAListWithASingleSegmentParentNamespacePrefix(): void
     {
         $rector = $this->make(Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class);
@@ -334,10 +341,11 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorConfigureTe
                 'Example',
             ],
         ]);
-
-        $this->addToAssertionCount(1);
     }
 
+    /**
+     * @doesNotPerformAssertions
+     */
     public function testConfigureAcceptsCombinedNamespacePrefixesAndParentNamespacePrefixes(): void
     {
         $rector = $this->make(Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class);
@@ -350,10 +358,11 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorConfigureTe
                 'Symfony\Component',
             ],
         ]);
-
-        $this->addToAssertionCount(1);
     }
 
+    /**
+     * @doesNotPerformAssertions
+     */
     public function testConfigureAcceptsOverlapBetweenNamespacePrefixesAndParentNamespacePrefixes(): void
     {
         $rector = $this->make(Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class);
@@ -366,8 +375,6 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorConfigureTe
                 'Example',
             ],
         ]);
-
-        $this->addToAssertionCount(1);
     }
 
     public function testConfigureRejectsNonBoolDiscoverNamespacePrefixes(): void
@@ -381,6 +388,9 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorConfigureTe
         ]);
     }
 
+    /**
+     * @doesNotPerformAssertions
+     */
     public function testConfigureAcceptsDiscoverNamespacePrefixes(): void
     {
         $rector = $this->make(Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class);
@@ -388,10 +398,11 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorConfigureTe
         $rector->configure([
             'discoverNamespacePrefixes' => true,
         ]);
-
-        $this->addToAssertionCount(1);
     }
 
+    /**
+     * @doesNotPerformAssertions
+     */
     public function testConfigureAcceptsCombinedDiscoverNamespacePrefixesAndNamespacePrefixes(): void
     {
         $rector = $this->make(Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class);
@@ -402,10 +413,11 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorConfigureTe
                 'Example\Core',
             ],
         ]);
-
-        $this->addToAssertionCount(1);
     }
 
+    /**
+     * @doesNotPerformAssertions
+     */
     public function testConfigureAcceptsCombinedDiscoverNamespacePrefixesAndParentNamespacePrefixes(): void
     {
         $rector = $this->make(Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class);
@@ -416,10 +428,11 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorConfigureTe
                 'Symfony\Component',
             ],
         ]);
-
-        $this->addToAssertionCount(1);
     }
 
+    /**
+     * @doesNotPerformAssertions
+     */
     public function testConfigureAcceptsCombinedDiscoverNamespacePrefixesAndNamespacePrefixesAndParentNamespacePrefixes(): void
     {
         $rector = $this->make(Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class);
@@ -433,7 +446,5 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorConfigureTe
                 'Symfony\Component',
             ],
         ]);
-
-        $this->addToAssertionCount(1);
     }
 }

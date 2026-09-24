@@ -85,6 +85,9 @@ final class SortMatchArmsByConditionalRectorConfigureTest extends Testing\PHPUni
         ]);
     }
 
+    /**
+     * @doesNotPerformAssertions
+     */
     public function testConfigureAcceptsValidConfiguration(): void
     {
         $rector = $this->make(Rules\Expressions\Matches\SortMatchArmsByConditionalRector::class);
@@ -93,16 +96,15 @@ final class SortMatchArmsByConditionalRectorConfigureTest extends Testing\PHPUni
             'comparison_function' => 'strnatcasecmp',
             'direction' => 'desc',
         ]);
-
-        $this->addToAssertionCount(1);
     }
 
+    /**
+     * @doesNotPerformAssertions
+     */
     public function testConfigureAcceptsEmptyConfiguration(): void
     {
         $rector = $this->make(Rules\Expressions\Matches\SortMatchArmsByConditionalRector::class);
 
         $rector->configure([]);
-
-        $this->addToAssertionCount(1);
     }
 }

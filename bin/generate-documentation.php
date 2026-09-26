@@ -249,7 +249,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
             $configurationOptions = $rule->configurationOptions()->toArray();
 
             if (\count($configurationOptions) > 0) {
-                $lines[] = '## Configuration';
+                $lines[] = '## Options';
                 $lines[] = '';
 
                 foreach ($configurationOptions as $option) {
@@ -292,24 +292,47 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
                 $lines[] = '';
 
+                $namespaceSegments = \explode(
+                    '\\',
+                    $rule->namespaceRelativeToNamespacePrefix(),
+                );
+
+                $className = $rule->namespaceRelativeToNamespacePrefix() . '\\' . $rule->shortName() . '::class';
+
+                $lines[] = '#### Configuration';
+                $lines[] = '';
+                $lines[] = '```php';
+                $lines[] = '<?php';
+                $lines[] = '';
+                $lines[] = 'declare(strict_types=1);';
+                $lines[] = '';
+                $lines[] = 'use Ergebnis\Rector\Rules\\' . $namespaceSegments[0] . ';';
+                $lines[] = 'use Rector\Config;';
+                $lines[] = '';
+
                 if ($codeSample instanceof RuleDocGenerator\ValueObject\CodeSample\ConfiguredCodeSample) {
-                    $configuration = $codeSample->getConfiguration();
+                    $configuration = self::exportValue(
+                        $codeSample->getConfiguration(),
+                        '',
+                    );
 
-                    $lines[] = 'Configuration:';
-                    $lines[] = '';
-
-                    foreach ($configuration as $key => $value) {
-                        $lines[] = '- `' . $key . '`: `' . self::formatValue($value) . '`';
-                    }
-
-                    $lines[] = '';
+                    $lines[] = 'return Config\RectorConfig::configure()->withConfiguredRule(' . $className . ', ' . $configuration . ');';
+                } else {
+                    $lines[] = 'return Config\RectorConfig::configure()->withRules([';
+                    $lines[] = '    ' . $className . ',';
+                    $lines[] = ']);';
                 }
+
+                $lines[] = '```';
+                $lines[] = '';
 
                 $diff = $this->diff(
                     $codeSample->getBadCode(),
                     $codeSample->getGoodCode(),
                 );
 
+                $lines[] = '#### Changes';
+                $lines[] = '';
                 $lines[] = '```diff';
                 $lines[] = $diff;
                 $lines[] = '```';
@@ -342,6 +365,78 @@ require_once __DIR__ . '/../vendor/autoload.php';
             return \sprintf(
                 "'%s'",
                 (string) $value,
+            );
+        }
+
+        /**
+         * @param mixed $value
+         */
+        private static function exportValue(
+            $value,
+            string $indentation
+        ): string {
+            if (\is_bool($value)) {
+                if ($value) {
+                    return 'true';
+                }
+
+                return 'false';
+            }
+
+            if (\is_array($value)) {
+                if ([] === $value) {
+                    return '[]';
+                }
+
+                $isList = \array_keys($value) === \range(
+                    0,
+                    \count($value) - 1,
+                );
+
+                $elements = [];
+
+                foreach ($value as $key => $element) {
+                    $exported = self::exportValue(
+                        $element,
+                        $indentation . '    ',
+                    );
+
+                    if (!$isList) {
+                        $exported = self::exportValue(
+                            $key,
+                            $indentation . '    ',
+                        ) . ' => ' . $exported;
+                    }
+
+                    $elements[] = $indentation . '    ' . $exported . ',';
+                }
+
+                return "[\n" . \implode(
+                    "\n",
+                    $elements,
+                ) . "\n" . $indentation . ']';
+            }
+
+            if (\is_string($value)) {
+                /**
+                 * In a single-quoted string, a backslash only needs escaping before another backslash, before a single quote, or at the end.
+                 */
+                $escaped = \preg_replace(
+                    '/\\\\(?=\\\\|\'|$)/',
+                    '\\\\\\\\',
+                    $value,
+                );
+
+                return "'" . \str_replace(
+                    "'",
+                    "\\'",
+                    (string) $escaped,
+                ) . "'";
+            }
+
+            return \var_export(
+                $value,
+                true,
             );
         }
 

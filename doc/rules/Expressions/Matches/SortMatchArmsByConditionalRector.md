@@ -2,7 +2,7 @@
 
 Sorts match arms by conditional when the conditionals are all integers or all strings.
 
-## Configuration
+## Options
 
 ### `comparison_function`
 
@@ -24,6 +24,23 @@ The sorting direction.
 
 ### Example 1
 
+#### Configuration
+
+```php
+<?php
+
+declare(strict_types=1);
+
+use Ergebnis\Rector\Rules\Expressions;
+use Rector\Config;
+
+return Config\RectorConfig::configure()->withRules([
+    Expressions\Matches\SortMatchArmsByConditionalRector::class,
+]);
+```
+
+#### Changes
+
 ```diff
  match ($status) {
 -    'pending' => handlePending(),
@@ -34,6 +51,23 @@ The sorting direction.
 ```
 
 ### Example 2
+
+#### Configuration
+
+```php
+<?php
+
+declare(strict_types=1);
+
+use Ergebnis\Rector\Rules\Expressions;
+use Rector\Config;
+
+return Config\RectorConfig::configure()->withRules([
+    Expressions\Matches\SortMatchArmsByConditionalRector::class,
+]);
+```
+
+#### Changes
 
 ```diff
  match ($status) {
@@ -48,6 +82,23 @@ The sorting direction.
 
 ### Example 3
 
+#### Configuration
+
+```php
+<?php
+
+declare(strict_types=1);
+
+use Ergebnis\Rector\Rules\Expressions;
+use Rector\Config;
+
+return Config\RectorConfig::configure()->withRules([
+    Expressions\Matches\SortMatchArmsByConditionalRector::class,
+]);
+```
+
+#### Changes
+
 ```diff
  match (true) {
 -    Zebra::class => handleZebra(),
@@ -58,6 +109,23 @@ The sorting direction.
 ```
 
 ### Example 4
+
+#### Configuration
+
+```php
+<?php
+
+declare(strict_types=1);
+
+use Ergebnis\Rector\Rules\Expressions;
+use Rector\Config;
+
+return Config\RectorConfig::configure()->withRules([
+    Expressions\Matches\SortMatchArmsByConditionalRector::class,
+]);
+```
+
+#### Changes
 
 ```diff
  match (true) {
@@ -72,6 +140,23 @@ The sorting direction.
 
 ### Example 5
 
+#### Configuration
+
+```php
+<?php
+
+declare(strict_types=1);
+
+use Ergebnis\Rector\Rules\Expressions;
+use Rector\Config;
+
+return Config\RectorConfig::configure()->withRules([
+    Expressions\Matches\SortMatchArmsByConditionalRector::class,
+]);
+```
+
+#### Changes
+
 ```diff
  match ($code) {
 +    200 => 'OK',
@@ -85,9 +170,22 @@ The sorting direction.
 
 ### Example 6
 
-Configuration:
+#### Configuration
 
-- `direction`: `'desc'`
+```php
+<?php
+
+declare(strict_types=1);
+
+use Ergebnis\Rector\Rules\Expressions;
+use Rector\Config;
+
+return Config\RectorConfig::configure()->withConfiguredRule(Expressions\Matches\SortMatchArmsByConditionalRector::class, [
+    'direction' => 'desc',
+]);
+```
+
+#### Changes
 
 ```diff
  match ($status) {
@@ -100,9 +198,22 @@ Configuration:
 
 ### Example 7
 
-Configuration:
+#### Configuration
 
-- `comparison_function`: `'strcasecmp'`
+```php
+<?php
+
+declare(strict_types=1);
+
+use Ergebnis\Rector\Rules\Expressions;
+use Rector\Config;
+
+return Config\RectorConfig::configure()->withConfiguredRule(Expressions\Matches\SortMatchArmsByConditionalRector::class, [
+    'comparison_function' => 'strcasecmp',
+]);
+```
+
+#### Changes
 
 ```diff
  match ($status) {
@@ -115,9 +226,22 @@ Configuration:
 
 ### Example 8
 
-Configuration:
+#### Configuration
 
-- `comparison_function`: `'strnatcmp'`
+```php
+<?php
+
+declare(strict_types=1);
+
+use Ergebnis\Rector\Rules\Expressions;
+use Rector\Config;
+
+return Config\RectorConfig::configure()->withConfiguredRule(Expressions\Matches\SortMatchArmsByConditionalRector::class, [
+    'comparison_function' => 'strnatcmp',
+]);
+```
+
+#### Changes
 
 ```diff
  match ($status) {
@@ -131,9 +255,22 @@ Configuration:
 
 ### Example 9
 
-Configuration:
+#### Configuration
 
-- `comparison_function`: `'strnatcasecmp'`
+```php
+<?php
+
+declare(strict_types=1);
+
+use Ergebnis\Rector\Rules\Expressions;
+use Rector\Config;
+
+return Config\RectorConfig::configure()->withConfiguredRule(Expressions\Matches\SortMatchArmsByConditionalRector::class, [
+    'comparison_function' => 'strnatcasecmp',
+]);
+```
+
+#### Changes
 
 ```diff
  match ($status) {

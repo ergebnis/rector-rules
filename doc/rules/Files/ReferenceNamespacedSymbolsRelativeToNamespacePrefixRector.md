@@ -2,7 +2,7 @@
 
 Replaces references to namespaced symbols (classes, functions, constants) whose fully-qualified name starts with a namespace prefix so they are relative to that prefix.
 
-## Configuration
+## Options
 
 ### `discoverNamespacePrefixes`
 
@@ -36,9 +36,24 @@ A list of parent namespace prefixes for automatic discovery of namespace prefixe
 
 ### Example 1
 
-Configuration:
+#### Configuration
 
-- `namespacePrefixes`: `['Foo\Bar\Baz']`
+```php
+<?php
+
+declare(strict_types=1);
+
+use Ergebnis\Rector\Rules\Files;
+use Rector\Config;
+
+return Config\RectorConfig::configure()->withConfiguredRule(Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class, [
+    'namespacePrefixes' => [
+        'Foo\Bar\Baz',
+    ],
+]);
+```
+
+#### Changes
 
 ```diff
 -use Foo\Bar;
@@ -53,9 +68,26 @@ Configuration:
 
 ### Example 2
 
-Configuration:
+#### Configuration
 
-- `namespacePrefixes`: `['Example\Core\Routing', 'Example\Domain', 'Psr\Http']`
+```php
+<?php
+
+declare(strict_types=1);
+
+use Ergebnis\Rector\Rules\Files;
+use Rector\Config;
+
+return Config\RectorConfig::configure()->withConfiguredRule(Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class, [
+    'namespacePrefixes' => [
+        'Example\Core\Routing',
+        'Example\Domain',
+        'Psr\Http',
+    ],
+]);
+```
+
+#### Changes
 
 ```diff
  namespace Example\App;
@@ -83,9 +115,24 @@ Configuration:
 
 ### Example 3
 
-Configuration:
+#### Configuration
 
-- `parentNamespacePrefixes`: `['Example']`
+```php
+<?php
+
+declare(strict_types=1);
+
+use Ergebnis\Rector\Rules\Files;
+use Rector\Config;
+
+return Config\RectorConfig::configure()->withConfiguredRule(Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class, [
+    'parentNamespacePrefixes' => [
+        'Example',
+    ],
+]);
+```
+
+#### Changes
 
 ```diff
  namespace Example\App;
@@ -101,10 +148,27 @@ Configuration:
 
 ### Example 4
 
-Configuration:
+#### Configuration
 
-- `namespacePrefixes`: `['Example\Core\Routing']`
-- `parentNamespacePrefixes`: `['Example']`
+```php
+<?php
+
+declare(strict_types=1);
+
+use Ergebnis\Rector\Rules\Files;
+use Rector\Config;
+
+return Config\RectorConfig::configure()->withConfiguredRule(Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class, [
+    'namespacePrefixes' => [
+        'Example\Core\Routing',
+    ],
+    'parentNamespacePrefixes' => [
+        'Example',
+    ],
+]);
+```
+
+#### Changes
 
 ```diff
  namespace Example\App;
@@ -127,9 +191,26 @@ Configuration:
 
 ### Example 5
 
-Configuration:
+#### Configuration
 
-- `namespacePrefixes`: `['Example\Core\Routing', 'Example\Core', 'Example\Core\Caching\Redis']`
+```php
+<?php
+
+declare(strict_types=1);
+
+use Ergebnis\Rector\Rules\Files;
+use Rector\Config;
+
+return Config\RectorConfig::configure()->withConfiguredRule(Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class, [
+    'namespacePrefixes' => [
+        'Example\Core\Routing',
+        'Example\Core',
+        'Example\Core\Caching\Redis',
+    ],
+]);
+```
+
+#### Changes
 
 ```diff
  namespace Example\App;
@@ -156,9 +237,24 @@ Configuration:
 
 ### Example 6
 
-Configuration:
+#### Configuration
 
-- `namespacePrefixes`: `['Example\Core']`
+```php
+<?php
+
+declare(strict_types=1);
+
+use Ergebnis\Rector\Rules\Files;
+use Rector\Config;
+
+return Config\RectorConfig::configure()->withConfiguredRule(Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class, [
+    'namespacePrefixes' => [
+        'Example\Core',
+    ],
+]);
+```
+
+#### Changes
 
 ```diff
  namespace Example\Core\Bar;
@@ -183,10 +279,25 @@ Configuration:
 
 ### Example 7
 
-Configuration:
+#### Configuration
 
-- `forceRelativeReferences`: `true`
-- `namespacePrefixes`: `['Example\Core']`
+```php
+<?php
+
+declare(strict_types=1);
+
+use Ergebnis\Rector\Rules\Files;
+use Rector\Config;
+
+return Config\RectorConfig::configure()->withConfiguredRule(Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class, [
+    'forceRelativeReferences' => true,
+    'namespacePrefixes' => [
+        'Example\Core',
+    ],
+]);
+```
+
+#### Changes
 
 ```diff
  namespace Example\Core\Bar;
@@ -212,9 +323,22 @@ Configuration:
 
 ### Example 8
 
-Configuration:
+#### Configuration
 
-- `discoverNamespacePrefixes`: `true`
+```php
+<?php
+
+declare(strict_types=1);
+
+use Ergebnis\Rector\Rules\Files;
+use Rector\Config;
+
+return Config\RectorConfig::configure()->withConfiguredRule(Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class, [
+    'discoverNamespacePrefixes' => true,
+]);
+```
+
+#### Changes
 
 ```diff
  namespace App;

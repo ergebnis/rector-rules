@@ -6,6 +6,23 @@ Replaces #[Test] attributes with test method prefixes.
 
 ### Example
 
+#### Configuration
+
+```php
+<?php
+
+declare(strict_types=1);
+
+use Ergebnis\Rector\Rules\PHPUnit;
+use Rector\Config;
+
+return Config\RectorConfig::configure()->withRules([
+    PHPUnit\ReplaceTestAttributeWithTestPrefixRector::class,
+]);
+```
+
+#### Changes
+
 ```diff
  use PHPUnit\Framework;
  

@@ -2,7 +2,7 @@
 
 Sorts associative arrays by key.
 
-## Configuration
+## Options
 
 ### `comparison_function`
 
@@ -24,6 +24,23 @@ The sorting direction.
 
 ### Example 1
 
+#### Configuration
+
+```php
+<?php
+
+declare(strict_types=1);
+
+use Ergebnis\Rector\Rules\Expressions;
+use Rector\Config;
+
+return Config\RectorConfig::configure()->withRules([
+    Expressions\Arrays\SortAssociativeArrayByKeyRector::class,
+]);
+```
+
+#### Changes
+
 ```diff
  $data = [
 +    'bar' => [
@@ -44,9 +61,22 @@ The sorting direction.
 
 ### Example 2
 
-Configuration:
+#### Configuration
 
-- `direction`: `'desc'`
+```php
+<?php
+
+declare(strict_types=1);
+
+use Ergebnis\Rector\Rules\Expressions;
+use Rector\Config;
+
+return Config\RectorConfig::configure()->withConfiguredRule(Expressions\Arrays\SortAssociativeArrayByKeyRector::class, [
+    'direction' => 'desc',
+]);
+```
+
+#### Changes
 
 ```diff
  $data = [
@@ -68,9 +98,22 @@ Configuration:
 
 ### Example 3
 
-Configuration:
+#### Configuration
 
-- `comparison_function`: `'strcasecmp'`
+```php
+<?php
+
+declare(strict_types=1);
+
+use Ergebnis\Rector\Rules\Expressions;
+use Rector\Config;
+
+return Config\RectorConfig::configure()->withConfiguredRule(Expressions\Arrays\SortAssociativeArrayByKeyRector::class, [
+    'comparison_function' => 'strcasecmp',
+]);
+```
+
+#### Changes
 
 ```diff
  $data = [
@@ -86,9 +129,22 @@ Configuration:
 
 ### Example 4
 
-Configuration:
+#### Configuration
 
-- `comparison_function`: `'strnatcmp'`
+```php
+<?php
+
+declare(strict_types=1);
+
+use Ergebnis\Rector\Rules\Expressions;
+use Rector\Config;
+
+return Config\RectorConfig::configure()->withConfiguredRule(Expressions\Arrays\SortAssociativeArrayByKeyRector::class, [
+    'comparison_function' => 'strnatcmp',
+]);
+```
+
+#### Changes
 
 ```diff
  $data = [
@@ -104,9 +160,22 @@ Configuration:
 
 ### Example 5
 
-Configuration:
+#### Configuration
 
-- `comparison_function`: `'strnatcasecmp'`
+```php
+<?php
+
+declare(strict_types=1);
+
+use Ergebnis\Rector\Rules\Expressions;
+use Rector\Config;
+
+return Config\RectorConfig::configure()->withConfiguredRule(Expressions\Arrays\SortAssociativeArrayByKeyRector::class, [
+    'comparison_function' => 'strnatcasecmp',
+]);
+```
+
+#### Changes
 
 ```diff
  $data = [

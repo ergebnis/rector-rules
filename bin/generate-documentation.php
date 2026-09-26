@@ -284,12 +284,21 @@ require_once __DIR__ . '/../vendor/autoload.php';
             $lines[] = '';
 
             foreach ($codeSamples as $index => $codeSample) {
+                $heading = '### Example';
+
                 if (1 < $sampleCount) {
-                    $lines[] = '### Example ' . ($index + 1);
-                } else {
-                    $lines[] = '### Example';
+                    $heading .= ' ' . ($index + 1);
                 }
 
+                if (\count($configurationOptions) > 0) {
+                    if ($codeSample instanceof RuleDocGenerator\ValueObject\CodeSample\ConfiguredCodeSample) {
+                        $heading .= ' (with ' . self::listOptionNames(\array_keys($codeSample->getConfiguration())) . ')';
+                    } else {
+                        $heading .= ' (with default configuration)';
+                    }
+                }
+
+                $lines[] = $heading;
                 $lines[] = '';
 
                 $namespaceSegments = \explode(
@@ -366,6 +375,33 @@ require_once __DIR__ . '/../vendor/autoload.php';
                 "'%s'",
                 (string) $value,
             );
+        }
+
+        /**
+         * @param list<int|string> $optionNames
+         */
+        private static function listOptionNames(array $optionNames): string
+        {
+            \sort($optionNames);
+
+            $formatted = \array_map(static function ($optionName): string {
+                return '`' . $optionName . '`';
+            }, $optionNames);
+
+            $last = \array_pop($formatted);
+
+            if ([] === $formatted) {
+                return (string) $last;
+            }
+
+            if (1 === \count($formatted)) {
+                return $formatted[0] . ' and ' . $last;
+            }
+
+            return \implode(
+                ', ',
+                $formatted,
+            ) . ', and ' . $last;
         }
 
         /**

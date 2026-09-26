@@ -34,7 +34,7 @@ A list of parent namespace prefixes for automatic discovery of namespace prefixe
 
 ## Examples
 
-### Example 1
+### Example 1 (with `namespacePrefixes`)
 
 #### Configuration
 
@@ -66,7 +66,7 @@ return Config\RectorConfig::configure()->withConfiguredRule(Files\ReferenceNames
 +new Baz\Qux\Quuz\Grauply();
 ```
 
-### Example 2
+### Example 2 (with `namespacePrefixes`)
 
 #### Configuration
 
@@ -113,7 +113,7 @@ return Config\RectorConfig::configure()->withConfiguredRule(Files\ReferenceNames
  }
 ```
 
-### Example 3
+### Example 3 (with `parentNamespacePrefixes`)
 
 #### Configuration
 
@@ -146,7 +146,7 @@ return Config\RectorConfig::configure()->withConfiguredRule(Files\ReferenceNames
  }
 ```
 
-### Example 4
+### Example 4 (with `namespacePrefixes` and `parentNamespacePrefixes`)
 
 #### Configuration
 
@@ -189,7 +189,7 @@ return Config\RectorConfig::configure()->withConfiguredRule(Files\ReferenceNames
  }
 ```
 
-### Example 5
+### Example 5 (with `namespacePrefixes`)
 
 #### Configuration
 
@@ -235,7 +235,7 @@ return Config\RectorConfig::configure()->withConfiguredRule(Files\ReferenceNames
  }
 ```
 
-### Example 6
+### Example 6 (with `namespacePrefixes`)
 
 #### Configuration
 
@@ -277,7 +277,7 @@ return Config\RectorConfig::configure()->withConfiguredRule(Files\ReferenceNames
  }
 ```
 
-### Example 7
+### Example 7 (with `forceRelativeReferences` and `namespacePrefixes`)
 
 #### Configuration
 
@@ -321,7 +321,7 @@ return Config\RectorConfig::configure()->withConfiguredRule(Files\ReferenceNames
  }
 ```
 
-### Example 8
+### Example 8 (with `discoverNamespacePrefixes`)
 
 #### Configuration
 

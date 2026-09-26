@@ -96,7 +96,15 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
         public function docPath(): string
         {
-            return 'doc/rules/' . \str_replace('\\', '/', $this->namespaceRelativeToNamespacePrefix()) . '/' . $this->shortName() . '.md';
+            return \sprintf(
+                'doc/rules/%s/%s.md',
+                \str_replace(
+                    '\\',
+                    '/',
+                    $this->namespaceRelativeToNamespacePrefix(),
+                ),
+                $this->shortName(),
+            );
         }
     }
 
@@ -112,11 +120,20 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
         public function run(): void
         {
-            $sourceDirectory = __DIR__ . '/../src';
+            $sourceDirectory = \sprintf(
+                '%s/../src',
+                __DIR__,
+            );
 
-            $docDirectory = __DIR__ . '/../doc';
+            $docDirectory = \sprintf(
+                '%s/../doc',
+                __DIR__,
+            );
 
-            $docsRulesDirectory = $docDirectory . '/rules';
+            $docsRulesDirectory = \sprintf(
+                '%s/rules',
+                $docDirectory,
+            );
 
             if ($this->fileSystem->exists($docDirectory)) {
                 $this->fileSystem->remove($docDirectory);
@@ -201,12 +218,24 @@ require_once __DIR__ . '/../vendor/autoload.php';
             \ksort($rulesByNamespace);
 
             foreach ($rulesByNamespace as $namespace => $rules) {
-                $namespaceDirectory = $docsRulesDirectory . '/' . \str_replace('\\', '/', $namespace);
+                $namespaceDirectory = \sprintf(
+                    '%s/%s',
+                    $docsRulesDirectory,
+                    \str_replace(
+                        '\\',
+                        '/',
+                        $namespace,
+                    ),
+                );
 
                 $this->fileSystem->mkdir($namespaceDirectory);
 
                 foreach ($rules as $rule) {
-                    $filePath = $namespaceDirectory . '/' . $rule->shortName() . '.md';
+                    $filePath = \sprintf(
+                        '%s/%s.md',
+                        $namespaceDirectory,
+                        $rule->shortName(),
+                    );
 
                     $content = $this->documentationFor($rule);
 
@@ -216,29 +245,46 @@ require_once __DIR__ . '/../vendor/autoload.php';
                     );
 
                     echo \sprintf(
-                        'Generated %s' . \PHP_EOL,
+                        'Generated %s%s',
                         \str_replace(
-                            \dirname($docsRulesDirectory, 2) . '/',
+                            \sprintf(
+                                '%s/',
+                                \dirname(
+                                    $docsRulesDirectory,
+                                    2,
+                                ),
+                            ),
                             '',
                             $filePath,
                         ),
+                        \PHP_EOL,
                     );
                 }
             }
 
             $this->updateReadme(
-                __DIR__ . '/../README.md',
+                \sprintf(
+                    '%s/../README.md',
+                    __DIR__,
+                ),
                 $rulesByNamespace,
             );
 
-            echo 'Done.' . \PHP_EOL;
+            echo \sprintf(
+                'Done.%s',
+                \PHP_EOL,
+            );
         }
 
         private function documentationFor(Rule $rule): string
         {
             $lines = [];
 
-            $lines[] = '# `' . $rule->namespaceRelativeToNamespacePrefix() . '\\' . $rule->shortName() . '`';
+            $lines[] = \sprintf(
+                '# `%s\\%s`',
+                $rule->namespaceRelativeToNamespacePrefix(),
+                $rule->shortName(),
+            );
             $lines[] = '';
             $lines[] = $rule->ruleDefinition()->getDescription();
             $lines[] = '';
@@ -255,27 +301,42 @@ require_once __DIR__ . '/../vendor/autoload.php';
                 foreach ($configurationOptions as $option) {
                     $value = $option->value();
 
-                    $lines[] = '### `' . $option->name()->toString() . '`';
+                    $lines[] = \sprintf(
+                        '### `%s`',
+                        $option->name()->toString(),
+                    );
                     $lines[] = '';
 
                     $lines[] = $option->description()->toString();
                     $lines[] = '';
-                    $lines[] = '- type: `' . $value->type() . '`';
+                    $lines[] = \sprintf(
+                        '- type: `%s`',
+                        $value->type(),
+                    );
 
                     $allowedValues = $value->allowedValues();
 
                     if (\count($allowedValues) > 0) {
-                        $formatted = \array_map(
-                            static function ($allowedValue): string {
-                                return '`' . self::formatValue($allowedValue) . '`';
-                            },
-                            $allowedValues,
-                        );
+                        $formatted = \array_map(static function ($allowedValue): string {
+                            return \sprintf(
+                                '`%s`',
+                                self::formatValue($allowedValue),
+                            );
+                        }, $allowedValues);
 
-                        $lines[] = '- allowed values: ' . \implode(', ', $formatted);
+                        $lines[] = \sprintf(
+                            '- allowed values: %s',
+                            \implode(
+                                ', ',
+                                $formatted,
+                            ),
+                        );
                     }
 
-                    $lines[] = '- default value: `' . self::formatValue($value->default()) . '`';
+                    $lines[] = \sprintf(
+                        '- default value: `%s`',
+                        self::formatValue($value->default()),
+                    );
                     $lines[] = '';
                 }
             }
@@ -287,14 +348,25 @@ require_once __DIR__ . '/../vendor/autoload.php';
                 $heading = '### Example';
 
                 if (1 < $sampleCount) {
-                    $heading .= ' ' . ($index + 1);
+                    $heading = \sprintf(
+                        '%s %d',
+                        $heading,
+                        $index + 1,
+                    );
                 }
 
                 if (\count($configurationOptions) > 0) {
                     if ($codeSample instanceof RuleDocGenerator\ValueObject\CodeSample\ConfiguredCodeSample) {
-                        $heading .= ' (with ' . self::listOptionNames(\array_keys($codeSample->getConfiguration())) . ')';
+                        $heading = \sprintf(
+                            '%s (with %s)',
+                            $heading,
+                            self::listOptionNames(\array_keys($codeSample->getConfiguration())),
+                        );
                     } else {
-                        $heading .= ' (with default configuration)';
+                        $heading = \sprintf(
+                            '%s (with default configuration)',
+                            $heading,
+                        );
                     }
                 }
 
@@ -306,7 +378,11 @@ require_once __DIR__ . '/../vendor/autoload.php';
                     $rule->namespaceRelativeToNamespacePrefix(),
                 );
 
-                $className = $rule->namespaceRelativeToNamespacePrefix() . '\\' . $rule->shortName() . '::class';
+                $className = \sprintf(
+                    '%s\\%s::class',
+                    $rule->namespaceRelativeToNamespacePrefix(),
+                    $rule->shortName(),
+                );
 
                 $lines[] = '#### Configuration';
                 $lines[] = '';
@@ -315,7 +391,10 @@ require_once __DIR__ . '/../vendor/autoload.php';
                 $lines[] = '';
                 $lines[] = 'declare(strict_types=1);';
                 $lines[] = '';
-                $lines[] = 'use Ergebnis\Rector\Rules\\' . $namespaceSegments[0] . ';';
+                $lines[] = \sprintf(
+                    'use Ergebnis\Rector\Rules\%s;',
+                    $namespaceSegments[0],
+                );
                 $lines[] = 'use Rector\Config;';
                 $lines[] = '';
 
@@ -325,10 +404,17 @@ require_once __DIR__ . '/../vendor/autoload.php';
                         '',
                     );
 
-                    $lines[] = 'return Config\RectorConfig::configure()->withConfiguredRule(' . $className . ', ' . $configuration . ');';
+                    $lines[] = \sprintf(
+                        'return Config\RectorConfig::configure()->withConfiguredRule(%s, %s);',
+                        $className,
+                        $configuration,
+                    );
                 } else {
                     $lines[] = 'return Config\RectorConfig::configure()->withRules([';
-                    $lines[] = '    ' . $className . ',';
+                    $lines[] = \sprintf(
+                        '    %s,',
+                        $className,
+                    );
                     $lines[] = ']);';
                 }
 
@@ -368,7 +454,13 @@ require_once __DIR__ . '/../vendor/autoload.php';
                     );
                 }, $value);
 
-                return '[' . \implode(', ', $items) . ']';
+                return \sprintf(
+                    '[%s]',
+                    \implode(
+                        ', ',
+                        $items,
+                    ),
+                );
             }
 
             return \sprintf(
@@ -385,7 +477,10 @@ require_once __DIR__ . '/../vendor/autoload.php';
             \sort($optionNames);
 
             $formatted = \array_map(static function ($optionName): string {
-                return '`' . $optionName . '`';
+                return \sprintf(
+                    '`%s`',
+                    $optionName,
+                );
             }, $optionNames);
 
             $last = \array_pop($formatted);
@@ -395,13 +490,21 @@ require_once __DIR__ . '/../vendor/autoload.php';
             }
 
             if (1 === \count($formatted)) {
-                return $formatted[0] . ' and ' . $last;
+                return \sprintf(
+                    '%s and %s',
+                    $formatted[0],
+                    $last,
+                );
             }
 
-            return \implode(
-                ', ',
-                $formatted,
-            ) . ', and ' . $last;
+            return \sprintf(
+                '%s, and %s',
+                \implode(
+                    ', ',
+                    $formatted,
+                ),
+                $last,
+            );
         }
 
         /**
@@ -431,26 +534,43 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
                 $elements = [];
 
+                $elementIndentation = \sprintf(
+                    '%s    ',
+                    $indentation,
+                );
+
                 foreach ($value as $key => $element) {
                     $exported = self::exportValue(
                         $element,
-                        $indentation . '    ',
+                        $elementIndentation,
                     );
 
                     if (!$isList) {
-                        $exported = self::exportValue(
-                            $key,
-                            $indentation . '    ',
-                        ) . ' => ' . $exported;
+                        $exported = \sprintf(
+                            '%s => %s',
+                            self::exportValue(
+                                $key,
+                                $elementIndentation,
+                            ),
+                            $exported,
+                        );
                     }
 
-                    $elements[] = $indentation . '    ' . $exported . ',';
+                    $elements[] = \sprintf(
+                        '%s%s,',
+                        $elementIndentation,
+                        $exported,
+                    );
                 }
 
-                return "[\n" . \implode(
-                    "\n",
-                    $elements,
-                ) . "\n" . $indentation . ']';
+                return \sprintf(
+                    "[\n%s\n%s]",
+                    \implode(
+                        "\n",
+                        $elements,
+                    ),
+                    $indentation,
+                );
             }
 
             if (\is_string($value)) {
@@ -463,11 +583,14 @@ require_once __DIR__ . '/../vendor/autoload.php';
                     $value,
                 );
 
-                return "'" . \str_replace(
-                    "'",
-                    "\\'",
-                    (string) $escaped,
-                ) . "'";
+                return \sprintf(
+                    "'%s'",
+                    \str_replace(
+                        "'",
+                        "\\'",
+                        (string) $escaped,
+                    ),
+                );
             }
 
             return \var_export(
@@ -495,17 +618,26 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
                 switch ($entry[1]) {
                     case Diff\Differ::OLD:
-                        $output[] = ' ' . $line;
+                        $output[] = \sprintf(
+                            ' %s',
+                            $line,
+                        );
 
                         break;
 
                     case Diff\Differ::REMOVED:
-                        $output[] = '-' . $line;
+                        $output[] = \sprintf(
+                            '-%s',
+                            $line,
+                        );
 
                         break;
 
                     case Diff\Differ::ADDED:
-                        $output[] = '+' . $line;
+                        $output[] = \sprintf(
+                            '+%s',
+                            $line,
+                        );
 
                         break;
                 }
@@ -541,8 +673,9 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
             if (false === $content) {
                 echo \sprintf(
-                    'Could not read "%s".' . \PHP_EOL,
+                    'Could not read "%s".%s',
                     $readmePath,
+                    \PHP_EOL,
                 );
 
                 exit(1);
@@ -575,18 +708,29 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
             $rulesSection = $this->rulesSection($rulesByNamespace);
 
-            $newContent = \substr($content, 0, $beginPosition + \strlen($beginMarker))
-                . "\n\n"
-                . $rulesSection
-                . "\n"
-                . \substr($content, $endPosition);
+            $newContent = \sprintf(
+                "%s\n\n%s\n%s",
+                \substr(
+                    $content,
+                    0,
+                    $beginPosition + \strlen($beginMarker),
+                ),
+                $rulesSection,
+                \substr(
+                    $content,
+                    $endPosition,
+                ),
+            );
 
             $this->fileSystem->dumpFile(
                 $readmePath,
                 $newContent,
             );
 
-            echo 'Updated README.md' . \PHP_EOL;
+            echo \sprintf(
+                'Updated README.md%s',
+                \PHP_EOL,
+            );
         }
 
         /**
@@ -601,22 +745,37 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
             foreach ($rulesByNamespace as $rules) {
                 foreach ($rules as $rule) {
-                    $heading = $rule->namespaceRelativeToNamespacePrefix() . '\\' . $rule->shortName();
+                    $heading = \sprintf(
+                        '%s\\%s',
+                        $rule->namespaceRelativeToNamespacePrefix(),
+                        $rule->shortName(),
+                    );
 
                     $anchor = self::anchorFor($heading);
 
-                    $lines[] = '- [`' . $rule->className() . '`](#' . $anchor . ')';
+                    $lines[] = \sprintf(
+                        '- [`%s`](#%s)',
+                        $rule->className(),
+                        $anchor,
+                    );
                 }
             }
 
             $lines[] = '';
 
             foreach ($rulesByNamespace as $namespace => $rules) {
-                $lines[] = '### ' . $namespace;
+                $lines[] = \sprintf(
+                    '### %s',
+                    $namespace,
+                );
                 $lines[] = '';
 
                 foreach ($rules as $rule) {
-                    $lines[] = '#### `' . $rule->namespaceRelativeToNamespacePrefix() . '\\' . $rule->shortName() . '`';
+                    $lines[] = \sprintf(
+                        '#### `%s\\%s`',
+                        $rule->namespaceRelativeToNamespacePrefix(),
+                        $rule->shortName(),
+                    );
                     $lines[] = '';
                     $lines[] = $rule->ruleDefinition()->getDescription();
                     $lines[] = '';
@@ -637,7 +796,12 @@ require_once __DIR__ . '/../vendor/autoload.php';
                         $lines[] = '';
                     }
 
-                    $lines[] = '💡 Find out more in the rule documentation for [`' . $rule->namespaceRelativeToNamespacePrefix() . '\\' . $rule->shortName() . '`](' . $rule->docPath() . ').';
+                    $lines[] = \sprintf(
+                        '💡 Find out more in the rule documentation for [`%s\\%s`](%s).',
+                        $rule->namespaceRelativeToNamespacePrefix(),
+                        $rule->shortName(),
+                        $rule->docPath(),
+                    );
                     $lines[] = '';
                 }
             }

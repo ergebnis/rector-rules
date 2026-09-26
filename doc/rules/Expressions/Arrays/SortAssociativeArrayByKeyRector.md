@@ -22,7 +22,7 @@ The sorting direction.
 
 ## Examples
 
-### Example 1
+### Example 1 (with default configuration)
 
 #### Configuration
 
@@ -59,7 +59,7 @@ return Config\RectorConfig::configure()->withRules([
  ];
 ```
 
-### Example 2
+### Example 2 (with `direction`)
 
 #### Configuration
 
@@ -96,7 +96,7 @@ return Config\RectorConfig::configure()->withConfiguredRule(Expressions\Arrays\S
  ];
 ```
 
-### Example 3
+### Example 3 (with `comparison_function`)
 
 #### Configuration
 
@@ -127,7 +127,7 @@ return Config\RectorConfig::configure()->withConfiguredRule(Expressions\Arrays\S
  ];
 ```
 
-### Example 4
+### Example 4 (with `comparison_function`)
 
 #### Configuration
 
@@ -158,7 +158,7 @@ return Config\RectorConfig::configure()->withConfiguredRule(Expressions\Arrays\S
  ];
 ```
 
-### Example 5
+### Example 5 (with `comparison_function`)
 
 #### Configuration
 

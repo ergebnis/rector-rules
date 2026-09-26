@@ -22,7 +22,7 @@ The sorting direction.
 
 ## Examples
 
-### Example 1
+### Example 1 (with default configuration)
 
 #### Configuration
 
@@ -50,7 +50,7 @@ return Config\RectorConfig::configure()->withRules([
  };
 ```
 
-### Example 2
+### Example 2 (with default configuration)
 
 #### Configuration
 
@@ -80,7 +80,7 @@ return Config\RectorConfig::configure()->withRules([
  };
 ```
 
-### Example 3
+### Example 3 (with default configuration)
 
 #### Configuration
 
@@ -108,7 +108,7 @@ return Config\RectorConfig::configure()->withRules([
  };
 ```
 
-### Example 4
+### Example 4 (with default configuration)
 
 #### Configuration
 
@@ -138,7 +138,7 @@ return Config\RectorConfig::configure()->withRules([
  };
 ```
 
-### Example 5
+### Example 5 (with default configuration)
 
 #### Configuration
 
@@ -168,7 +168,7 @@ return Config\RectorConfig::configure()->withRules([
  };
 ```
 
-### Example 6
+### Example 6 (with `direction`)
 
 #### Configuration
 
@@ -196,7 +196,7 @@ return Config\RectorConfig::configure()->withConfiguredRule(Expressions\Matches\
  };
 ```
 
-### Example 7
+### Example 7 (with `comparison_function`)
 
 #### Configuration
 
@@ -224,7 +224,7 @@ return Config\RectorConfig::configure()->withConfiguredRule(Expressions\Matches\
  };
 ```
 
-### Example 8
+### Example 8 (with `comparison_function`)
 
 #### Configuration
 
@@ -253,7 +253,7 @@ return Config\RectorConfig::configure()->withConfiguredRule(Expressions\Matches\
  };
 ```
 
-### Example 9
+### Example 9 (with `comparison_function`)
 
 #### Configuration
 

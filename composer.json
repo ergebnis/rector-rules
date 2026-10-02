@@ -23,7 +23,7 @@
     "rector/rector": "^2.6.7"
   },
   "require-dev": {
-    "ergebnis/classy": "^3.0.0",
+    "ergebnis/classy": "^3.1.0",
     "ergebnis/composer-normalize": "^2.53.0",
     "ergebnis/data-provider": "^3.6.0",
     "ergebnis/license": "^2.7.0",

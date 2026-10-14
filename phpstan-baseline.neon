@@ -55,6 +55,12 @@ parameters:
 			path: src/Faker/GeneratorPropertyFetchToMethodCallRector.php
 
 		-
+			message: '#^Property Ergebnis\\Rector\\Rules\\Files\\NamespaceSegments\:\:\$values \(list\<Ergebnis\\Rector\\Rules\\Files\\NamespaceSegment\>\) does not accept array\<int\<0, max\>\|string, Ergebnis\\Rector\\Rules\\Files\\NamespaceSegment\>\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Files/NamespaceSegments.php
+
+		-
 			message: '#^Parameter \#1 \$configuration of method Ergebnis\\Rector\\Rules\\Configuration\\Options\:\:resolveConfigurationFrom\(\) expects array\<string, mixed\>, array\<mixed\> given\.$#'
 			identifier: argument.type
 			count: 1

@@ -27,7 +27,7 @@ final class InvalidOptionValue extends \InvalidArgumentException
     }
 
     /**
-     * @param array<int, mixed> $allowedValues
+     * @param array<int, string> $allowedValues
      */
     public static function typeMismatchWithAllowedValues(array $allowedValues): self
     {
@@ -38,7 +38,7 @@ final class InvalidOptionValue extends \InvalidArgumentException
     }
 
     /**
-     * @param array<int, mixed> $allowedValues
+     * @param array<int, string> $allowedValues
      */
     public static function notAllowed(
         string $value,

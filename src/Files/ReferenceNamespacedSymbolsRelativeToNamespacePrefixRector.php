@@ -2021,7 +2021,7 @@ CODE_SAMPLE
     }
 
     /**
-     * @param list<Node\Stmt> $statements
+     * @param array<array-key, Node\Stmt> $statements
      *
      * @return list<int>
      */

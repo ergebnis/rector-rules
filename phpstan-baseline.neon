@@ -370,18 +370,6 @@ parameters:
 			path: test/Unit/Faker/GeneratorPropertyFetchToMethodCallRectorTest.php
 
 		-
-			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Files\\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorConfigureTest\:\:testConfigureRejectsNamespacePrefixesWhenValueIsNotAListOfStrings\(\) has parameter \$value with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: test/Unit/Files/ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorConfigureTest.php
-
-		-
-			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Files\\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorConfigureTest\:\:testConfigureRejectsParentNamespacePrefixesWhereValueIsNotAListOfStrings\(\) has parameter \$value with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: test/Unit/Files/ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorConfigureTest.php
-
-		-
 			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Files\\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorWithDefaultConfigurationTest\:\:provideData\(\) return type has no value type specified in iterable type iterable\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -529,12 +517,6 @@ parameters:
 			'''
 			identifier: method.deprecatedClass
 			count: 7
-			path: test/Unit/Files/UseImportRelativeToNamespacePrefixRectorConfigureTest.php
-
-		-
-			message: '#^Method Ergebnis\\Rector\\Rules\\Test\\Unit\\Files\\UseImportRelativeToNamespacePrefixRectorConfigureTest\:\:testConfigureRejectsNamespacePrefixesWhenValueIsNotAListOfStrings\(\) has parameter \$value with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
 			path: test/Unit/Files/UseImportRelativeToNamespacePrefixRectorConfigureTest.php
 
 		-

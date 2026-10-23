@@ -30,6 +30,9 @@ final class RemoveNamedArgumentForSingleParameterRectorTest extends Testing\PHPU
         $this->doTestFile($filePath);
     }
 
+    /**
+     * @return \Iterator<string, array{string}>
+     */
     public static function provideData(): iterable
     {
         return self::yieldFilesFromDirectory(__DIR__ . '/../../../Fixture/Expressions/CallLikes/RemoveNamedArgumentForSingleParameterRector/');

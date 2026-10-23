@@ -41,6 +41,9 @@ final class SortAssociativeArrayByKeyRectorWithComparisonFunctionStrcasecmpTest 
         $this->doTestFile($filePath);
     }
 
+    /**
+     * @return \Iterator<string, array{string}>
+     */
     public static function provideFilePathsPhp74(): iterable
     {
         return self::yieldFilesFromDirectory(__DIR__ . '/../../Fixture/Arrays/SortAssociativeArrayByKeyRector/WithComparisonFunctionStrcasecmp/Php74');
@@ -58,6 +61,9 @@ final class SortAssociativeArrayByKeyRectorWithComparisonFunctionStrcasecmpTest 
         $this->doTestFile($filePath);
     }
 
+    /**
+     * @return \Iterator<string, array{string}>
+     */
     public static function provideFilePathsPhp80(): iterable
     {
         return self::yieldFilesFromDirectory(__DIR__ . '/../../Fixture/Arrays/SortAssociativeArrayByKeyRector/WithComparisonFunctionStrcasecmp/Php80');

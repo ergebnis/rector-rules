@@ -40,6 +40,9 @@ final class SortMatchArmsByConditionalRectorWithDirectionDescTest extends Testin
         $this->doTestFile($filePath);
     }
 
+    /**
+     * @return \Iterator<string, array{string}>
+     */
     public static function provideData(): iterable
     {
         return self::yieldFilesFromDirectory(__DIR__ . '/../../../Fixture/Expressions/Matches/SortMatchArmsByConditionalRector/WithDirectionDesc');

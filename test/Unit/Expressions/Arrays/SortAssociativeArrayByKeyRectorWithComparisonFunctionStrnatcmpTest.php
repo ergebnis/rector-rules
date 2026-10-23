@@ -37,6 +37,9 @@ final class SortAssociativeArrayByKeyRectorWithComparisonFunctionStrnatcmpTest e
         $this->doTestFile($filePath);
     }
 
+    /**
+     * @return \Iterator<string, array{string}>
+     */
     public static function provideData(): iterable
     {
         return self::yieldFilesFromDirectory(__DIR__ . '/../../../Fixture/Expressions/Arrays/SortAssociativeArrayByKeyRector/WithComparisonFunctionStrnatcmp');

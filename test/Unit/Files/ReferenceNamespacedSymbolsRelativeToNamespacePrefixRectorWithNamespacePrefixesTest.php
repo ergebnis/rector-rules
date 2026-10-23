@@ -39,6 +39,9 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorWithNamespa
         $this->doTestFile($filePath);
     }
 
+    /**
+     * @return \Iterator<string, array{string}>
+     */
     public static function provideDataOnPhp70(): iterable
     {
         return self::yieldFilesFromDirectory(__DIR__ . '/../../Fixture/Files/ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector/WithNamespacePrefixes/Php70');
@@ -54,6 +57,9 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorWithNamespa
         $this->doTestFile($filePath);
     }
 
+    /**
+     * @return \Iterator<string, array{string}>
+     */
     public static function provideDataOnPhp80(): iterable
     {
         return self::yieldFilesFromDirectory(__DIR__ . '/../../Fixture/Files/ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector/WithNamespacePrefixes/Php80');
@@ -69,6 +75,9 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorWithNamespa
         $this->doTestFile($filePath);
     }
 
+    /**
+     * @return \Iterator<string, array{string}>
+     */
     public static function provideDataOnPhp81(): iterable
     {
         return self::yieldFilesFromDirectory(__DIR__ . '/../../Fixture/Files/ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector/WithNamespacePrefixes/Php81');
@@ -84,6 +93,9 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorWithNamespa
         $this->doTestFile($filePath);
     }
 
+    /**
+     * @return \Iterator<string, array{string}>
+     */
     public static function provideDataOnPhp82(): iterable
     {
         return self::yieldFilesFromDirectory(__DIR__ . '/../../Fixture/Files/ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector/WithNamespacePrefixes/Php82');
@@ -99,6 +111,9 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorWithNamespa
         $this->doTestFile($filePath);
     }
 
+    /**
+     * @return \Iterator<string, array{string}>
+     */
     public static function provideDataOnPhp83(): iterable
     {
         return self::yieldFilesFromDirectory(__DIR__ . '/../../Fixture/Files/ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector/WithNamespacePrefixes/Php83');
@@ -114,6 +129,9 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorWithNamespa
         $this->doTestFile($filePath);
     }
 
+    /**
+     * @return \Iterator<string, array{string}>
+     */
     public static function provideDataOnPhp84(): iterable
     {
         return self::yieldFilesFromDirectory(__DIR__ . '/../../Fixture/Files/ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector/WithNamespacePrefixes/Php84');
@@ -129,6 +147,9 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorWithNamespa
         $this->doTestFile($filePath);
     }
 
+    /**
+     * @return \Iterator<string, array{string}>
+     */
     public static function provideDataOnPhp85(): iterable
     {
         return self::yieldFilesFromDirectory(__DIR__ . '/../../Fixture/Files/ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector/WithNamespacePrefixes/Php85');

@@ -30,6 +30,9 @@ final class UseImportRelativeToNamespacePrefixRectorWithSingleNamespacePrefixTes
         $this->doTestFile($filePath);
     }
 
+    /**
+     * @return \Iterator<string, array{string}>
+     */
     public static function provideDataOnPhp7(): iterable
     {
         return self::yieldFilesFromDirectory(__DIR__ . '/../../Fixture/Files/UseImportRelativeToNamespacePrefixRector/WithSingleNamespacePrefix/Php7');
@@ -45,6 +48,9 @@ final class UseImportRelativeToNamespacePrefixRectorWithSingleNamespacePrefixTes
         $this->doTestFile($filePath);
     }
 
+    /**
+     * @return \Iterator<string, array{string}>
+     */
     public static function provideDataOnPhp8(): iterable
     {
         return self::yieldFilesFromDirectory(__DIR__ . '/../../Fixture/Files/UseImportRelativeToNamespacePrefixRector/WithSingleNamespacePrefix/Php8');

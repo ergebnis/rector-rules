@@ -39,6 +39,9 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorWithOverlap
         $this->doTestFile($filePath);
     }
 
+    /**
+     * @return \Iterator<string, array{string}>
+     */
     public static function provideData(): iterable
     {
         return self::yieldFilesFromDirectory(__DIR__ . '/../../Fixture/Files/ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector/WithOverlappingNamespacePrefixes');

@@ -37,6 +37,9 @@ final class SortAssociativeArrayByKeyRectorWithDirectionDescTest extends Testing
         $this->doTestFile($filePath);
     }
 
+    /**
+     * @return \Iterator<string, array{string}>
+     */
     public static function provideData(): iterable
     {
         return self::yieldFilesFromDirectory(__DIR__ . '/../../Fixture/Arrays/SortAssociativeArrayByKeyRector/WithDirectionDesc');

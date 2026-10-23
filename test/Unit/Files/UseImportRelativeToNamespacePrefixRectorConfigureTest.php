@@ -47,6 +47,8 @@ final class UseImportRelativeToNamespacePrefixRectorConfigureTest extends Testin
 
     /**
      * @dataProvider provideNamespacePrefixesWhereValueIsNotAListOfStrings
+     *
+     * @param list<mixed> $value
      */
     public function testConfigureRejectsNamespacePrefixesWhenValueIsNotAListOfStrings(array $value): void
     {

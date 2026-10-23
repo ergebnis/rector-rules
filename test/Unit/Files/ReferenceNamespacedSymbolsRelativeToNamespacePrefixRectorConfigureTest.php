@@ -83,6 +83,8 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorConfigureTe
 
     /**
      * @dataProvider provideNamespacePrefixesWhereValueIsNotAListOfStrings
+     *
+     * @param list<mixed> $value
      */
     public function testConfigureRejectsNamespacePrefixesWhenValueIsNotAListOfStrings(array $value): void
     {
@@ -204,6 +206,8 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorConfigureTe
 
     /**
      * @dataProvider provideParentNamespacePrefixesWhereValueIsNotAListOfStrings
+     *
+     * @param list<mixed> $value
      */
     public function testConfigureRejectsParentNamespacePrefixesWhereValueIsNotAListOfStrings(array $value): void
     {

@@ -28,6 +28,9 @@ final class GeneratorPropertyFetchToMethodCallRectorTest extends Testing\PHPUnit
         $this->doTestFile($filePath);
     }
 
+    /**
+     * @return \Iterator<string, array{string}>
+     */
     public static function provideData(): iterable
     {
         return self::yieldFilesFromDirectory(__DIR__ . '/../../Fixture/Faker/GeneratorPropertyFetchToMethodCallRector/');

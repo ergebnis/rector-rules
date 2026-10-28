@@ -1129,74 +1129,122 @@ CODE_SAMPLE
 
             $hasChanged = false;
 
-            $phpDocNodeTraverser = new PhpDocParser\PhpDocParser\PhpDocNodeTraverser();
-
-            $phpDocNodeTraverser->traverseWithCallable($phpDocInfo->getPhpDocNode(), '', static function (Ast\Node $phpDocNode) use ($aliasesToReferences, $classReferences, $containerNode, $namespacePrefix, $moreSpecificNamespacePrefixes, $namespaceOfContainingFile, $namespacePrefixOfContainingFile, $unavailableFirstNamespaceSegments, &$hasChanged, &$requiresNamespacePrefixImport): ?Ast\Type\IdentifierTypeNode {
-                if (!$phpDocNode instanceof Ast\Type\IdentifierTypeNode) {
-                    return null;
-                }
-
-                if (
-                    $phpDocNode instanceof BetterPhpDocParser\ValueObject\Type\FullyQualifiedIdentifierTypeNode
-                    || \strpos($phpDocNode->name, '\\') === 0
-                ) {
-                    $reference = Reference::fromString(\ltrim($phpDocNode->name, '\\'));
+            $phpDocNodeTraverser = new Ast\NodeTraverser([
+                new PhpDocParser\PhpDocParser\PhpDocNodeVisitor\CallablePhpDocNodeVisitor(static function (Ast\Node $phpDocNode) use ($aliasesToReferences, $classReferences, $containerNode, $namespacePrefix, $moreSpecificNamespacePrefixes, $namespaceOfContainingFile, $namespacePrefixOfContainingFile, $unavailableFirstNamespaceSegments, &$hasChanged, &$requiresNamespacePrefixImport): ?Ast\Type\IdentifierTypeNode {
+                    if (!$phpDocNode instanceof Ast\Type\IdentifierTypeNode) {
+                        return null;
+                    }
 
                     if (
-                        !$reference->is($namespacePrefix)
-                        && !$reference->isDeclaredIn($namespacePrefix)
+                        $phpDocNode instanceof BetterPhpDocParser\ValueObject\Type\FullyQualifiedIdentifierTypeNode
+                        || \strpos($phpDocNode->name, '\\') === 0
                     ) {
-                        return null;
-                    }
+                        $reference = Reference::fromString(\ltrim($phpDocNode->name, '\\'));
 
-                    if ($reference->isOrIsDeclaredInOneOf(...$moreSpecificNamespacePrefixes)) {
-                        return null;
-                    }
-
-                    $hasChanged = true;
-
-                    if ($namespacePrefixOfContainingFile instanceof NamespacePrefix) {
-                        if ($reference->is($namespacePrefixOfContainingFile)) {
+                        if (
+                            !$reference->is($namespacePrefix)
+                            && !$reference->isDeclaredIn($namespacePrefix)
+                        ) {
                             return null;
                         }
 
-                        return new Ast\Type\IdentifierTypeNode($reference->relativeTo($namespacePrefixOfContainingFile)->toString());
+                        if ($reference->isOrIsDeclaredInOneOf(...$moreSpecificNamespacePrefixes)) {
+                            return null;
+                        }
+
+                        $hasChanged = true;
+
+                        if ($namespacePrefixOfContainingFile instanceof NamespacePrefix) {
+                            if ($reference->is($namespacePrefixOfContainingFile)) {
+                                return null;
+                            }
+
+                            return new Ast\Type\IdentifierTypeNode($reference->relativeTo($namespacePrefixOfContainingFile)->toString());
+                        }
+
+                        return new Ast\Type\IdentifierTypeNode(self::nameRelativeToNamespacePrefixOrNamespaceOfContainingFile(
+                            $reference,
+                            $namespacePrefix,
+                            $namespaceOfContainingFile,
+                            $unavailableFirstNamespaceSegments,
+                            $requiresNamespacePrefixImport,
+                        ));
                     }
 
-                    return new Ast\Type\IdentifierTypeNode(self::nameRelativeToNamespacePrefixOrNamespaceOfContainingFile(
-                        $reference,
-                        $namespacePrefix,
-                        $namespaceOfContainingFile,
-                        $unavailableFirstNamespaceSegments,
-                        $requiresNamespacePrefixImport,
-                    ));
-                }
+                    $nameParts = \explode(
+                        '\\',
+                        $phpDocNode->name,
+                    );
 
-                $nameParts = \explode(
-                    '\\',
-                    $phpDocNode->name,
-                );
+                    $firstName = $nameParts[0];
 
-                $firstName = $nameParts[0];
+                    if (!\array_key_exists($firstName, $aliasesToReferences)) {
+                        if (
+                            !$containerNode instanceof Node\Stmt\Namespace_
+                            || null === $containerNode->name
+                        ) {
+                            return null;
+                        }
 
-                if (!\array_key_exists($firstName, $aliasesToReferences)) {
-                    if (
-                        !$containerNode instanceof Node\Stmt\Namespace_
-                        || null === $containerNode->name
-                    ) {
-                        return null;
+                        $fullyQualifiedName = $containerNode->name->toString() . '\\' . $phpDocNode->name;
+
+                        if (
+                            \count($nameParts) < 2
+                            && !\array_key_exists($fullyQualifiedName, $classReferences)
+                        ) {
+                            return null;
+                        }
+
+                        $reference = Reference::fromString($fullyQualifiedName);
+
+                        if (
+                            !$reference->is($namespacePrefix)
+                            && !$reference->isDeclaredIn($namespacePrefix)
+                        ) {
+                            return null;
+                        }
+
+                        if ($reference->isOrIsDeclaredInOneOf(...$moreSpecificNamespacePrefixes)) {
+                            return null;
+                        }
+
+                        if ($namespacePrefixOfContainingFile instanceof NamespacePrefix) {
+                            if ($reference->is($namespacePrefixOfContainingFile)) {
+                                return null;
+                            }
+
+                            $newName = $reference->relativeTo($namespacePrefixOfContainingFile)->toString();
+                        } else {
+                            $newName = self::nameRelativeToNamespacePrefixOrNamespaceOfContainingFile(
+                                $reference,
+                                $namespacePrefix,
+                                $namespaceOfContainingFile,
+                                $unavailableFirstNamespaceSegments,
+                                $requiresNamespacePrefixImport,
+                            );
+                        }
+
+                        if ($phpDocNode->name === $newName) {
+                            return null;
+                        }
+
+                        $hasChanged = true;
+
+                        return new Ast\Type\IdentifierTypeNode($newName);
                     }
 
-                    $fullyQualifiedName = $containerNode->name->toString() . '\\' . $phpDocNode->name;
+                    $importReference = $aliasesToReferences[$firstName];
 
-                    if (
-                        \count($nameParts) < 2
-                        && !\array_key_exists($fullyQualifiedName, $classReferences)
-                    ) {
-                        return null;
+                    $remainingParts = \array_slice(
+                        $nameParts,
+                        1,
+                    );
+
+                    if (\count($remainingParts) > 0) {
+                        $reference = $importReference->append(...$remainingParts);
+                    } else {
+                        $reference = $importReference;
                     }
-
-                    $reference = Reference::fromString($fullyQualifiedName);
 
                     if (
                         !$reference->is($namespacePrefix)
@@ -1232,56 +1280,12 @@ CODE_SAMPLE
                     $hasChanged = true;
 
                     return new Ast\Type\IdentifierTypeNode($newName);
-                }
+                }),
+            ]);
 
-                $importReference = $aliasesToReferences[$firstName];
-
-                $remainingParts = \array_slice(
-                    $nameParts,
-                    1,
-                );
-
-                if (\count($remainingParts) > 0) {
-                    $reference = $importReference->append(...$remainingParts);
-                } else {
-                    $reference = $importReference;
-                }
-
-                if (
-                    !$reference->is($namespacePrefix)
-                    && !$reference->isDeclaredIn($namespacePrefix)
-                ) {
-                    return null;
-                }
-
-                if ($reference->isOrIsDeclaredInOneOf(...$moreSpecificNamespacePrefixes)) {
-                    return null;
-                }
-
-                if ($namespacePrefixOfContainingFile instanceof NamespacePrefix) {
-                    if ($reference->is($namespacePrefixOfContainingFile)) {
-                        return null;
-                    }
-
-                    $newName = $reference->relativeTo($namespacePrefixOfContainingFile)->toString();
-                } else {
-                    $newName = self::nameRelativeToNamespacePrefixOrNamespaceOfContainingFile(
-                        $reference,
-                        $namespacePrefix,
-                        $namespaceOfContainingFile,
-                        $unavailableFirstNamespaceSegments,
-                        $requiresNamespacePrefixImport,
-                    );
-                }
-
-                if ($phpDocNode->name === $newName) {
-                    return null;
-                }
-
-                $hasChanged = true;
-
-                return new Ast\Type\IdentifierTypeNode($newName);
-            });
+            $phpDocNodeTraverser->traverse([
+                $phpDocInfo->getPhpDocNode(),
+            ]);
 
             if ($hasChanged) {
                 $anyDocBlockChanged = true;

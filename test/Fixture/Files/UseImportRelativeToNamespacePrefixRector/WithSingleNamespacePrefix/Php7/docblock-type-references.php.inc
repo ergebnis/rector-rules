@@ -103,7 +103,7 @@ final class ExampleService
 
     /**
      * @param Core\EntityManager\EntityManagerInterface $entityManager
-     * @param Core\Http\Response $response
+     * @param Core\Http\Response               $response
      */
     public function __construct($entityManager, $response)
     {

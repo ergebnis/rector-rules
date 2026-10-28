@@ -369,57 +369,61 @@ CODE_SAMPLE
 
             $hasChanged = false;
 
-            $phpDocNodeTraverser = new PhpDocParser\PhpDocParser\PhpDocNodeTraverser();
-
-            $phpDocNodeTraverser->traverseWithCallable($phpDocInfo->getPhpDocNode(), '', static function (Ast\Node $phpDocNode) use ($aliasToRelativePath, $namespacePrefixWithSeparator, $parentAlias, &$hasChanged): ?Ast\Type\IdentifierTypeNode {
-                if (!$phpDocNode instanceof Ast\Type\IdentifierTypeNode) {
-                    return null;
-                }
-
-                $name = $phpDocNode->name;
-
-                if (
-                    $phpDocNode instanceof BetterPhpDocParser\ValueObject\Type\FullyQualifiedIdentifierTypeNode
-                    || \strpos($name, '\\') === 0
-                ) {
-                    $name = \ltrim($name, '\\');
-
-                    if (\strpos($name, $namespacePrefixWithSeparator) !== 0) {
+            $phpDocNodeTraverser = new Ast\NodeTraverser([
+                new PhpDocParser\PhpDocParser\PhpDocNodeVisitor\CallablePhpDocNodeVisitor(static function (Ast\Node $phpDocNode) use ($aliasToRelativePath, $namespacePrefixWithSeparator, $parentAlias, &$hasChanged): ?Ast\Type\IdentifierTypeNode {
+                    if (!$phpDocNode instanceof Ast\Type\IdentifierTypeNode) {
                         return null;
                     }
 
-                    $relativePath = \substr(
-                        $name,
-                        \strlen($namespacePrefixWithSeparator),
+                    $name = $phpDocNode->name;
+
+                    if (
+                        $phpDocNode instanceof BetterPhpDocParser\ValueObject\Type\FullyQualifiedIdentifierTypeNode
+                        || \strpos($name, '\\') === 0
+                    ) {
+                        $name = \ltrim($name, '\\');
+
+                        if (\strpos($name, $namespacePrefixWithSeparator) !== 0) {
+                            return null;
+                        }
+
+                        $relativePath = \substr(
+                            $name,
+                            \strlen($namespacePrefixWithSeparator),
+                        );
+
+                        $hasChanged = true;
+
+                        return new Ast\Type\IdentifierTypeNode($parentAlias . '\\' . $relativePath);
+                    }
+
+                    $nameParts = \explode('\\', $name);
+                    $firstName = $nameParts[0];
+
+                    if (!\array_key_exists($firstName, $aliasToRelativePath)) {
+                        return null;
+                    }
+
+                    $remainingParts = \array_slice(
+                        $nameParts,
+                        1,
                     );
+
+                    $newName = $aliasToRelativePath[$firstName];
+
+                    if (\count($remainingParts) > 0) {
+                        $newName .= '\\' . \implode('\\', $remainingParts);
+                    }
 
                     $hasChanged = true;
 
-                    return new Ast\Type\IdentifierTypeNode($parentAlias . '\\' . $relativePath);
-                }
+                    return new Ast\Type\IdentifierTypeNode($newName);
+                }),
+            ]);
 
-                $nameParts = \explode('\\', $name);
-                $firstName = $nameParts[0];
-
-                if (!\array_key_exists($firstName, $aliasToRelativePath)) {
-                    return null;
-                }
-
-                $remainingParts = \array_slice(
-                    $nameParts,
-                    1,
-                );
-
-                $newName = $aliasToRelativePath[$firstName];
-
-                if (\count($remainingParts) > 0) {
-                    $newName .= '\\' . \implode('\\', $remainingParts);
-                }
-
-                $hasChanged = true;
-
-                return new Ast\Type\IdentifierTypeNode($newName);
-            });
+            $phpDocNodeTraverser->traverse([
+                $phpDocInfo->getPhpDocNode(),
+            ]);
 
             if ($hasChanged) {
                 $this->docBlockUpdater->updateRefactoredNodeWithPhpDocInfo($node);

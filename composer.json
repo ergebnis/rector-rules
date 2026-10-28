@@ -66,7 +66,7 @@
   },
   "extra": {
     "branch-alias": {
-      "dev-main": "1.18-dev"
+      "dev-main": "1.19-dev"
     },
     "composer-normalize": {
       "indent-size": 2,

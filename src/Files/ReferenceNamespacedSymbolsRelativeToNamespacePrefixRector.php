@@ -579,6 +579,7 @@ CODE_SAMPLE
         $aliasesToReferences = [];
 
         $hasNamespacePrefixImport = false;
+        $hasNamespacePrefixImportWithAlias = false;
 
         foreach ($containerNode->stmts as $statement) {
             if ($statement instanceof Node\Stmt\Use_) {
@@ -591,7 +592,11 @@ CODE_SAMPLE
                         $aliasesToReferences[$alias] = $reference;
 
                         if ($reference->is($namespacePrefix)) {
-                            $hasNamespacePrefixImport = true;
+                            if (\strtolower($namespacePrefix->lastNamespaceSegment()->toString()) === \strtolower($alias)) {
+                                $hasNamespacePrefixImport = true;
+                            } else {
+                                $hasNamespacePrefixImportWithAlias = true;
+                            }
                         }
                     }
                 }
@@ -611,11 +616,22 @@ CODE_SAMPLE
                         $aliasesToReferences[$alias] = $reference;
 
                         if ($reference->is($namespacePrefix)) {
-                            $hasNamespacePrefixImport = true;
+                            if (\strtolower($namespacePrefix->lastNamespaceSegment()->toString()) === \strtolower($alias)) {
+                                $hasNamespacePrefixImport = true;
+                            } else {
+                                $hasNamespacePrefixImportWithAlias = true;
+                            }
                         }
                     }
                 }
             }
+        }
+
+        if (
+            $hasNamespacePrefixImportWithAlias
+            && !$hasNamespacePrefixImport
+        ) {
+            return false;
         }
 
         $hasMatchingNamespacePrefixImports = self::hasMatchingNamespacePrefixImports(

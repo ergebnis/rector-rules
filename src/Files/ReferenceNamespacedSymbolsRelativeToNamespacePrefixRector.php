@@ -592,6 +592,10 @@ CODE_SAMPLE
 
                         if ($reference->is($namespacePrefix)) {
                             $hasNamespacePrefixImport = true;
+
+                            if ($namespacePrefix->lastNamespaceSegment()->toString() !== $alias) {
+                                return false;
+                            }
                         }
                     }
                 }
@@ -612,6 +616,10 @@ CODE_SAMPLE
 
                         if ($reference->is($namespacePrefix)) {
                             $hasNamespacePrefixImport = true;
+
+                            if ($namespacePrefix->lastNamespaceSegment()->toString() !== $alias) {
+                                return false;
+                            }
                         }
                     }
                 }

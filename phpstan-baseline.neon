@@ -80,7 +80,7 @@ parameters:
 
 		-
 			message: '''
-				#^Access to constant on deprecated class Ergebnis\\Rector\\Rules\\Arrays\\SortAssociativeArrayByKeyRector\:
+				#^Fetching class constant class of deprecated class Ergebnis\\Rector\\Rules\\Arrays\\SortAssociativeArrayByKeyRector\:
 				use Ergebnis\\Rector\\Rules\\Expressions\\Arrays\\SortAssociativeArrayByKeyRector instead$#
 			'''
 			identifier: classConstant.deprecatedClass
@@ -89,7 +89,7 @@ parameters:
 
 		-
 			message: '''
-				#^Access to constant on deprecated class Ergebnis\\Rector\\Rules\\Arrays\\SortAssociativeArrayByKeyRector\:
+				#^Fetching class constant class of deprecated class Ergebnis\\Rector\\Rules\\Arrays\\SortAssociativeArrayByKeyRector\:
 				use Ergebnis\\Rector\\Rules\\Expressions\\Arrays\\SortAssociativeArrayByKeyRector instead$#
 			'''
 			identifier: classConstant.deprecatedClass
@@ -98,7 +98,7 @@ parameters:
 
 		-
 			message: '''
-				#^Access to constant on deprecated class Ergebnis\\Rector\\Rules\\Arrays\\SortAssociativeArrayByKeyRector\:
+				#^Fetching class constant class of deprecated class Ergebnis\\Rector\\Rules\\Arrays\\SortAssociativeArrayByKeyRector\:
 				use Ergebnis\\Rector\\Rules\\Expressions\\Arrays\\SortAssociativeArrayByKeyRector instead$#
 			'''
 			identifier: classConstant.deprecatedClass
@@ -107,7 +107,7 @@ parameters:
 
 		-
 			message: '''
-				#^Access to constant on deprecated class Ergebnis\\Rector\\Rules\\Arrays\\SortAssociativeArrayByKeyRector\:
+				#^Fetching class constant class of deprecated class Ergebnis\\Rector\\Rules\\Arrays\\SortAssociativeArrayByKeyRector\:
 				use Ergebnis\\Rector\\Rules\\Expressions\\Arrays\\SortAssociativeArrayByKeyRector instead$#
 			'''
 			identifier: classConstant.deprecatedClass
@@ -116,7 +116,7 @@ parameters:
 
 		-
 			message: '''
-				#^Access to constant on deprecated class Ergebnis\\Rector\\Rules\\Arrays\\SortAssociativeArrayByKeyRector\:
+				#^Fetching class constant class of deprecated class Ergebnis\\Rector\\Rules\\Arrays\\SortAssociativeArrayByKeyRector\:
 				use Ergebnis\\Rector\\Rules\\Expressions\\Arrays\\SortAssociativeArrayByKeyRector instead$#
 			'''
 			identifier: classConstant.deprecatedClass
@@ -125,7 +125,7 @@ parameters:
 
 		-
 			message: '''
-				#^Access to constant on deprecated class Ergebnis\\Rector\\Rules\\Arrays\\SortAssociativeArrayByKeyRector\:
+				#^Fetching class constant class of deprecated class Ergebnis\\Rector\\Rules\\Arrays\\SortAssociativeArrayByKeyRector\:
 				use Ergebnis\\Rector\\Rules\\Expressions\\Arrays\\SortAssociativeArrayByKeyRector instead$#
 			'''
 			identifier: classConstant.deprecatedClass
@@ -134,7 +134,7 @@ parameters:
 
 		-
 			message: '''
-				#^Access to constant on deprecated class Ergebnis\\Rector\\Rules\\Arrays\\SortAssociativeArrayByKeyRector\:
+				#^Fetching class constant class of deprecated class Ergebnis\\Rector\\Rules\\Arrays\\SortAssociativeArrayByKeyRector\:
 				use Ergebnis\\Rector\\Rules\\Expressions\\Arrays\\SortAssociativeArrayByKeyRector instead$#
 			'''
 			identifier: classConstant.deprecatedClass
@@ -143,7 +143,7 @@ parameters:
 
 		-
 			message: '''
-				#^Access to constant on deprecated class Ergebnis\\Rector\\Rules\\Files\\UseImportRelativeToNamespacePrefixRector\:
+				#^Fetching class constant class of deprecated class Ergebnis\\Rector\\Rules\\Files\\UseImportRelativeToNamespacePrefixRector\:
 				use ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector instead$#
 			'''
 			identifier: classConstant.deprecatedClass
@@ -152,21 +152,12 @@ parameters:
 
 		-
 			message: '''
-				#^Access to constant on deprecated class Ergebnis\\Rector\\Rules\\Files\\UseImportRelativeToNamespacePrefixRector\:
+				#^Fetching class constant class of deprecated class Ergebnis\\Rector\\Rules\\Files\\UseImportRelativeToNamespacePrefixRector\:
 				use ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector instead$#
 			'''
 			identifier: classConstant.deprecatedClass
 			count: 1
 			path: test/Fixture/Files/UseImportRelativeToNamespacePrefixRector/WithSingleNamespacePrefix/config.php
-
-		-
-			message: '''
-				#^Access to constant on deprecated class Ergebnis\\Rector\\Rules\\Arrays\\SortAssociativeArrayByKeyRector\:
-				use Ergebnis\\Rector\\Rules\\Expressions\\Arrays\\SortAssociativeArrayByKeyRector instead$#
-			'''
-			identifier: classConstant.deprecatedClass
-			count: 7
-			path: test/Unit/Arrays/SortAssociativeArrayByKeyRectorConfigureTest.php
 
 		-
 			message: '''
@@ -178,6 +169,15 @@ parameters:
 			path: test/Unit/Arrays/SortAssociativeArrayByKeyRectorConfigureTest.php
 
 		-
+			message: '''
+				#^Fetching class constant class of deprecated class Ergebnis\\Rector\\Rules\\Arrays\\SortAssociativeArrayByKeyRector\:
+				use Ergebnis\\Rector\\Rules\\Expressions\\Arrays\\SortAssociativeArrayByKeyRector instead$#
+			'''
+			identifier: classConstant.deprecatedClass
+			count: 7
+			path: test/Unit/Arrays/SortAssociativeArrayByKeyRectorConfigureTest.php
+
+		-
 			message: '#^Parameter \#1 \$values of static method Ergebnis\\Rector\\Rules\\Configuration\\Configuration\:\:fromArray\(\) expects array\<string, mixed\>, array\<int, string\> given\.$#'
 			identifier: argument.type
 			count: 1
@@ -185,18 +185,18 @@ parameters:
 
 		-
 			message: '''
-				#^Access to constant on deprecated class Ergebnis\\Rector\\Rules\\Files\\UseImportRelativeToNamespacePrefixRector\:
+				#^Call to method configure\(\) of deprecated class Ergebnis\\Rector\\Rules\\Files\\UseImportRelativeToNamespacePrefixRector\:
 				use ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector instead$#
 			'''
-			identifier: classConstant.deprecatedClass
+			identifier: method.deprecatedClass
 			count: 7
 			path: test/Unit/Files/UseImportRelativeToNamespacePrefixRectorConfigureTest.php
 
 		-
 			message: '''
-				#^Call to method configure\(\) of deprecated class Ergebnis\\Rector\\Rules\\Files\\UseImportRelativeToNamespacePrefixRector\:
+				#^Fetching class constant class of deprecated class Ergebnis\\Rector\\Rules\\Files\\UseImportRelativeToNamespacePrefixRector\:
 				use ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector instead$#
 			'''
-			identifier: method.deprecatedClass
+			identifier: classConstant.deprecatedClass
 			count: 7
 			path: test/Unit/Files/UseImportRelativeToNamespacePrefixRectorConfigureTest.php

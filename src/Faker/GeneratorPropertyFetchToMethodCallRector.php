@@ -171,6 +171,7 @@ final class GeneratorPropertyFetchToMethodCallRector extends Rector\AbstractRect
     public function getNodeTypes(): array
     {
         return [
+            Node\Expr\NullsafePropertyFetch::class,
             Node\Expr\PropertyFetch::class,
         ];
     }
@@ -197,11 +198,13 @@ final class GeneratorPropertyFetchToMethodCallRector extends Rector\AbstractRect
     }
 
     /**
-     * @param Node\Expr\PropertyFetch $node
+     * @param Node\Expr\NullsafePropertyFetch|Node\Expr\PropertyFetch $node
      */
     public function refactor(Node $node): ?Node
     {
-        if (!$this->isObjectType($node->var, new Type\ObjectType(Generator::class))) {
+        $type = Type\TypeCombinator::removeNull($this->getType($node->var));
+
+        if (!(new Type\ObjectType(Generator::class))->isSuperTypeOf($type)->yes()) {
             return null;
         }
 
@@ -213,6 +216,13 @@ final class GeneratorPropertyFetchToMethodCallRector extends Rector\AbstractRect
 
         if (!\in_array($propertyName, $this->deprecatedPropertyNames, true)) {
             return null;
+        }
+
+        if ($node instanceof Node\Expr\NullsafePropertyFetch) {
+            return new Node\Expr\NullsafeMethodCall(
+                $node->var,
+                new Node\Identifier($propertyName),
+            );
         }
 
         return new Node\Expr\MethodCall(

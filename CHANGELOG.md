@@ -14,6 +14,7 @@ For a full diff see [`1.19.0...main`][1.19.0...main].
 
 ### Changed
 
+- Adjusted `Rules\Files\RemoveAvoidableImportAliasRector` to remove aliases from imports of functions and constants ([#298]), by [@localheinz]
 - Required `rector/rector:^2.8.4` ([#470]), by [@localheinz]
 - Adjusted `Rules\Expressions\Matches\SortMatchArmsByConditionalRector` to sort match arms with negative integer conditionals ([#474]), by [@localheinz]
 - Adjusted `Rules\Expressions\CallLikes\RemoveNamedArgumentForSingleParameterRector` to remove named arguments for attributes whose constructor has a single parameter ([#481]), by [@localheinz]

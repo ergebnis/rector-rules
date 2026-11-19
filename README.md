@@ -125,7 +125,7 @@ Replaces references to classes whose fully-qualified name starts with a namespac
 
 #### `Files\RemoveAvoidableImportAliasRector`
 
-Removes aliases from imports of classes and namespaces when the imported name is not otherwise in use.
+Removes aliases from imports of classes, namespaces, functions, and constants when the imported name is not otherwise in use.
 
 ```diff
  namespace App\Http;

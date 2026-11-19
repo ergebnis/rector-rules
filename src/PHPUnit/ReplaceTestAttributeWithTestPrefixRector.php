@@ -23,6 +23,11 @@ use Symplify\RuleDocGenerator;
  */
 final class ReplaceTestAttributeWithTestPrefixRector extends Rector\AbstractRector
 {
+    private const DEPENDS_ATTRIBUTES = [
+        'PHPUnit\\Framework\\Attributes\\Depends',
+        'PHPUnit\\Framework\\Attributes\\DependsUsingDeepClone',
+        'PHPUnit\\Framework\\Attributes\\DependsUsingShallowClone',
+    ];
     private const TEST_ATTRIBUTE = 'PHPUnit\\Framework\\Attributes\\Test';
     private PHPUnit\NodeAnalyzer\TestsNodeAnalyzer $testsNodeAnalyzer;
 
@@ -34,7 +39,7 @@ final class ReplaceTestAttributeWithTestPrefixRector extends Rector\AbstractRect
     public function getNodeTypes(): array
     {
         return [
-            Node\Stmt\ClassMethod::class,
+            Node\Stmt\Class_::class,
         ];
     }
 
@@ -74,7 +79,7 @@ CODE_SAMPLE
     }
 
     /**
-     * @param Node\Stmt\ClassMethod $node
+     * @param Node\Stmt\Class_ $node
      */
     public function refactor(Node $node): ?Node
     {
@@ -82,22 +87,106 @@ CODE_SAMPLE
             return null;
         }
 
-        if (\strncmp($node->name->toString(), 'test', 4) === 0) {
+        $declaredMethodNames = [];
+
+        foreach ($node->getMethods() as $classMethod) {
+            $declaredMethodNames[] = \strtolower($classMethod->name->toString());
+        }
+
+        $renamedMethodNames = [];
+
+        foreach ($node->getMethods() as $classMethod) {
+            $methodName = $classMethod->name->toString();
+
+            if (\strncmp($methodName, 'test', 4) === 0) {
+                continue;
+            }
+
+            if (!$this->hasTestAttribute($classMethod)) {
+                continue;
+            }
+
+            $prefixedMethodName = \sprintf(
+                'test%s',
+                \ucfirst($methodName),
+            );
+
+            if (\in_array(\strtolower($prefixedMethodName), $declaredMethodNames, true)) {
+                continue;
+            }
+
+            $this->removeTestAttribute($classMethod);
+
+            $classMethod->name->name = $prefixedMethodName;
+
+            $declaredMethodNames[] = \strtolower($prefixedMethodName);
+            $renamedMethodNames[\strtolower($methodName)] = $prefixedMethodName;
+        }
+
+        if ([] === $renamedMethodNames) {
             return null;
         }
 
-        if (!$this->hasTestAttribute($node)) {
-            return null;
+        foreach ($node->getMethods() as $classMethod) {
+            $this->updateDependsAttributes(
+                $classMethod,
+                $renamedMethodNames,
+            );
         }
-
-        $this->removeTestAttribute($node);
-
-        $node->name->name = \sprintf(
-            'test%s',
-            \ucfirst($node->name->name),
-        );
 
         return $node;
+    }
+
+    /**
+     * @param array<string, string> $renamedMethodNames
+     */
+    private function updateDependsAttributes(
+        Node\Stmt\ClassMethod $classMethod,
+        array $renamedMethodNames
+    ): void {
+        foreach ($classMethod->attrGroups as $attributeGroup) {
+            foreach ($attributeGroup->attrs as $attribute) {
+                if (!$this->isDependsAttributeName($attribute->name)) {
+                    continue;
+                }
+
+                if (\count($attribute->args) !== 1) {
+                    continue;
+                }
+
+                $value = $attribute->args[0]->value;
+
+                if (!$value instanceof Node\Scalar\String_) {
+                    continue;
+                }
+
+                $referencedMethodName = \strtolower($value->value);
+
+                if (!\array_key_exists($referencedMethodName, $renamedMethodNames)) {
+                    continue;
+                }
+
+                $attribute->args[0]->value = new Node\Scalar\String_($renamedMethodNames[$referencedMethodName]);
+            }
+        }
+    }
+
+    private function isDependsAttributeName(Node\Name $name): bool
+    {
+        foreach (self::DEPENDS_ATTRIBUTES as $dependsAttribute) {
+            if ($this->isName($name, $dependsAttribute)) {
+                return true;
+            }
+
+            if (
+                $name instanceof Node\Name\FullyQualified
+                && $name->toString() === $dependsAttribute
+            ) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private function hasTestAttribute(Node\Stmt\ClassMethod $classMethod): bool

@@ -11,6 +11,7 @@ For a full diff see [`1.19.0...main`][1.19.0...main].
 ### Changed
 
 - Required `rector/rector:^2.8.4` ([#470]), by [@localheinz]
+- Adjusted `Rules\Expressions\Matches\SortMatchArmsByConditionalRector` to sort match arms with negative integer conditionals ([#474]), by [@localheinz]
 
 ### Fixed
 
@@ -548,5 +549,6 @@ For a full diff see [`fd198f0...0.1.0`][fd198f0...0.1.0].
 [#458]: https://github.com/ergebnis/rector-rules/pull/458
 [#470]: https://github.com/ergebnis/rector-rules/pull/470
 [#471]: https://github.com/ergebnis/rector-rules/pull/471
+[#474]: https://github.com/ergebnis/rector-rules/pull/474
 
 [@localheinz]: https://github.com/localheinz

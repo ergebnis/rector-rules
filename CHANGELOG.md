@@ -20,6 +20,7 @@ For a full diff see [`1.19.0...main`][1.19.0...main].
 - Adjusted `Rules\Expressions\Matches\SortMatchArmsByConditionalRector` to sort match arms with negative integer conditionals ([#474]), by [@localheinz]
 - Adjusted `Rules\Expressions\CallLikes\RemoveNamedArgumentForSingleParameterRector` to remove named arguments for attributes whose constructor has a single parameter ([#481]), by [@localheinz]
 - Adjusted `Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector` to reference qualified function calls and constant fetches relative to configured namespace prefixes ([#484]), by [@localheinz]
+- Adjusted `Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector` to discover namespace prefixes from the namespaces of qualified function calls and constant fetches ([#486]), by [@localheinz]
 
 ### Fixed
 
@@ -573,6 +574,7 @@ For a full diff see [`fd198f0...0.1.0`][fd198f0...0.1.0].
 [#482]: https://github.com/ergebnis/rector-rules/pull/482
 [#484]: https://github.com/ergebnis/rector-rules/pull/484
 [#485]: https://github.com/ergebnis/rector-rules/pull/485
+[#486]: https://github.com/ergebnis/rector-rules/pull/486
 [#480]: https://github.com/ergebnis/rector-rules/pull/480
 
 [@localheinz]: https://github.com/localheinz

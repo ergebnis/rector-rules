@@ -1824,15 +1824,31 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
         $nodeFinder = new NodeFinder();
 
         $functionAndConstantNodeIdentifiers = self::functionAndConstantNodeIdentifiers($containerNode->stmts);
+        $unqualifiedFunctionAndConstantNodeIdentifiers = self::unqualifiedFunctionAndConstantNodeIdentifiers($containerNode->stmts);
 
         $nodeFinder->find(
             $containerNode->stmts,
-            static function (Node $node) use ($collectFirstSegment, $functionAndConstantNodeIdentifiers): bool {
+            static function (Node $node) use ($collectFirstSegment, $functionAndConstantNodeIdentifiers, $unqualifiedFunctionAndConstantNodeIdentifiers): bool {
                 if (!$node instanceof Node\Name\FullyQualified) {
                     return false;
                 }
 
+                if (\in_array(\spl_object_id($node), $unqualifiedFunctionAndConstantNodeIdentifiers, true)) {
+                    return false;
+                }
+
                 if (\in_array(\spl_object_id($node), $functionAndConstantNodeIdentifiers, true)) {
+                    $namespace = $node->slice(
+                        0,
+                        -1,
+                    );
+
+                    if (!$namespace instanceof Node\Name) {
+                        return false;
+                    }
+
+                    $collectFirstSegment($namespace->toString());
+
                     return false;
                 }
 
@@ -1972,20 +1988,36 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
         $nodeFinder = new NodeFinder();
 
         $functionAndConstantNodeIdentifiers = self::functionAndConstantNodeIdentifiers($containerNode->stmts);
+        $unqualifiedFunctionAndConstantNodeIdentifiers = self::unqualifiedFunctionAndConstantNodeIdentifiers($containerNode->stmts);
 
         $nodeFinder->find(
             $containerNode->stmts,
-            static function (Node $node) use ($parentNamespacePrefixes, &$existingKeys, &$discoveredNamespacePrefixes, $functionAndConstantNodeIdentifiers): bool {
+            static function (Node $node) use ($parentNamespacePrefixes, &$existingKeys, &$discoveredNamespacePrefixes, $functionAndConstantNodeIdentifiers, $unqualifiedFunctionAndConstantNodeIdentifiers): bool {
                 if (!$node instanceof Node\Name\FullyQualified) {
                     return false;
                 }
 
-                if (\in_array(\spl_object_id($node), $functionAndConstantNodeIdentifiers, true)) {
+                if (\in_array(\spl_object_id($node), $unqualifiedFunctionAndConstantNodeIdentifiers, true)) {
                     return false;
                 }
 
+                $reference = $node->toString();
+
+                if (\in_array(\spl_object_id($node), $functionAndConstantNodeIdentifiers, true)) {
+                    $namespace = $node->slice(
+                        0,
+                        -1,
+                    );
+
+                    if (!$namespace instanceof Node\Name) {
+                        return false;
+                    }
+
+                    $reference = $namespace->toString();
+                }
+
                 self::discoverChildPrefix(
-                    $node->toString(),
+                    $reference,
                     $parentNamespacePrefixes,
                     $existingKeys,
                     $discoveredNamespacePrefixes,

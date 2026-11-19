@@ -6,7 +6,7 @@ final class Kernel
 {
     public function handle()
     {
-        $value = \Foo\Bar\SOME_CONSTANT;
+        \Symfony\Component\dump('hello');
     }
 }
 

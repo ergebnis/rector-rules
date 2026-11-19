@@ -1,6 +1,6 @@
 # `Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector`
 
-Replaces references to namespaced symbols (classes, functions, constants) whose fully-qualified name starts with a namespace prefix so they are relative to that prefix.
+Replaces references to classes whose fully-qualified name starts with a namespace prefix so they are relative to that prefix.
 
 ## Options
 

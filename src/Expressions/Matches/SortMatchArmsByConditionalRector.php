@@ -368,6 +368,13 @@ CODE_SAMPLE,
             return IntConditional::fromInt($expr->value);
         }
 
+        if (
+            $expr instanceof Node\Expr\UnaryMinus
+            && $expr->expr instanceof Node\Scalar\Int_
+        ) {
+            return IntConditional::fromInt(-$expr->expr->value);
+        }
+
         if ($expr instanceof Node\Scalar\String_) {
             return StringConditional::fromString($expr->value);
         }

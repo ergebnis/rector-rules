@@ -12,6 +12,7 @@ For a full diff see [`1.19.0...main`][1.19.0...main].
 
 - Required `rector/rector:^2.8.4` ([#470]), by [@localheinz]
 - Adjusted `Rules\Expressions\Matches\SortMatchArmsByConditionalRector` to sort match arms with negative integer conditionals ([#474]), by [@localheinz]
+- Adjusted `Rules\Expressions\CallLikes\RemoveNamedArgumentForSingleParameterRector` to remove named arguments for attributes whose constructor has a single parameter ([#481]), by [@localheinz]
 
 ### Fixed
 
@@ -560,5 +561,6 @@ For a full diff see [`fd198f0...0.1.0`][fd198f0...0.1.0].
 [#477]: https://github.com/ergebnis/rector-rules/pull/477
 [#478]: https://github.com/ergebnis/rector-rules/pull/478
 [#479]: https://github.com/ergebnis/rector-rules/pull/479
+[#481]: https://github.com/ergebnis/rector-rules/pull/481
 
 [@localheinz]: https://github.com/localheinz

@@ -17,6 +17,7 @@ For a full diff see [`1.19.0...main`][1.19.0...main].
 
 - Adjusted `Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector` to skip a namespace prefix that is imported with an alias ([#458]), by [@localheinz]
 - Adjusted `Rules\PHPUnit\ReplaceTestAttributeWithTestPrefixRector` to skip a method when its prefixed name is already declared, and to update `#[Depends]`, `#[DependsUsingDeepClone]`, and `#[DependsUsingShallowClone]` attributes that reference a renamed method ([#471]), by [@localheinz]
+- Adjusted the description of `Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector` to mention only classes, since it skips functions and constants ([#475]), by [@localheinz]
 
 ## [`1.19.0`][1.19.0]
 
@@ -550,5 +551,6 @@ For a full diff see [`fd198f0...0.1.0`][fd198f0...0.1.0].
 [#470]: https://github.com/ergebnis/rector-rules/pull/470
 [#471]: https://github.com/ergebnis/rector-rules/pull/471
 [#474]: https://github.com/ergebnis/rector-rules/pull/474
+[#475]: https://github.com/ergebnis/rector-rules/pull/475
 
 [@localheinz]: https://github.com/localheinz

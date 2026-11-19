@@ -327,6 +327,10 @@ CODE_SAMPLE,
             return null;
         }
 
+        if (self::hasDuplicateConditionals(...$matchArmsWithConditionals)) {
+            return null;
+        }
+
         $conditionalComparator = $this->conditionalComparatorFor(...$matchArmsWithConditionals);
 
         if (!$conditionalComparator instanceof \Closure) {
@@ -360,6 +364,37 @@ CODE_SAMPLE,
         $node->arms = $sortedArms;
 
         return $node;
+    }
+
+    private static function hasDuplicateConditionals(MatchArmWithConditional ...$matchArmsWithConditionals): bool
+    {
+        $values = [];
+
+        foreach ($matchArmsWithConditionals as $matchArmWithConditional) {
+            $conditional = $matchArmWithConditional->conditional();
+
+            if ($conditional instanceof IntConditional) {
+                $value = \sprintf(
+                    'int:%d',
+                    $conditional->toInt(),
+                );
+            } elseif ($conditional instanceof StringConditional) {
+                $value = \sprintf(
+                    'string:%s',
+                    $conditional->toString(),
+                );
+            } else {
+                continue;
+            }
+
+            if (\array_key_exists($value, $values)) {
+                return true;
+            }
+
+            $values[$value] = true;
+        }
+
+        return false;
     }
 
     private static function conditionalFrom(Node\Expr $expr): ?Conditional

@@ -64,7 +64,7 @@ Sorts associative arrays by key.
 
 #### `Expressions\CallLikes\RemoveNamedArgumentForSingleParameterRector`
 
-Removes named arguments for single-parameter function and method calls.
+Removes named arguments for single-parameter function calls, method calls, and attributes.
 
 ```diff
 -strlen(string: 'hello');

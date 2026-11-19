@@ -33,6 +33,7 @@ final class RemoveNamedArgumentForSingleParameterRector extends Rector\AbstractR
     public function getNodeTypes(): array
     {
         return [
+            Node\Attribute::class,
             Node\Expr\CallLike::class,
         ];
     }
@@ -40,7 +41,7 @@ final class RemoveNamedArgumentForSingleParameterRector extends Rector\AbstractR
     public function getRuleDefinition(): RuleDocGenerator\ValueObject\RuleDefinition
     {
         return new RuleDocGenerator\ValueObject\RuleDefinition(
-            'Removes named arguments for single-parameter function and method calls.',
+            'Removes named arguments for single-parameter function calls, method calls, and attributes.',
             [
                 new RuleDocGenerator\ValueObject\CodeSample\CodeSample(
                     <<<'CODE_SAMPLE'
@@ -56,17 +57,19 @@ final class RemoveNamedArgumentForSingleParameterRector extends Rector\AbstractR
     }
 
     /**
-     * @param Node\Expr\CallLike $node
+     * @param Node\Attribute|Node\Expr\CallLike $node
      */
     public function refactor(Node $node): ?Node
     {
+        if ($node instanceof Node\Attribute) {
+            return $this->refactorAttribute($node);
+        }
+
         if ($node->isFirstClassCallable()) {
             return null;
         }
 
-        $namedArguments = \array_filter($node->getArgs(), static function ($argument): bool {
-            return $argument->name instanceof Node\Identifier;
-        });
+        $namedArguments = self::namedArguments($node->getArgs());
 
         if (\count($namedArguments) !== 1) {
             return null;
@@ -93,14 +96,73 @@ final class RemoveNamedArgumentForSingleParameterRector extends Rector\AbstractR
             $scope,
         );
 
-        $parameters = $parametersAcceptor->getParameters();
-
-        if (\count($parameters) !== 1) {
+        if (!self::removeNamedArgument($namedArguments, $parametersAcceptor->getParameters())) {
             return null;
         }
 
-        $parameter = $parameters[0];
-        $parameterName = $parameter->getName();
+        return $node;
+    }
+
+    private function refactorAttribute(Node\Attribute $attribute): ?Node\Attribute
+    {
+        $namedArguments = self::namedArguments($attribute->args);
+
+        if (\count($namedArguments) !== 1) {
+            return null;
+        }
+
+        $reflection = $this->reflectionResolver->resolveConstructorReflectionFromAttribute($attribute);
+
+        if (!$reflection instanceof Reflection\MethodReflection) {
+            return null;
+        }
+
+        $parametersAcceptor = Reflection\ParametersAcceptorSelector::combineAcceptors($reflection->getVariants());
+
+        if (!self::removeNamedArgument($namedArguments, $parametersAcceptor->getParameters())) {
+            return null;
+        }
+
+        return $attribute;
+    }
+
+    /**
+     * @param array<array-key, Node\Arg|Node\VariadicPlaceholder> $arguments
+     *
+     * @return list<Node\Arg>
+     */
+    private static function namedArguments(array $arguments): array
+    {
+        $namedArguments = [];
+
+        foreach ($arguments as $argument) {
+            if (!$argument instanceof Node\Arg) {
+                continue;
+            }
+
+            if (!$argument->name instanceof Node\Identifier) {
+                continue;
+            }
+
+            $namedArguments[] = $argument;
+        }
+
+        return $namedArguments;
+    }
+
+    /**
+     * @param list<Node\Arg>                       $namedArguments
+     * @param list<Reflection\ParameterReflection> $parameters
+     */
+    private static function removeNamedArgument(
+        array $namedArguments,
+        array $parameters
+    ): bool {
+        if (\count($parameters) !== 1) {
+            return false;
+        }
+
+        $parameterName = $parameters[0]->getName();
 
         $hasChanged = false;
 
@@ -118,10 +180,6 @@ final class RemoveNamedArgumentForSingleParameterRector extends Rector\AbstractR
             $hasChanged = true;
         }
 
-        if (!$hasChanged) {
-            return null;
-        }
-
-        return $node;
+        return $hasChanged;
     }
 }

@@ -12,6 +12,7 @@
     "PHPStan\\Reflection\\ClassReflection",
     "PHPStan\\Reflection\\FunctionReflection",
     "PHPStan\\Reflection\\MethodReflection",
+    "PHPStan\\Reflection\\ParametersAcceptorSelector",
     "PHPStan\\Type\\ObjectType",
     "Rector\\BetterPhpDocParser\\PhpDocInfo\\PhpDocInfo",
     "Rector\\BetterPhpDocParser\\PhpDocInfo\\PhpDocInfoFactory",

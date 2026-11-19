@@ -1,6 +1,6 @@
 # `Expressions\CallLikes\RemoveNamedArgumentForSingleParameterRector`
 
-Removes named arguments for single-parameter function and method calls.
+Removes named arguments for single-parameter function calls, method calls, and attributes.
 
 ## Examples
 

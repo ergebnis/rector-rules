@@ -551,18 +551,16 @@ final class RemoveAvoidableImportAliasRector extends Rector\AbstractRector
      */
     private static function declaredNames(Node $containerNode): array
     {
+        $nodeFinder = new NodeFinder();
+
         $declaredNames = [];
 
-        foreach ($containerNode->stmts as $statement) {
-            if (!$statement instanceof Node\Stmt\ClassLike) {
+        foreach ($nodeFinder->findInstanceOf(self::statementsWithoutImports($containerNode), Node\Stmt\ClassLike::class) as $classLike) {
+            if (!$classLike->name instanceof Node\Identifier) {
                 continue;
             }
 
-            if (!$statement->name instanceof Node\Identifier) {
-                continue;
-            }
-
-            $declaredNames[] = $statement->name->toString();
+            $declaredNames[] = $classLike->name->toString();
         }
 
         return $declaredNames;

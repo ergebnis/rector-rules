@@ -14,6 +14,7 @@
     "PHPStan\\Reflection\\MethodReflection",
     "PHPStan\\Reflection\\ParametersAcceptorSelector",
     "PHPStan\\Type\\ObjectType",
+    "PHPStan\\Type\\TypeCombinator",
     "Rector\\BetterPhpDocParser\\PhpDocInfo\\PhpDocInfo",
     "Rector\\BetterPhpDocParser\\PhpDocInfo\\PhpDocInfoFactory",
     "Rector\\BetterPhpDocParser\\ValueObject\\Type\\FullyQualifiedIdentifierTypeNode",

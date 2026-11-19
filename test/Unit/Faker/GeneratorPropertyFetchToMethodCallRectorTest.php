@@ -21,9 +21,9 @@ use Rector\Testing;
 final class GeneratorPropertyFetchToMethodCallRectorTest extends Testing\PHPUnit\AbstractRectorTestCase
 {
     /**
-     * @dataProvider provideData
+     * @dataProvider provideDataOnPhp70
      */
-    public function test(string $filePath): void
+    public function testOnPhp70(string $filePath): void
     {
         $this->doTestFile($filePath);
     }
@@ -31,9 +31,27 @@ final class GeneratorPropertyFetchToMethodCallRectorTest extends Testing\PHPUnit
     /**
      * @return \Iterator<string, array{string}>
      */
-    public static function provideData(): iterable
+    public static function provideDataOnPhp70(): iterable
     {
-        return self::yieldFilesFromDirectory(__DIR__ . '/../../Fixture/Faker/GeneratorPropertyFetchToMethodCallRector/');
+        return self::yieldFilesFromDirectory(__DIR__ . '/../../Fixture/Faker/GeneratorPropertyFetchToMethodCallRector/Php70');
+    }
+
+    /**
+     * @dataProvider provideDataOnPhp80
+     *
+     * @requires PHP >= 8.0.0
+     */
+    public function testOnPhp80(string $filePath): void
+    {
+        $this->doTestFile($filePath);
+    }
+
+    /**
+     * @return \Iterator<string, array{string}>
+     */
+    public static function provideDataOnPhp80(): iterable
+    {
+        return self::yieldFilesFromDirectory(__DIR__ . '/../../Fixture/Faker/GeneratorPropertyFetchToMethodCallRector/Php80');
     }
 
     public function provideConfigFilePath(): string

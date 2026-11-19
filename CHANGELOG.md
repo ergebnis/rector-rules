@@ -23,6 +23,7 @@ For a full diff see [`1.19.0...main`][1.19.0...main].
 - Adjusted `Rules\Expressions\Matches\SortMatchArmsByConditionalRector` to compare resolved class names when detecting duplicate conditionals and to skip a match with `self::class`, `static::class`, or `parent::class` conditionals ([#477]), by [@localheinz]
 - Adjusted `Rules\Expressions\Arrays\SortAssociativeArrayByKeyRector` to skip an array with duplicate keys, comparing resolved class names, and an array with `self::class`, `static::class`, or `parent::class` keys, since sorting could change which value a key holds ([#478]), by [@localheinz]
 - Adjusted `Rules\PHPUnit\ReplaceTestAttributeWithTestPrefixRector` to remove `#[Test]` attributes from methods whose names already start with `test` ([#479]), by [@localheinz]
+- Adjusted `Rules\Faker\GeneratorPropertyFetchToMethodCallRector` to replace null-safe property fetches ([#480]), by [@localheinz]
 
 ## [`1.19.0`][1.19.0]
 
@@ -562,5 +563,6 @@ For a full diff see [`fd198f0...0.1.0`][fd198f0...0.1.0].
 [#478]: https://github.com/ergebnis/rector-rules/pull/478
 [#479]: https://github.com/ergebnis/rector-rules/pull/479
 [#481]: https://github.com/ergebnis/rector-rules/pull/481
+[#480]: https://github.com/ergebnis/rector-rules/pull/480
 
 [@localheinz]: https://github.com/localheinz

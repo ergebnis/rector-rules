@@ -33,6 +33,29 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
     private const CONFIGURATION_KEY_FORCE_RELATIVE_REFERENCES = 'forceRelativeReferences';
     private const CONFIGURATION_KEY_NAMESPACE_PREFIXES = 'namespacePrefixes';
     private const CONFIGURATION_KEY_PARENT_NAMESPACE_PREFIXES = 'parentNamespacePrefixes';
+
+    /**
+     * @see https://www.php.net/manual/en/reserved.other-reserved-words.php
+     */
+    private const RESERVED_NAMES = [
+        'array',
+        'bool',
+        'callable',
+        'false',
+        'float',
+        'int',
+        'iterable',
+        'mixed',
+        'never',
+        'null',
+        'object',
+        'parent',
+        'self',
+        'static',
+        'string',
+        'true',
+        'void',
+    ];
     private BetterPhpDocParser\PhpDocInfo\PhpDocInfoFactory $phpDocInfoFactory;
     private Comments\NodeDocBlock\DocBlockUpdater $docBlockUpdater;
     private bool $discoverNamespacePrefixes = false;
@@ -575,6 +598,10 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
         array $moreSpecificNamespacePrefixes,
         array $classReferences
     ): bool {
+        if (\in_array(\strtolower($namespacePrefix->lastNamespaceSegment()->toString()), self::RESERVED_NAMES, true)) {
+            return false;
+        }
+
         /** @var array<string, Reference> $aliasesToReferences */
         $aliasesToReferences = [];
 

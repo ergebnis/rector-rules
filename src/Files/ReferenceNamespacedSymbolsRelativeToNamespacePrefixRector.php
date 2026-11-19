@@ -191,7 +191,7 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
     public function getRuleDefinition(): RuleDocGenerator\ValueObject\RuleDefinition
     {
         return new RuleDocGenerator\ValueObject\RuleDefinition(
-            'Replaces references to classes whose fully-qualified name starts with a namespace prefix so they are relative to that prefix.',
+            'Replaces references to namespaced symbols (classes, functions, constants) whose fully-qualified name starts with a namespace prefix so they are relative to that prefix.',
             [
                 new RuleDocGenerator\ValueObject\CodeSample\ConfiguredCodeSample(
                     <<<'CODE_SAMPLE'
@@ -872,7 +872,7 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
     ): bool {
         $nodeFinder = new NodeFinder();
 
-        $functionAndConstantNodeIdentifiers = self::functionAndConstantNodeIdentifiers($containerNode->stmts);
+        $functionAndConstantNodeIdentifiers = self::unqualifiedFunctionAndConstantNodeIdentifiers($containerNode->stmts);
 
         $match = $nodeFinder->findFirst(
             $containerNode->stmts,
@@ -937,7 +937,7 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
     ): bool {
         $nodeFinder = new NodeFinder();
 
-        $functionAndConstantNodeIdentifiers = self::functionAndConstantNodeIdentifiers($containerNode->stmts);
+        $functionAndConstantNodeIdentifiers = self::unqualifiedFunctionAndConstantNodeIdentifiers($containerNode->stmts);
 
         $match = $nodeFinder->findFirst(
             $containerNode->stmts,
@@ -1043,21 +1043,31 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
         $hasChanged = false;
 
         $functionAndConstantNodeIdentifiers = self::functionAndConstantNodeIdentifiers($containerNode->stmts);
+        $unqualifiedFunctionAndConstantNodeIdentifiers = self::unqualifiedFunctionAndConstantNodeIdentifiers($containerNode->stmts);
 
-        $this->traverseNodesWithCallable($containerNode->stmts, static function (Node $node) use ($namespacePrefix, $moreSpecificNamespacePrefixes, $namespacePrefixOfContainingFile, $namespaceOfContainingFile, $unavailableFirstNamespaceSegments, $functionAndConstantNodeIdentifiers, &$hasChanged, &$requiresNamespacePrefixImport): ?Node {
+        $this->traverseNodesWithCallable($containerNode->stmts, static function (Node $node) use ($namespacePrefix, $moreSpecificNamespacePrefixes, $namespacePrefixOfContainingFile, $namespaceOfContainingFile, $unavailableFirstNamespaceSegments, $functionAndConstantNodeIdentifiers, $unqualifiedFunctionAndConstantNodeIdentifiers, &$hasChanged, &$requiresNamespacePrefixImport): ?Node {
             if (!$node instanceof Node\Name\FullyQualified) {
                 return null;
             }
 
-            if (\in_array(\spl_object_id($node), $functionAndConstantNodeIdentifiers, true)) {
+            if (\in_array(\spl_object_id($node), $unqualifiedFunctionAndConstantNodeIdentifiers, true)) {
                 return null;
             }
+
+            $isFunctionOrConstant = \in_array(\spl_object_id($node), $functionAndConstantNodeIdentifiers, true);
 
             $reference = Reference::fromString($node->toString());
 
             if (
                 !$reference->is($namespacePrefix)
                 && !$reference->isDeclaredIn($namespacePrefix)
+            ) {
+                return null;
+            }
+
+            if (
+                $isFunctionOrConstant
+                && $reference->is($namespacePrefix)
             ) {
                 return null;
             }
@@ -1072,6 +1082,13 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
                 }
 
                 $rewrittenName = $reference->relativeTo($namespacePrefixOfContainingFile)->toString();
+
+                if (
+                    $isFunctionOrConstant
+                    && \strpos($rewrittenName, '\\') === false
+                ) {
+                    return null;
+                }
 
                 $originalName = $node->getAttribute('originalName');
 
@@ -1093,6 +1110,7 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
                 $namespaceOfContainingFile,
                 $unavailableFirstNamespaceSegments,
                 $requiresNamespacePrefixImport,
+                $isFunctionOrConstant,
             );
 
             $originalName = $node->getAttribute('originalName');
@@ -1422,7 +1440,7 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
 
         $nodeFinder = new NodeFinder();
 
-        $functionAndConstantNodeIdentifiers = self::functionAndConstantNodeIdentifiers(\array_values($containerNode->stmts));
+        $functionAndConstantNodeIdentifiers = self::unqualifiedFunctionAndConstantNodeIdentifiers(\array_values($containerNode->stmts));
 
         $match = $nodeFinder->findFirst(
             $containerNode->stmts,
@@ -1668,7 +1686,8 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
         NamespacePrefix $namespacePrefix,
         ?NamespacePrefix $namespaceOfContainingFile,
         array $unavailableFirstNamespaceSegments,
-        bool &$requiresNamespacePrefixImport
+        bool &$requiresNamespacePrefixImport,
+        bool $requiresQualifiedName = false
     ): string {
         if (
             $namespaceOfContainingFile instanceof NamespacePrefix
@@ -1683,7 +1702,13 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
 
             $firstNamespaceSegment = $namespaceSegments[0];
 
-            if (!\in_array(\strtolower($firstNamespaceSegment), $unavailableFirstNamespaceSegments, true)) {
+            if (
+                !\in_array(\strtolower($firstNamespaceSegment), $unavailableFirstNamespaceSegments, true)
+                && (
+                    !$requiresQualifiedName
+                    || \count($namespaceSegments) > 1
+                )
+            ) {
                 return $name;
             }
         }
@@ -2071,6 +2096,46 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
             /** @var Node\Expr\ConstFetch|Node\Expr\FuncCall $node */
             return \spl_object_id($node->name);
         }, $nodes)));
+    }
+
+    /**
+     * Returns the object identifiers of names of function calls and constant fetches that are unqualified in the source. PHP
+     * resolves such a name through the import table for functions or constants, or relative to the current namespace with a
+     * fallback to the global namespace, so it can not be rewritten relative to a namespace prefix.
+     *
+     * @param array<array-key, Node\Stmt> $statements
+     *
+     * @return list<int>
+     */
+    private static function unqualifiedFunctionAndConstantNodeIdentifiers(array $statements): array
+    {
+        $nodeFinder = new NodeFinder();
+
+        $nodes = $nodeFinder->find($statements, static function (Node $node): bool {
+            return $node instanceof Node\Expr\ConstFetch
+                || $node instanceof Node\Expr\FuncCall;
+        });
+
+        $identifiers = [];
+
+        foreach ($nodes as $node) {
+            /** @var Node\Expr\ConstFetch|Node\Expr\FuncCall $node */
+            if (!$node->name instanceof Node\Name\FullyQualified) {
+                continue;
+            }
+
+            $originalName = $node->name->getAttribute('originalName');
+
+            if (
+                $originalName instanceof Node\Name
+                && !$originalName instanceof Node\Name\FullyQualified
+                && $originalName->isUnqualified()
+            ) {
+                $identifiers[] = \spl_object_id($node->name);
+            }
+        }
+
+        return \array_values(\array_unique($identifiers));
     }
 
     /**

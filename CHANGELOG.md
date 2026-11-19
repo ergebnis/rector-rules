@@ -10,6 +10,7 @@ For a full diff see [`1.19.0...main`][1.19.0...main].
 
 ### Added
 
+- Added support for PHP 8.6 ([#468]), by [@localheinz]
 - Added `Rules\Files\RemoveAvoidableImportAliasRector` ([#482]), by [@localheinz]
 
 ### Changed
@@ -559,6 +560,7 @@ For a full diff see [`fd198f0...0.1.0`][fd198f0...0.1.0].
 [#414]: https://github.com/ergebnis/rector-rules/pull/414
 [#453]: https://github.com/ergebnis/rector-rules/pull/453
 [#458]: https://github.com/ergebnis/rector-rules/pull/458
+[#468]: https://github.com/ergebnis/rector-rules/pull/468
 [#470]: https://github.com/ergebnis/rector-rules/pull/470
 [#471]: https://github.com/ergebnis/rector-rules/pull/471
 [#474]: https://github.com/ergebnis/rector-rules/pull/474

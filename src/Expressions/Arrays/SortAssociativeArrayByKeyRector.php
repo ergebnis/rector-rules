@@ -266,6 +266,10 @@ CODE_SAMPLE,
             return null;
         }
 
+        if (self::hasDuplicateKeys(...$arrayItemsWithKeys)) {
+            return null;
+        }
+
         $comparator = $this->comparator;
 
         \usort($arrayItemsWithKeys, static function (ArrayItemWithKey $a, ArrayItemWithKey $b) use ($comparator): int {
@@ -288,6 +292,45 @@ CODE_SAMPLE,
         return $node;
     }
 
+    private static function hasDuplicateKeys(ArrayItemWithKey ...$arrayItemsWithKeys): bool
+    {
+        $values = [];
+
+        foreach ($arrayItemsWithKeys as $arrayItemWithKey) {
+            $value = self::valueFrom($arrayItemWithKey->arrayItem());
+
+            if (null === $value) {
+                continue;
+            }
+
+            if (\array_key_exists($value, $values)) {
+                return true;
+            }
+
+            $values[$value] = true;
+        }
+
+        return false;
+    }
+
+    private static function valueFrom(Node\Expr\ArrayItem $arrayItem): ?string
+    {
+        $key = $arrayItem->key;
+
+        if ($key instanceof Node\Scalar\String_) {
+            return $key->value;
+        }
+
+        if (
+            $key instanceof Node\Expr\ClassConstFetch
+            && $key->class instanceof Node\Name
+        ) {
+            return $key->class->toString();
+        }
+
+        return null;
+    }
+
     private static function arrayItemWithKeyFrom(Node\Expr\ArrayItem $arrayItem): ?ArrayItemWithKey
     {
         $key = $arrayItem->key;
@@ -298,6 +341,10 @@ CODE_SAMPLE,
             && $key->name->toString() === 'class'
             && $key->class instanceof Node\Name
         ) {
+            if ($key->class->isSpecialClassName()) {
+                return null;
+            }
+
             $name = $key->class;
 
             if ($name->hasAttribute('originalName')) {

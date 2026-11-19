@@ -30,6 +30,7 @@ For a full diff see [`1.19.0...main`][1.19.0...main].
 - Adjusted `Rules\Expressions\Arrays\SortAssociativeArrayByKeyRector` to skip an array with duplicate keys, comparing resolved class names, and an array with `self::class`, `static::class`, or `parent::class` keys, since sorting could change which value a key holds ([#478]), by [@localheinz]
 - Adjusted `Rules\PHPUnit\ReplaceTestAttributeWithTestPrefixRector` to remove `#[Test]` attributes from methods whose names already start with `test` ([#479]), by [@localheinz]
 - Adjusted `Rules\Faker\GeneratorPropertyFetchToMethodCallRector` to replace null-safe property fetches ([#480]), by [@localheinz]
+- Adjusted `Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector` to skip a namespace prefix whose last segment is a reserved name, such as `Symfony\Component\String` ([#485]), by [@localheinz]
 
 ## [`1.19.0`][1.19.0]
 
@@ -571,6 +572,7 @@ For a full diff see [`fd198f0...0.1.0`][fd198f0...0.1.0].
 [#481]: https://github.com/ergebnis/rector-rules/pull/481
 [#482]: https://github.com/ergebnis/rector-rules/pull/482
 [#484]: https://github.com/ergebnis/rector-rules/pull/484
+[#485]: https://github.com/ergebnis/rector-rules/pull/485
 [#480]: https://github.com/ergebnis/rector-rules/pull/480
 
 [@localheinz]: https://github.com/localheinz

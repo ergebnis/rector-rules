@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 For a full diff see [`1.19.0...main`][1.19.0...main].
 
+### Added
+
+- Added `Rules\Files\RemoveAvoidableImportAliasRector` ([#482]), by [@localheinz]
+
 ### Changed
 
 - Required `rector/rector:^2.8.4` ([#470]), by [@localheinz]
@@ -563,6 +567,7 @@ For a full diff see [`fd198f0...0.1.0`][fd198f0...0.1.0].
 [#478]: https://github.com/ergebnis/rector-rules/pull/478
 [#479]: https://github.com/ergebnis/rector-rules/pull/479
 [#481]: https://github.com/ergebnis/rector-rules/pull/481
+[#482]: https://github.com/ergebnis/rector-rules/pull/482
 [#480]: https://github.com/ergebnis/rector-rules/pull/480
 
 [@localheinz]: https://github.com/localheinz

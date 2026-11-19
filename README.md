@@ -32,6 +32,7 @@ This project provides the following rules for [`rector/rector`](https://github.c
 - [`Ergebnis\Rector\Rules\Expressions\Matches\SortMatchArmsByConditionalRector`](#expressionsmatchessortmatcharmsbyconditionalrector)
 - [`Ergebnis\Rector\Rules\Faker\GeneratorPropertyFetchToMethodCallRector`](#fakergeneratorpropertyfetchtomethodcallrector)
 - [`Ergebnis\Rector\Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector`](#filesreferencenamespacedsymbolsrelativetonamespaceprefixrector)
+- [`Ergebnis\Rector\Rules\Files\RemoveAvoidableImportAliasRector`](#filesremoveavoidableimportaliasrector)
 - [`Ergebnis\Rector\Rules\PHPUnit\ReplaceTestAttributeWithTestPrefixRector`](#phpunitreplacetestattributewithtestprefixrector)
 
 ### Expressions\Arrays
@@ -121,6 +122,27 @@ Replaces references to classes whose fully-qualified name starts with a namespac
 ```
 
 💡 Find out more in the rule documentation for [`Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector`](doc/rules/Files/ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector.md).
+
+#### `Files\RemoveAvoidableImportAliasRector`
+
+Removes aliases from imports of classes and namespaces when the imported name is not otherwise in use.
+
+```diff
+ namespace App\Http;
+ 
+-use App\Controller as Foo;
++use App\Controller;
+ 
+ final class Router
+ {
+-    public function dashboard(): Foo\DashboardController
++    public function dashboard(): Controller\DashboardController
+     {
+     }
+ }
+```
+
+💡 Find out more in the rule documentation for [`Files\RemoveAvoidableImportAliasRector`](doc/rules/Files/RemoveAvoidableImportAliasRector.md).
 
 ### PHPUnit
 

@@ -19,6 +19,7 @@ For a full diff see [`1.19.0...main`][1.19.0...main].
 - Adjusted `Rules\PHPUnit\ReplaceTestAttributeWithTestPrefixRector` to skip a method when its prefixed name is already declared, and to update `#[Depends]`, `#[DependsUsingDeepClone]`, and `#[DependsUsingShallowClone]` attributes that reference a renamed method ([#471]), by [@localheinz]
 - Adjusted the description of `Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector` to mention only classes, since it skips functions and constants ([#475]), by [@localheinz]
 - Adjusted `Rules\Expressions\Matches\SortMatchArmsByConditionalRector` to skip a match with duplicate conditionals, since sorting could change which arm matches ([#476]), by [@localheinz]
+- Adjusted `Rules\Expressions\Matches\SortMatchArmsByConditionalRector` to compare resolved class names when detecting duplicate conditionals and to skip a match with `self::class`, `static::class`, or `parent::class` conditionals ([#477]), by [@localheinz]
 
 ## [`1.19.0`][1.19.0]
 
@@ -554,5 +555,6 @@ For a full diff see [`fd198f0...0.1.0`][fd198f0...0.1.0].
 [#474]: https://github.com/ergebnis/rector-rules/pull/474
 [#475]: https://github.com/ergebnis/rector-rules/pull/475
 [#476]: https://github.com/ergebnis/rector-rules/pull/476
+[#477]: https://github.com/ergebnis/rector-rules/pull/477
 
 [@localheinz]: https://github.com/localheinz

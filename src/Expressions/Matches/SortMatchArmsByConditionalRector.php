@@ -371,19 +371,15 @@ CODE_SAMPLE,
         $values = [];
 
         foreach ($matchArmsWithConditionals as $matchArmWithConditional) {
-            $conditional = $matchArmWithConditional->conditional();
+            $conds = $matchArmWithConditional->arm()->conds;
 
-            if ($conditional instanceof IntConditional) {
-                $value = \sprintf(
-                    'int:%d',
-                    $conditional->toInt(),
-                );
-            } elseif ($conditional instanceof StringConditional) {
-                $value = \sprintf(
-                    'string:%s',
-                    $conditional->toString(),
-                );
-            } else {
+            if (null === $conds) {
+                continue;
+            }
+
+            $value = self::valueFrom($conds[0]);
+
+            if (null === $value) {
                 continue;
             }
 
@@ -395,6 +391,47 @@ CODE_SAMPLE,
         }
 
         return false;
+    }
+
+    private static function valueFrom(Node\Expr $expr): ?string
+    {
+        if ($expr instanceof Node\Scalar\Int_) {
+            return \sprintf(
+                'int:%d',
+                $expr->value,
+            );
+        }
+
+        if (
+            $expr instanceof Node\Expr\UnaryMinus
+            && $expr->expr instanceof Node\Scalar\Int_
+        ) {
+            return \sprintf(
+                'int:%d',
+                -$expr->expr->value,
+            );
+        }
+
+        if ($expr instanceof Node\Scalar\String_) {
+            return \sprintf(
+                'string:%s',
+                $expr->value,
+            );
+        }
+
+        if (
+            $expr instanceof Node\Expr\ClassConstFetch
+            && $expr->name instanceof Node\Identifier
+            && $expr->name->toString() === 'class'
+            && $expr->class instanceof Node\Name
+        ) {
+            return \sprintf(
+                'string:%s',
+                $expr->class->toString(),
+            );
+        }
+
+        return null;
     }
 
     private static function conditionalFrom(Node\Expr $expr): ?Conditional
@@ -420,6 +457,10 @@ CODE_SAMPLE,
             && $expr->name->toString() === 'class'
             && $expr->class instanceof Node\Name
         ) {
+            if ($expr->class->isSpecialClassName()) {
+                return null;
+            }
+
             $name = $expr->class;
 
             if ($name->hasAttribute('originalName')) {

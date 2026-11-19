@@ -105,171 +105,171 @@ final class SortMatchArmsByConditionalRector extends Rector\AbstractRector imple
             [
                 new RuleDocGenerator\ValueObject\CodeSample\CodeSample(
                     <<<'CODE_SAMPLE'
-match ($status) {
-    'pending' => handlePending(),
-    'active' => handleActive(),
-    'closed' => handleClosed(),
-};
-CODE_SAMPLE
+                        match ($status) {
+                            'pending' => handlePending(),
+                            'active' => handleActive(),
+                            'closed' => handleClosed(),
+                        };
+                        CODE_SAMPLE
                     ,
                     <<<'CODE_SAMPLE'
-match ($status) {
-    'active' => handleActive(),
-    'closed' => handleClosed(),
-    'pending' => handlePending(),
-};
-CODE_SAMPLE
+                        match ($status) {
+                            'active' => handleActive(),
+                            'closed' => handleClosed(),
+                            'pending' => handlePending(),
+                        };
+                        CODE_SAMPLE
                 ),
                 new RuleDocGenerator\ValueObject\CodeSample\CodeSample(
                     <<<'CODE_SAMPLE'
-match ($status) {
-    'pending' => handlePending(),
-    default => handleUnknown(),
-    'active' => handleActive(),
-    'closed' => handleClosed(),
-};
-CODE_SAMPLE
+                        match ($status) {
+                            'pending' => handlePending(),
+                            default => handleUnknown(),
+                            'active' => handleActive(),
+                            'closed' => handleClosed(),
+                        };
+                        CODE_SAMPLE
                     ,
                     <<<'CODE_SAMPLE'
-match ($status) {
-    'active' => handleActive(),
-    'closed' => handleClosed(),
-    'pending' => handlePending(),
-    default => handleUnknown(),
-};
-CODE_SAMPLE
+                        match ($status) {
+                            'active' => handleActive(),
+                            'closed' => handleClosed(),
+                            'pending' => handlePending(),
+                            default => handleUnknown(),
+                        };
+                        CODE_SAMPLE
                 ),
                 new RuleDocGenerator\ValueObject\CodeSample\CodeSample(
                     <<<'CODE_SAMPLE'
-match (true) {
-    Zebra::class => handleZebra(),
-    Apple::class => handleApple(),
-    Mango::class => handleMango(),
-};
-CODE_SAMPLE
+                        match (true) {
+                            Zebra::class => handleZebra(),
+                            Apple::class => handleApple(),
+                            Mango::class => handleMango(),
+                        };
+                        CODE_SAMPLE
                     ,
                     <<<'CODE_SAMPLE'
-match (true) {
-    Apple::class => handleApple(),
-    Mango::class => handleMango(),
-    Zebra::class => handleZebra(),
-};
-CODE_SAMPLE
+                        match (true) {
+                            Apple::class => handleApple(),
+                            Mango::class => handleMango(),
+                            Zebra::class => handleZebra(),
+                        };
+                        CODE_SAMPLE
                 ),
                 new RuleDocGenerator\ValueObject\CodeSample\CodeSample(
                     <<<'CODE_SAMPLE'
-match (true) {
-    Zebra::class => handleZebra(),
-    default => handleUnknown(),
-    Apple::class => handleApple(),
-    Mango::class => handleMango(),
-};
-CODE_SAMPLE
+                        match (true) {
+                            Zebra::class => handleZebra(),
+                            default => handleUnknown(),
+                            Apple::class => handleApple(),
+                            Mango::class => handleMango(),
+                        };
+                        CODE_SAMPLE
                     ,
                     <<<'CODE_SAMPLE'
-match (true) {
-    Apple::class => handleApple(),
-    Mango::class => handleMango(),
-    Zebra::class => handleZebra(),
-    default => handleUnknown(),
-};
-CODE_SAMPLE
+                        match (true) {
+                            Apple::class => handleApple(),
+                            Mango::class => handleMango(),
+                            Zebra::class => handleZebra(),
+                            default => handleUnknown(),
+                        };
+                        CODE_SAMPLE
                 ),
                 new RuleDocGenerator\ValueObject\CodeSample\CodeSample(
                     <<<'CODE_SAMPLE'
-match ($code) {
-    404 => 'Not Found',
-    default => 'Unknown',
-    200 => 'OK',
-    500 => 'Server Error',
-};
-CODE_SAMPLE
+                        match ($code) {
+                            404 => 'Not Found',
+                            default => 'Unknown',
+                            200 => 'OK',
+                            500 => 'Server Error',
+                        };
+                        CODE_SAMPLE
                     ,
                     <<<'CODE_SAMPLE'
-match ($code) {
-    200 => 'OK',
-    404 => 'Not Found',
-    500 => 'Server Error',
-    default => 'Unknown',
-};
-CODE_SAMPLE
+                        match ($code) {
+                            200 => 'OK',
+                            404 => 'Not Found',
+                            500 => 'Server Error',
+                            default => 'Unknown',
+                        };
+                        CODE_SAMPLE
                 ),
                 new RuleDocGenerator\ValueObject\CodeSample\ConfiguredCodeSample(
                     <<<'CODE_SAMPLE'
-match ($status) {
-    'active' => handleActive(),
-    'pending' => handlePending(),
-    'closed' => handleClosed(),
-};
-CODE_SAMPLE
+                        match ($status) {
+                            'active' => handleActive(),
+                            'pending' => handlePending(),
+                            'closed' => handleClosed(),
+                        };
+                        CODE_SAMPLE
                     ,
                     <<<'CODE_SAMPLE'
-match ($status) {
-    'pending' => handlePending(),
-    'closed' => handleClosed(),
-    'active' => handleActive(),
-};
-CODE_SAMPLE,
+                        match ($status) {
+                            'pending' => handlePending(),
+                            'closed' => handleClosed(),
+                            'active' => handleActive(),
+                        };
+                        CODE_SAMPLE,
                     [
                         self::CONFIGURATION_KEY_DIRECTION => 'desc',
                     ],
                 ),
                 new RuleDocGenerator\ValueObject\CodeSample\ConfiguredCodeSample(
                     <<<'CODE_SAMPLE'
-match ($status) {
-    'Pending' => handlePending(),
-    'active' => handleActive(),
-    'Closed' => handleClosed(),
-};
-CODE_SAMPLE
+                        match ($status) {
+                            'Pending' => handlePending(),
+                            'active' => handleActive(),
+                            'Closed' => handleClosed(),
+                        };
+                        CODE_SAMPLE
                     ,
                     <<<'CODE_SAMPLE'
-match ($status) {
-    'active' => handleActive(),
-    'Closed' => handleClosed(),
-    'Pending' => handlePending(),
-};
-CODE_SAMPLE,
+                        match ($status) {
+                            'active' => handleActive(),
+                            'Closed' => handleClosed(),
+                            'Pending' => handlePending(),
+                        };
+                        CODE_SAMPLE,
                     [
                         self::CONFIGURATION_KEY_COMPARISON_FUNCTION => 'strcasecmp',
                     ],
                 ),
                 new RuleDocGenerator\ValueObject\CodeSample\ConfiguredCodeSample(
                     <<<'CODE_SAMPLE'
-match ($status) {
-    'Status10' => handle10(),
-    'Status2' => handle2(),
-    'Status' => handleBase(),
-};
-CODE_SAMPLE
+                        match ($status) {
+                            'Status10' => handle10(),
+                            'Status2' => handle2(),
+                            'Status' => handleBase(),
+                        };
+                        CODE_SAMPLE
                     ,
                     <<<'CODE_SAMPLE'
-match ($status) {
-    'Status' => handleBase(),
-    'Status2' => handle2(),
-    'Status10' => handle10(),
-};
-CODE_SAMPLE,
+                        match ($status) {
+                            'Status' => handleBase(),
+                            'Status2' => handle2(),
+                            'Status10' => handle10(),
+                        };
+                        CODE_SAMPLE,
                     [
                         self::CONFIGURATION_KEY_COMPARISON_FUNCTION => 'strnatcmp',
                     ],
                 ),
                 new RuleDocGenerator\ValueObject\CodeSample\ConfiguredCodeSample(
                     <<<'CODE_SAMPLE'
-match ($status) {
-    'Status10' => handle10(),
-    'status2' => handle2(),
-    'Status' => handleBase(),
-};
-CODE_SAMPLE
+                        match ($status) {
+                            'Status10' => handle10(),
+                            'status2' => handle2(),
+                            'Status' => handleBase(),
+                        };
+                        CODE_SAMPLE
                     ,
                     <<<'CODE_SAMPLE'
-match ($status) {
-    'Status' => handleBase(),
-    'status2' => handle2(),
-    'Status10' => handle10(),
-};
-CODE_SAMPLE,
+                        match ($status) {
+                            'Status' => handleBase(),
+                            'status2' => handle2(),
+                            'Status10' => handle10(),
+                        };
+                        CODE_SAMPLE,
                     [
                         self::CONFIGURATION_KEY_COMPARISON_FUNCTION => 'strnatcasecmp',
                     ],

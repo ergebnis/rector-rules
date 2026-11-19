@@ -50,29 +50,29 @@ final class ReplaceTestAttributeWithTestPrefixRector extends Rector\AbstractRect
             [
                 new RuleDocGenerator\ValueObject\CodeSample\CodeSample(
                     <<<'CODE_SAMPLE'
-use PHPUnit\Framework;
+                        use PHPUnit\Framework;
 
-final class SomeTest extends Framework\TestCase
-{
-    #[Framework\Attributes\Test]
-    public function onePlusOneShouldBeTwo(): void
-    {
-        self::assertSame(2, 1 + 1);
-    }
-}
-CODE_SAMPLE
+                        final class SomeTest extends Framework\TestCase
+                        {
+                            #[Framework\Attributes\Test]
+                            public function onePlusOneShouldBeTwo(): void
+                            {
+                                self::assertSame(2, 1 + 1);
+                            }
+                        }
+                        CODE_SAMPLE
                     ,
                     <<<'CODE_SAMPLE'
-use PHPUnit\Framework;
+                        use PHPUnit\Framework;
 
-final class SomeTest extends Framework\TestCase
-{
-    public function testOnePlusOneShouldBeTwo(): void
-    {
-        self::assertSame(2, 1 + 1);
-    }
-}
-CODE_SAMPLE
+                        final class SomeTest extends Framework\TestCase
+                        {
+                            public function testOnePlusOneShouldBeTwo(): void
+                            {
+                                self::assertSame(2, 1 + 1);
+                            }
+                        }
+                        CODE_SAMPLE
                 ),
             ],
         );

@@ -44,12 +44,12 @@ final class RemoveNamedArgumentForSingleParameterRector extends Rector\AbstractR
             [
                 new RuleDocGenerator\ValueObject\CodeSample\CodeSample(
                     <<<'CODE_SAMPLE'
-strlen(string: 'hello');
-CODE_SAMPLE
+                        strlen(string: 'hello');
+                        CODE_SAMPLE
                     ,
                     <<<'CODE_SAMPLE'
-strlen('hello');
-CODE_SAMPLE
+                        strlen('hello');
+                        CODE_SAMPLE
                 ),
             ],
         );

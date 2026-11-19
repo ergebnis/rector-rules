@@ -185,12 +185,12 @@ final class GeneratorPropertyFetchToMethodCallRector extends Rector\AbstractRect
             [
                 new RuleDocGenerator\ValueObject\CodeSample\CodeSample(
                     <<<'CODE_SAMPLE'
-$faker->address;
-CODE_SAMPLE
+                        $faker->address;
+                        CODE_SAMPLE
                     ,
                     <<<'CODE_SAMPLE'
-$faker->address();
-CODE_SAMPLE
+                        $faker->address();
+                        CODE_SAMPLE
                 ),
             ],
         );

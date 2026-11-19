@@ -125,25 +125,25 @@ final class UseImportRelativeToNamespacePrefixRector extends Rector\AbstractRect
             [
                 new RuleDocGenerator\ValueObject\CodeSample\ConfiguredCodeSample(
                     <<<'CODE_SAMPLE'
-use Example\Core\AbstractController;
-use Example\Core\Routing\Attribute\Route;
+                        use Example\Core\AbstractController;
+                        use Example\Core\Routing\Attribute\Route;
 
-final class Foo extends AbstractController
-{
-    #[Route(path: '/foo', name: 'foo')]
-    public function bar(): void {}
-}
-CODE_SAMPLE
+                        final class Foo extends AbstractController
+                        {
+                            #[Route(path: '/foo', name: 'foo')]
+                            public function bar(): void {}
+                        }
+                        CODE_SAMPLE
                     ,
                     <<<'CODE_SAMPLE'
-use Example\Core;
+                        use Example\Core;
 
-final class Foo extends Core\AbstractController
-{
-    #[Core\Routing\Attribute\Route(path: '/foo', name: 'foo')]
-    public function bar(): void {}
-}
-CODE_SAMPLE
+                        final class Foo extends Core\AbstractController
+                        {
+                            #[Core\Routing\Attribute\Route(path: '/foo', name: 'foo')]
+                            public function bar(): void {}
+                        }
+                        CODE_SAMPLE
                     ,
                     [
                         self::CONFIGURATION_KEY_NAMESPACE_PREFIXES => [

@@ -195,19 +195,19 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
             [
                 new RuleDocGenerator\ValueObject\CodeSample\ConfiguredCodeSample(
                     <<<'CODE_SAMPLE'
-use Foo\Bar;
-use Foo\Bar\Baz\Qux;
+                        use Foo\Bar;
+                        use Foo\Bar\Baz\Qux;
 
-new Bar\Baz\Qux\Quuz();
-new Qux\Quuz\Grauply();
-CODE_SAMPLE
+                        new Bar\Baz\Qux\Quuz();
+                        new Qux\Quuz\Grauply();
+                        CODE_SAMPLE
                     ,
                     <<<'CODE_SAMPLE'
-use Foo\Bar\Baz;
+                        use Foo\Bar\Baz;
 
-new Baz\Qux\Quuz();
-new Baz\Qux\Quuz\Grauply();
-CODE_SAMPLE
+                        new Baz\Qux\Quuz();
+                        new Baz\Qux\Quuz\Grauply();
+                        CODE_SAMPLE
                     ,
                     [
                         self::CONFIGURATION_KEY_NAMESPACE_PREFIXES => [
@@ -217,40 +217,40 @@ CODE_SAMPLE
                 ),
                 new RuleDocGenerator\ValueObject\CodeSample\ConfiguredCodeSample(
                     <<<'CODE_SAMPLE'
-namespace Example\App;
+                        namespace Example\App;
 
-use Example\Core\Routing\Attribute\Route;
-use Example\Domain\UserRepository;
-use Psr\Http\Message\ResponseInterface;
+                        use Example\Core\Routing\Attribute\Route;
+                        use Example\Domain\UserRepository;
+                        use Psr\Http\Message\ResponseInterface;
 
-final class ExampleController
-{
-    private UserRepository $userRepository;
+                        final class ExampleController
+                        {
+                            private UserRepository $userRepository;
 
-    #[Route(path: '/example', name: 'example')]
-    public function dashboard(): ResponseInterface
-    {
-    }
-}
-CODE_SAMPLE
+                            #[Route(path: '/example', name: 'example')]
+                            public function dashboard(): ResponseInterface
+                            {
+                            }
+                        }
+                        CODE_SAMPLE
                     ,
                     <<<'CODE_SAMPLE'
-namespace Example\App;
+                        namespace Example\App;
 
-use Example\Core\Routing;
-use Example\Domain;
-use Psr\Http;
+                        use Example\Core\Routing;
+                        use Example\Domain;
+                        use Psr\Http;
 
-final class ExampleController
-{
-    private Domain\UserRepository $userRepository;
+                        final class ExampleController
+                        {
+                            private Domain\UserRepository $userRepository;
 
-    #[Routing\Attribute\Route(path: '/example', name: 'example')]
-    public function dashboard(): Http\Message\ResponseInterface
-    {
-    }
-}
-CODE_SAMPLE
+                            #[Routing\Attribute\Route(path: '/example', name: 'example')]
+                            public function dashboard(): Http\Message\ResponseInterface
+                            {
+                            }
+                        }
+                        CODE_SAMPLE
                     ,
                     [
                         self::CONFIGURATION_KEY_NAMESPACE_PREFIXES => [
@@ -262,24 +262,24 @@ CODE_SAMPLE
                 ),
                 new RuleDocGenerator\ValueObject\CodeSample\ConfiguredCodeSample(
                     <<<'CODE_SAMPLE'
-namespace Example\App;
+                        namespace Example\App;
 
-use Example\Core\Controller\AbstractController;
+                        use Example\Core\Controller\AbstractController;
 
-final class ExampleController extends AbstractController
-{
-}
-CODE_SAMPLE
+                        final class ExampleController extends AbstractController
+                        {
+                        }
+                        CODE_SAMPLE
                     ,
                     <<<'CODE_SAMPLE'
-namespace Example\App;
+                        namespace Example\App;
 
-use Example\Core;
+                        use Example\Core;
 
-final class ExampleController extends Core\Controller\AbstractController
-{
-}
-CODE_SAMPLE
+                        final class ExampleController extends Core\Controller\AbstractController
+                        {
+                        }
+                        CODE_SAMPLE
                     ,
                     [
                         self::CONFIGURATION_KEY_PARENT_NAMESPACE_PREFIXES => [
@@ -289,34 +289,34 @@ CODE_SAMPLE
                 ),
                 new RuleDocGenerator\ValueObject\CodeSample\ConfiguredCodeSample(
                     <<<'CODE_SAMPLE'
-namespace Example\App;
+                        namespace Example\App;
 
-use Example\Core\Controller\AbstractController;
-use Example\Core\Routing\Attribute\Route;
+                        use Example\Core\Controller\AbstractController;
+                        use Example\Core\Routing\Attribute\Route;
 
-final class ExampleController extends AbstractController
-{
-    #[Route(path: '/example', name: 'example')]
-    public function dashboard()
-    {
-    }
-}
-CODE_SAMPLE
+                        final class ExampleController extends AbstractController
+                        {
+                            #[Route(path: '/example', name: 'example')]
+                            public function dashboard()
+                            {
+                            }
+                        }
+                        CODE_SAMPLE
                     ,
                     <<<'CODE_SAMPLE'
-namespace Example\App;
+                        namespace Example\App;
 
-use Example\Core;
-use Example\Core\Routing;
+                        use Example\Core;
+                        use Example\Core\Routing;
 
-final class ExampleController extends Core\Controller\AbstractController
-{
-    #[Routing\Attribute\Route(path: '/example', name: 'example')]
-    public function dashboard()
-    {
-    }
-}
-CODE_SAMPLE
+                        final class ExampleController extends Core\Controller\AbstractController
+                        {
+                            #[Routing\Attribute\Route(path: '/example', name: 'example')]
+                            public function dashboard()
+                            {
+                            }
+                        }
+                        CODE_SAMPLE
                     ,
                     [
                         self::CONFIGURATION_KEY_NAMESPACE_PREFIXES => [
@@ -329,38 +329,38 @@ CODE_SAMPLE
                 ),
                 new RuleDocGenerator\ValueObject\CodeSample\ConfiguredCodeSample(
                     <<<'CODE_SAMPLE'
-namespace Example\App;
+                        namespace Example\App;
 
-use Example\Core\Caching\Redis\Connection;
-use Example\Core\Controller\AbstractController;
-use Example\Core\Routing\Attribute\Route;
+                        use Example\Core\Caching\Redis\Connection;
+                        use Example\Core\Controller\AbstractController;
+                        use Example\Core\Routing\Attribute\Route;
 
-final class ExampleController extends AbstractController
-{
-    #[Route(path: '/example', name: 'example')]
-    #[Connection(host: 'localhost')]
-    public function dashboard()
-    {
-    }
-}
-CODE_SAMPLE
+                        final class ExampleController extends AbstractController
+                        {
+                            #[Route(path: '/example', name: 'example')]
+                            #[Connection(host: 'localhost')]
+                            public function dashboard()
+                            {
+                            }
+                        }
+                        CODE_SAMPLE
                     ,
                     <<<'CODE_SAMPLE'
-namespace Example\App;
+                        namespace Example\App;
 
-use Example\Core\Caching\Redis;
-use Example\Core;
-use Example\Core\Routing;
+                        use Example\Core\Caching\Redis;
+                        use Example\Core;
+                        use Example\Core\Routing;
 
-final class ExampleController extends Core\Controller\AbstractController
-{
-    #[Routing\Attribute\Route(path: '/example', name: 'example')]
-    #[Redis\Connection(host: 'localhost')]
-    public function dashboard()
-    {
-    }
-}
-CODE_SAMPLE
+                        final class ExampleController extends Core\Controller\AbstractController
+                        {
+                            #[Routing\Attribute\Route(path: '/example', name: 'example')]
+                            #[Redis\Connection(host: 'localhost')]
+                            public function dashboard()
+                            {
+                            }
+                        }
+                        CODE_SAMPLE
                     ,
                     [
                         self::CONFIGURATION_KEY_NAMESPACE_PREFIXES => [
@@ -372,38 +372,38 @@ CODE_SAMPLE
                 ),
                 new RuleDocGenerator\ValueObject\CodeSample\ConfiguredCodeSample(
                     <<<'CODE_SAMPLE'
-namespace Example\Core\Bar;
+                        namespace Example\Core\Bar;
 
-use Example\Core\Bar\Baz;
-use Example\Core\Bar\Baz\Qux;
-use Example\Core\Quz;
+                        use Example\Core\Bar\Baz;
+                        use Example\Core\Bar\Baz\Qux;
+                        use Example\Core\Quz;
 
-final class ExampleService
-{
-    public function __construct(
-        private Baz $baz,
-        private Qux $qux,
-        private Quz $quz,
-    ) {
-    }
-}
-CODE_SAMPLE
+                        final class ExampleService
+                        {
+                            public function __construct(
+                                private Baz $baz,
+                                private Qux $qux,
+                                private Quz $quz,
+                            ) {
+                            }
+                        }
+                        CODE_SAMPLE
                     ,
                     <<<'CODE_SAMPLE'
-namespace Example\Core\Bar;
+                        namespace Example\Core\Bar;
 
-use Example\Core;
+                        use Example\Core;
 
-final class ExampleService
-{
-    public function __construct(
-        private Baz $baz,
-        private Baz\Qux $qux,
-        private Core\Quz $quz,
-    ) {
-    }
-}
-CODE_SAMPLE
+                        final class ExampleService
+                        {
+                            public function __construct(
+                                private Baz $baz,
+                                private Baz\Qux $qux,
+                                private Core\Quz $quz,
+                            ) {
+                            }
+                        }
+                        CODE_SAMPLE
                     ,
                     [
                         self::CONFIGURATION_KEY_NAMESPACE_PREFIXES => [
@@ -413,38 +413,38 @@ CODE_SAMPLE
                 ),
                 new RuleDocGenerator\ValueObject\CodeSample\ConfiguredCodeSample(
                     <<<'CODE_SAMPLE'
-namespace Example\Core\Bar;
+                        namespace Example\Core\Bar;
 
-use Example\Core\Bar\Baz;
-use Example\Core\Bar\Baz\Qux;
-use Example\Core\Quz;
+                        use Example\Core\Bar\Baz;
+                        use Example\Core\Bar\Baz\Qux;
+                        use Example\Core\Quz;
 
-final class ExampleService
-{
-    public function __construct(
-        private Baz $baz,
-        private Qux $qux,
-        private Quz $quz,
-    ) {
-    }
-}
-CODE_SAMPLE
+                        final class ExampleService
+                        {
+                            public function __construct(
+                                private Baz $baz,
+                                private Qux $qux,
+                                private Quz $quz,
+                            ) {
+                            }
+                        }
+                        CODE_SAMPLE
                     ,
                     <<<'CODE_SAMPLE'
-namespace Example\Core\Bar;
+                        namespace Example\Core\Bar;
 
-use Example\Core;
+                        use Example\Core;
 
-final class ExampleService
-{
-    public function __construct(
-        private Core\Bar\Baz $baz,
-        private Core\Bar\Baz\Qux $qux,
-        private Core\Quz $quz,
-    ) {
-    }
-}
-CODE_SAMPLE
+                        final class ExampleService
+                        {
+                            public function __construct(
+                                private Core\Bar\Baz $baz,
+                                private Core\Bar\Baz\Qux $qux,
+                                private Core\Quz $quz,
+                            ) {
+                            }
+                        }
+                        CODE_SAMPLE
                     ,
                     [
                         self::CONFIGURATION_KEY_FORCE_RELATIVE_REFERENCES => true,
@@ -455,35 +455,35 @@ CODE_SAMPLE
                 ),
                 new RuleDocGenerator\ValueObject\CodeSample\ConfiguredCodeSample(
                     <<<'CODE_SAMPLE'
-namespace App;
+                        namespace App;
 
-use Ramsey\Uuid\Uuid;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
+                        use Ramsey\Uuid\Uuid;
+                        use Symfony\Component\HttpFoundation\Request;
+                        use Symfony\Component\HttpFoundation\Response;
 
-final class Kernel
-{
-    public function handle(Request $request): Response
-    {
-        $id = Uuid::uuid4();
-    }
-}
-CODE_SAMPLE
+                        final class Kernel
+                        {
+                            public function handle(Request $request): Response
+                            {
+                                $id = Uuid::uuid4();
+                            }
+                        }
+                        CODE_SAMPLE
                     ,
                     <<<'CODE_SAMPLE'
-namespace App;
+                        namespace App;
 
-use Ramsey\Uuid;
-use Symfony\Component;
+                        use Ramsey\Uuid;
+                        use Symfony\Component;
 
-final class Kernel
-{
-    public function handle(Component\HttpFoundation\Request $request): Component\HttpFoundation\Response
-    {
-        $id = Uuid\Uuid::uuid4();
-    }
-}
-CODE_SAMPLE
+                        final class Kernel
+                        {
+                            public function handle(Component\HttpFoundation\Request $request): Component\HttpFoundation\Response
+                            {
+                                $id = Uuid\Uuid::uuid4();
+                            }
+                        }
+                        CODE_SAMPLE
                     ,
                     [
                         self::CONFIGURATION_KEY_DISCOVER_NAMESPACE_PREFIXES => true,

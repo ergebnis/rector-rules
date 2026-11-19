@@ -93,12 +93,19 @@ CODE_SAMPLE
             $declaredMethodNames[] = \strtolower($classMethod->name->toString());
         }
 
+        $hasChanged = false;
         $renamedMethodNames = [];
 
         foreach ($node->getMethods() as $classMethod) {
             $methodName = $classMethod->name->toString();
 
             if (\strncmp($methodName, 'test', 4) === 0) {
+                if ($this->hasTestAttribute($classMethod)) {
+                    $this->removeTestAttribute($classMethod);
+
+                    $hasChanged = true;
+                }
+
                 continue;
             }
 
@@ -121,9 +128,11 @@ CODE_SAMPLE
 
             $declaredMethodNames[] = \strtolower($prefixedMethodName);
             $renamedMethodNames[\strtolower($methodName)] = $prefixedMethodName;
+
+            $hasChanged = true;
         }
 
-        if ([] === $renamedMethodNames) {
+        if (!$hasChanged) {
             return null;
         }
 

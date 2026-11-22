@@ -12,6 +12,10 @@ For a full diff see [`1.20.0...main`][1.20.0...main].
 
 - Adjusted `Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector` to discover namespace prefixes from names in DocBlocks that are relative to an import ([#489]), by [@localheinz]
 
+### Fixed
+
+- Adjusted `Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector` to keep the comments of a group import it replaces with an import of a namespace prefix ([#494]), by [@localheinz]
+
 ## [`1.20.0`][1.20.0]
 
 For a full diff see [`1.19.0...1.20.0`][1.19.0...1.20.0].
@@ -587,5 +591,6 @@ For a full diff see [`fd198f0...0.1.0`][fd198f0...0.1.0].
 [#485]: https://github.com/ergebnis/rector-rules/pull/485
 [#486]: https://github.com/ergebnis/rector-rules/pull/486
 [#489]: https://github.com/ergebnis/rector-rules/pull/489
+[#494]: https://github.com/ergebnis/rector-rules/pull/494
 
 [@localheinz]: https://github.com/localheinz

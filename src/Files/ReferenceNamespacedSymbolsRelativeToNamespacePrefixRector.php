@@ -1945,6 +1945,9 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
             $existingKeys[$existingPrefix->toString()] = true;
         }
 
+        /** @var array<string, string> $aliasesToImportedNames */
+        $aliasesToImportedNames = [];
+
         foreach ($containerNode->stmts as $statement) {
             if ($statement instanceof Node\Stmt\Use_) {
                 if (Node\Stmt\Use_::TYPE_NORMAL !== $statement->type) {
@@ -1953,6 +1956,8 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
 
                 foreach ($statement->uses as $use) {
                     $reference = $use->name->toString();
+
+                    $aliasesToImportedNames[$use->getAlias()->toString()] = $reference;
 
                     self::discoverChildPrefix(
                         $reference,
@@ -1974,6 +1979,8 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
                         $prefix,
                         $use->name->toString(),
                     );
+
+                    $aliasesToImportedNames[$use->getAlias()->toString()] = $reference;
 
                     self::discoverChildPrefix(
                         $reference,
@@ -2029,7 +2036,7 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
 
         $nodeFinder->find(
             $containerNode->stmts,
-            static function (Node $node) use ($parentNamespacePrefixes, &$existingKeys, &$discoveredNamespacePrefixes): bool {
+            static function (Node $node) use ($aliasesToImportedNames, $parentNamespacePrefixes, &$existingKeys, &$discoveredNamespacePrefixes): bool {
                 $docComment = $node->getDocComment();
 
                 if (null === $docComment) {
@@ -2037,6 +2044,24 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
                 }
 
                 $text = $docComment->getText();
+
+                foreach ($aliasesToImportedNames as $alias => $importedName) {
+                    $pattern = \sprintf(
+                        '/(?<![\\\\\w])%s((?:\\\\[a-zA-Z_][a-zA-Z0-9_]*)+)/',
+                        \preg_quote($alias, '/'),
+                    );
+
+                    if (\preg_match_all($pattern, $text, $matches) > 0) {
+                        foreach ($matches[1] as $relativeName) {
+                            self::discoverChildPrefix(
+                                $importedName . $relativeName,
+                                $parentNamespacePrefixes,
+                                $existingKeys,
+                                $discoveredNamespacePrefixes,
+                            );
+                        }
+                    }
+                }
 
                 foreach ($parentNamespacePrefixes as $parentNamespacePrefix) {
                     $pattern = \sprintf(

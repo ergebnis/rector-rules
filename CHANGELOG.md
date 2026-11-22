@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 For a full diff see [`1.20.0...main`][1.20.0...main].
 
+### Changed
+
+- Adjusted `Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector` to discover namespace prefixes from names in DocBlocks that are relative to an import ([#489]), by [@localheinz]
+
 ## [`1.20.0`][1.20.0]
 
 For a full diff see [`1.19.0...1.20.0`][1.19.0...1.20.0].
@@ -582,5 +586,6 @@ For a full diff see [`fd198f0...0.1.0`][fd198f0...0.1.0].
 [#484]: https://github.com/ergebnis/rector-rules/pull/484
 [#485]: https://github.com/ergebnis/rector-rules/pull/485
 [#486]: https://github.com/ergebnis/rector-rules/pull/486
+[#489]: https://github.com/ergebnis/rector-rules/pull/489
 
 [@localheinz]: https://github.com/localheinz

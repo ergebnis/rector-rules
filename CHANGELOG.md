@@ -576,11 +576,11 @@ For a full diff see [`fd198f0...0.1.0`][fd198f0...0.1.0].
 [#477]: https://github.com/ergebnis/rector-rules/pull/477
 [#478]: https://github.com/ergebnis/rector-rules/pull/478
 [#479]: https://github.com/ergebnis/rector-rules/pull/479
+[#480]: https://github.com/ergebnis/rector-rules/pull/480
 [#481]: https://github.com/ergebnis/rector-rules/pull/481
 [#482]: https://github.com/ergebnis/rector-rules/pull/482
 [#484]: https://github.com/ergebnis/rector-rules/pull/484
 [#485]: https://github.com/ergebnis/rector-rules/pull/485
 [#486]: https://github.com/ergebnis/rector-rules/pull/486
-[#480]: https://github.com/ergebnis/rector-rules/pull/480
 
 [@localheinz]: https://github.com/localheinz

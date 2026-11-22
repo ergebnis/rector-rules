@@ -628,26 +628,24 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
                     }
                 }
             } elseif ($statement instanceof Node\Stmt\GroupUse) {
-                if (Node\Stmt\Use_::TYPE_NORMAL === $statement->type) {
-                    $prefix = $statement->prefix->toString();
+                $prefix = $statement->prefix->toString();
 
-                    foreach ($statement->uses as $use) {
-                        $alias = $use->getAlias()->toString();
+                foreach (self::classImportItems($statement) as $use) {
+                    $alias = $use->getAlias()->toString();
 
-                        $reference = Reference::fromString(\sprintf(
-                            '%s\\%s',
-                            $prefix,
-                            $use->name->toString(),
-                        ));
+                    $reference = Reference::fromString(\sprintf(
+                        '%s\\%s',
+                        $prefix,
+                        $use->name->toString(),
+                    ));
 
-                        $aliasesToReferences[$alias] = $reference;
+                    $aliasesToReferences[$alias] = $reference;
 
-                        if ($reference->is($namespacePrefix)) {
-                            if (\strtolower($namespacePrefix->lastNamespaceSegment()->toString()) === \strtolower($alias)) {
-                                $hasNamespacePrefixImport = true;
-                            } else {
-                                $hasNamespacePrefixImportWithAlias = true;
-                            }
+                    if ($reference->is($namespacePrefix)) {
+                        if (\strtolower($namespacePrefix->lastNamespaceSegment()->toString()) === \strtolower($alias)) {
+                            $hasNamespacePrefixImport = true;
+                        } else {
+                            $hasNamespacePrefixImportWithAlias = true;
                         }
                     }
                 }
@@ -814,16 +812,9 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
                     }
                 }
             } elseif ($statement instanceof Node\Stmt\GroupUse) {
-                if (
-                    Node\Stmt\Use_::TYPE_FUNCTION === $statement->type
-                    || Node\Stmt\Use_::TYPE_CONSTANT === $statement->type
-                ) {
-                    continue;
-                }
-
                 $prefix = $statement->prefix->toString();
 
-                foreach ($statement->uses as $use) {
+                foreach (self::classImportItems($statement) as $use) {
                     $reference = Reference::fromString(\sprintf(
                         '%s\\%s',
                         $prefix,
@@ -865,13 +856,9 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
                     }
                 }
             } elseif ($statement instanceof Node\Stmt\GroupUse) {
-                if (Node\Stmt\Use_::TYPE_NORMAL !== $statement->type) {
-                    continue;
-                }
-
                 $prefix = $statement->prefix->toString();
 
-                foreach ($statement->uses as $use) {
+                foreach (self::classImportItems($statement) as $use) {
                     $namespacePrefixFromUse = NamespacePrefix::fromString(\sprintf(
                         '%s\\%s',
                         $prefix,
@@ -1390,13 +1377,9 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
                     }
                 }
             } elseif ($statement instanceof Node\Stmt\GroupUse) {
-                if (Node\Stmt\Use_::TYPE_NORMAL !== $statement->type) {
-                    continue;
-                }
-
                 $prefix = $statement->prefix->toString();
 
-                foreach ($statement->uses as $useStatement) {
+                foreach (self::classImportItems($statement) as $useStatement) {
                     $reference = Reference::fromString(\sprintf(
                         '%s\\%s',
                         $prefix,
@@ -1512,18 +1495,19 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
         }
 
         foreach ($containerNode->stmts as $statement) {
-            if (
-                !$statement instanceof Node\Stmt\Use_
-                && !$statement instanceof Node\Stmt\GroupUse
-            ) {
+            if ($statement instanceof Node\Stmt\Use_) {
+                if (Node\Stmt\Use_::TYPE_NORMAL !== $statement->type) {
+                    continue;
+                }
+
+                $useStatements = $statement->uses;
+            } elseif ($statement instanceof Node\Stmt\GroupUse) {
+                $useStatements = self::classImportItems($statement);
+            } else {
                 continue;
             }
 
-            if (Node\Stmt\Use_::TYPE_NORMAL !== $statement->type) {
-                continue;
-            }
-
-            foreach ($statement->uses as $useStatement) {
+            foreach ($useStatements as $useStatement) {
                 if (\strtolower($useStatement->getAlias()->toString()) === $lastNamespaceSegment) {
                     return false;
                 }
@@ -1805,13 +1789,9 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
                     $collectFirstSegment($use->name->toString());
                 }
             } elseif ($statement instanceof Node\Stmt\GroupUse) {
-                if (Node\Stmt\Use_::TYPE_NORMAL !== $statement->type) {
-                    continue;
-                }
-
                 $prefix = $statement->prefix->toString();
 
-                foreach ($statement->uses as $use) {
+                foreach (self::classImportItems($statement) as $use) {
                     $collectFirstSegment(\sprintf(
                         '%s\\%s',
                         $prefix,
@@ -1967,13 +1947,9 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
                     );
                 }
             } elseif ($statement instanceof Node\Stmt\GroupUse) {
-                if (Node\Stmt\Use_::TYPE_NORMAL !== $statement->type) {
-                    continue;
-                }
-
                 $prefix = $statement->prefix->toString();
 
-                foreach ($statement->uses as $use) {
+                foreach (self::classImportItems($statement) as $use) {
                     $reference = \sprintf(
                         '%s\\%s',
                         $prefix,
@@ -2223,6 +2199,27 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
     }
 
     /**
+     * Returns the items of a group import that import classes. php-parser records the kind of import on each item of a
+     * group import written without the function or const keyword, and on the group import itself otherwise.
+     *
+     * @return list<Node\UseItem>
+     */
+    private static function classImportItems(Node\Stmt\GroupUse $groupUse): array
+    {
+        if (Node\Stmt\Use_::TYPE_NORMAL === $groupUse->type) {
+            return \array_values($groupUse->uses);
+        }
+
+        if (Node\Stmt\Use_::TYPE_UNKNOWN !== $groupUse->type) {
+            return [];
+        }
+
+        return \array_values(\array_filter($groupUse->uses, static function (Node\UseItem $useItem): bool {
+            return Node\Stmt\Use_::TYPE_NORMAL === $useItem->type;
+        }));
+    }
+
+    /**
      * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
      * @param list<NamespacePrefix>                        $moreSpecificNamespacePrefixes
      */
@@ -2285,10 +2282,9 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
                     $stmt->uses = $remainingUses;
                 }
             } elseif ($stmt instanceof Node\Stmt\GroupUse) {
-                if (
-                    Node\Stmt\Use_::TYPE_FUNCTION === $stmt->type
-                    || Node\Stmt\Use_::TYPE_CONSTANT === $stmt->type
-                ) {
+                $classImportItems = self::classImportItems($stmt);
+
+                if (\count($classImportItems) === 0) {
                     continue;
                 }
 
@@ -2297,6 +2293,12 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
                 $remainingUses = [];
 
                 foreach ($stmt->uses as $use) {
+                    if (!\in_array($use, $classImportItems, true)) {
+                        $remainingUses[] = $use;
+
+                        continue;
+                    }
+
                     $reference = Reference::fromString(\sprintf(
                         '%s\\%s',
                         $prefix,
@@ -2331,8 +2333,21 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
 
                 if (\count($remainingUses) === 0) {
                     $indicesToRemove[] = $index;
-                } else {
-                    $stmt->uses = $remainingUses;
+                } elseif (\count($remainingUses) !== \count($stmt->uses)) {
+                    $containerNode->stmts[$index] = new Node\Stmt\GroupUse(
+                        new Node\Name($stmt->prefix->toString()),
+                        \array_map(static function (Node\UseItem $use): Node\UseItem {
+                            return new Node\UseItem(
+                                new Node\Name($use->name->toString()),
+                                $use->alias,
+                                $use->type,
+                            );
+                        }, $remainingUses),
+                        $stmt->type,
+                        [
+                            'comments' => $stmt->getComments(),
+                        ],
+                    );
                 }
             }
         }
@@ -2420,13 +2435,9 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
                         }
                     }
                 } elseif ($statement instanceof Node\Stmt\GroupUse) {
-                    if (Node\Stmt\Use_::TYPE_NORMAL !== $statement->type) {
-                        continue;
-                    }
-
                     $prefix = $statement->prefix->toString();
 
-                    foreach ($statement->uses as $use) {
+                    foreach (self::classImportItems($statement) as $use) {
                         $namespacePrefixFromUse = NamespacePrefix::fromString(\sprintf(
                             '%s\\%s',
                             $prefix,

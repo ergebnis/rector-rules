@@ -2359,9 +2359,15 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
                         new Node\UseItem(new Node\Name($namespacePrefix->toString())),
                     ];
                 } else {
-                    $prefixUseStatement = new Node\Stmt\Use_([
-                        new Node\UseItem(new Node\Name($namespacePrefix->toString())),
-                    ]);
+                    $prefixUseStatement = new Node\Stmt\Use_(
+                        [
+                            new Node\UseItem(new Node\Name($namespacePrefix->toString())),
+                        ],
+                        Node\Stmt\Use_::TYPE_NORMAL,
+                        [
+                            'comments' => $firstMatchNode->getComments(),
+                        ],
+                    );
 
                     $containerNode->stmts[(int) $firstMatchIndex] = $prefixUseStatement;
                 }

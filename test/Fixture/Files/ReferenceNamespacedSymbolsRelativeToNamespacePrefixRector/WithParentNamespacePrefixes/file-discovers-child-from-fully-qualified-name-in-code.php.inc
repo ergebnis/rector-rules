@@ -18,6 +18,7 @@ final class Kernel
 namespace App;
 
 use Symfony\Component\HttpFoundation;
+
 final class Kernel
 {
     public function handle()

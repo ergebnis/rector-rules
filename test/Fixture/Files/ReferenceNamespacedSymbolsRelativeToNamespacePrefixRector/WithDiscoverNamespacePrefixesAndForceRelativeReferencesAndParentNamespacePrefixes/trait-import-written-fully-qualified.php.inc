@@ -14,6 +14,7 @@ final class Notifier
 namespace App;
 
 use Symfony\Component\Mailer;
+
 final class Notifier
 {
     use Mailer\HasMailer;

@@ -19,6 +19,7 @@ final class Kernel
 namespace App;
 
 use Symfony\Component;
+
 final class Kernel
 {
     /**

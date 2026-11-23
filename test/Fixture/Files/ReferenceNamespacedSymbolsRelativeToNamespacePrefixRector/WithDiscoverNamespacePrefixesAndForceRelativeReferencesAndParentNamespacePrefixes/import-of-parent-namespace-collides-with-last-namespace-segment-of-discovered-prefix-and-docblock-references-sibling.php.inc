@@ -22,6 +22,7 @@ namespace App;
 
 use Smarty\Exception;
 use Smarty\Smarty;
+
 final class View
 {
     /**

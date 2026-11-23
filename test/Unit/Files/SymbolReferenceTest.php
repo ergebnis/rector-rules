@@ -51,7 +51,7 @@ final class SymbolReferenceTest extends Framework\TestCase
         self::assertSame($spelling, $symbolReference->spelling());
         self::assertSame($fullyQualifiedName, $symbolReference->fullyQualifiedName());
         self::assertSame($name, $symbolReference->node());
-        self::assertNull($symbolReference->typeNode());
+        self::assertNull($symbolReference->phpDocNode());
     }
 
     public function testInDocBlockTextReturnsSymbolReference(): void
@@ -71,7 +71,7 @@ final class SymbolReferenceTest extends Framework\TestCase
         self::assertSame($spelling, $symbolReference->spelling());
         self::assertSame($fullyQualifiedName, $symbolReference->fullyQualifiedName());
         self::assertSame($node, $symbolReference->node());
-        self::assertNull($symbolReference->typeNode());
+        self::assertNull($symbolReference->phpDocNode());
     }
 
     public function testInDocBlockTypeReturnsSymbolReferenceWhenPhpDocNodeIsIdentifierTypeNode(): void
@@ -93,7 +93,7 @@ final class SymbolReferenceTest extends Framework\TestCase
         self::assertSame($spelling, $symbolReference->spelling());
         self::assertSame($fullyQualifiedName, $symbolReference->fullyQualifiedName());
         self::assertSame($node, $symbolReference->node());
-        self::assertSame($typeNode, $symbolReference->typeNode());
+        self::assertSame($typeNode, $symbolReference->phpDocNode());
     }
 
     public function testInDocBlockTypeReturnsSymbolReferenceWhenPhpDocNodeIsConstFetchNode(): void

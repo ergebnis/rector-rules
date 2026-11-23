@@ -333,8 +333,8 @@ final class FileReader
 
             $phpDocInfo = $this->phpDocInfoFactory->createFromNode($node);
 
-            /** @var list<Ast\Type\IdentifierTypeNode> $typeNodes */
-            $typeNodes = [];
+            /** @var list<Ast\ConstExpr\ConstFetchNode|Ast\Type\IdentifierTypeNode> $phpDocNodes */
+            $phpDocNodes = [];
 
             /**
              * @var array<int, true> $keysOfShapes
@@ -343,7 +343,7 @@ final class FileReader
 
             if ($phpDocInfo instanceof BetterPhpDocParser\PhpDocInfo\PhpDocInfo) {
                 $phpDocNodeTraverser = new Ast\NodeTraverser([
-                    new PhpDocParser\PhpDocParser\PhpDocNodeVisitor\CallablePhpDocNodeVisitor(static function (Ast\Node $phpDocNode) use (&$keysOfShapes, &$typeNodes): ?Ast\Node {
+                    new PhpDocParser\PhpDocParser\PhpDocNodeVisitor\CallablePhpDocNodeVisitor(static function (Ast\Node $phpDocNode) use (&$keysOfShapes, &$phpDocNodes): ?Ast\Node {
                         if (
                             $phpDocNode instanceof Ast\Type\ArrayShapeItemNode
                             || $phpDocNode instanceof Ast\Type\ObjectShapeItemNode
@@ -359,7 +359,16 @@ final class FileReader
                             $phpDocNode instanceof Ast\Type\IdentifierTypeNode
                             && !\array_key_exists(\spl_object_id($phpDocNode), $keysOfShapes)
                         ) {
-                            $typeNodes[] = $phpDocNode;
+                            $phpDocNodes[] = $phpDocNode;
+
+                            return null;
+                        }
+
+                        if (
+                            $phpDocNode instanceof Ast\ConstExpr\ConstFetchNode
+                            && '' !== $phpDocNode->className
+                        ) {
+                            $phpDocNodes[] = $phpDocNode;
                         }
 
                         return null;
@@ -380,8 +389,12 @@ final class FileReader
                 $localTypeNames = $localTypeNamesOfNodes[\spl_object_id($node)];
             }
 
-            foreach ($typeNodes as $typeNode) {
-                $name = $typeNode->name;
+            foreach ($phpDocNodes as $phpDocNode) {
+                $name = $phpDocNode->name;
+
+                if ($phpDocNode instanceof Ast\ConstExpr\ConstFetchNode) {
+                    $name = $phpDocNode->className;
+                }
 
                 $spelling = Spelling::fromString($name);
 
@@ -405,7 +418,7 @@ final class FileReader
                         $imports,
                     ),
                     $node,
-                    $typeNode,
+                    $phpDocNode,
                 );
 
                 if (!\array_key_exists($name, $spellingsInTypes)) {

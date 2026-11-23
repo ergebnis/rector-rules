@@ -74,7 +74,7 @@ final class SymbolReferenceTest extends Framework\TestCase
         self::assertNull($symbolReference->typeNode());
     }
 
-    public function testInDocBlockTypeReturnsSymbolReference(): void
+    public function testInDocBlockTypeReturnsSymbolReferenceWhenPhpDocNodeIsIdentifierTypeNode(): void
     {
         $spelling = Rules\Files\Spelling::fromString('Smarty\Smarty');
         $fullyQualifiedName = Rules\Files\FullyQualifiedName::fromString('Smarty\Smarty');
@@ -94,5 +94,30 @@ final class SymbolReferenceTest extends Framework\TestCase
         self::assertSame($fullyQualifiedName, $symbolReference->fullyQualifiedName());
         self::assertSame($node, $symbolReference->node());
         self::assertSame($typeNode, $symbolReference->typeNode());
+    }
+
+    public function testInDocBlockTypeReturnsSymbolReferenceWhenPhpDocNodeIsConstFetchNode(): void
+    {
+        $spelling = Rules\Files\Spelling::fromString('Smarty\Smarty');
+        $fullyQualifiedName = Rules\Files\FullyQualifiedName::fromString('Smarty\Smarty');
+        $node = new Node\Stmt\Nop();
+        $constFetchNode = new PhpDocParser\Ast\ConstExpr\ConstFetchNode(
+            $spelling->toString(),
+            'CACHING_*',
+        );
+
+        $symbolReference = Rules\Files\SymbolReference::inDocBlockType(
+            $spelling,
+            $fullyQualifiedName,
+            $node,
+            $constFetchNode,
+        );
+
+        self::assertTrue($symbolReference->location()->isDocBlockType());
+        self::assertTrue($symbolReference->symbolKind()->isClassLike());
+        self::assertSame($spelling, $symbolReference->spelling());
+        self::assertSame($fullyQualifiedName, $symbolReference->fullyQualifiedName());
+        self::assertSame($node, $symbolReference->node());
+        self::assertSame($constFetchNode, $symbolReference->phpDocNode());
     }
 }

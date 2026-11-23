@@ -166,6 +166,34 @@ final class FileReaderTest extends AbstractFileTestCase
         self::assertSame($expected, self::describeSymbolReferences($file));
     }
 
+    public function testReadReturnsFileWithSymbolReferencesForClassNamesInConstantReferencesInDocBlocks(): void
+    {
+        $file = $this->read(<<<'PHP'
+            <?php
+
+            namespace App;
+
+            use Smarty;
+
+            final class View
+            {
+                /**
+                 * @param Smarty\Smarty::CACHING_* $caching
+                 * @param self::MODE_* $mode
+                 */
+                public function render($caching, $mode): void
+                {
+                }
+            }
+            PHP);
+
+        $expected = [
+            'doc-block-type class-like Smarty\Smarty -> Smarty\Smarty',
+        ];
+
+        self::assertSame($expected, self::describeSymbolReferences($file));
+    }
+
     public function testReadReturnsFileWithoutSymbolReferencesForKeywordsAndLocalTypeNamesInDocBlocks(): void
     {
         $file = $this->read(<<<'PHP'

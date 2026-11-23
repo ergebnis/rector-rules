@@ -176,7 +176,10 @@ final class NamespacePrefixPlanner
 
         $replacedImport = null;
 
-        if (!$namespaceIsOrContainsNamespacePrefix) {
+        if (
+            $requiresNamespacePrefixImport
+            && !$hasNamespacePrefixImport
+        ) {
             if ($file->declaredClassLikeNames()->contains(ClassLikeName::fromString($lastNamespaceSegment))) {
                 return null;
             }

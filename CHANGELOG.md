@@ -11,6 +11,7 @@ For a full diff see [`1.20.0...main`][1.20.0...main].
 ### Changed
 
 - Adjusted `Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector` to discover namespace prefixes from names in DocBlocks that are relative to an import ([#489]), by [@localheinz]
+- Adjusted `Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector` to process files faster by reading them again only after a namespace prefix changed them ([#503]), by [@localheinz]
 
 ### Fixed
 
@@ -606,5 +607,6 @@ For a full diff see [`fd198f0...0.1.0`][fd198f0...0.1.0].
 [#499]: https://github.com/ergebnis/rector-rules/pull/499
 [#500]: https://github.com/ergebnis/rector-rules/pull/500
 [#502]: https://github.com/ergebnis/rector-rules/pull/502
+[#503]: https://github.com/ergebnis/rector-rules/pull/503
 
 [@localheinz]: https://github.com/localheinz

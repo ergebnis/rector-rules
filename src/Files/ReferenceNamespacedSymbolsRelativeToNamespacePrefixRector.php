@@ -551,11 +551,13 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
             $changedInPass = false;
 
             foreach ($pendingNamespacePrefixes as $index => $namespacePrefix) {
-                if ($this->processNamespacePrefix($containerNode, $namespacePrefix, $namespacePrefixes->moreSpecificThan($namespacePrefix))) {
+                if ($this->processNamespacePrefix($containerNode, $file, $namespacePrefix, $namespacePrefixes->moreSpecificThan($namespacePrefix))) {
                     $changed = true;
                     $changedInPass = true;
 
                     unset($pendingNamespacePrefixes[$index]);
+
+                    $file = $this->fileReader->read($containerNode);
                 }
             }
         } while (
@@ -575,11 +577,12 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
      */
     private function processNamespacePrefix(
         Node $containerNode,
+        File $file,
         NamespacePrefix $namespacePrefix,
         NamespacePrefixes $moreSpecificNamespacePrefixes
     ): bool {
         $namespacePrefixPlan = $this->namespacePrefixPlanner->plan(
-            $this->fileReader->read($containerNode),
+            $file,
             $namespacePrefix,
             $moreSpecificNamespacePrefixes,
             $this->forceRelativeReferences,

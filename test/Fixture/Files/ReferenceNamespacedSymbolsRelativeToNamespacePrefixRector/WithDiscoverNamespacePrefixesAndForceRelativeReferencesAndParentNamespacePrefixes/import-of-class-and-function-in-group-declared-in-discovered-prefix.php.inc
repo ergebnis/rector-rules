@@ -20,6 +20,7 @@ namespace App;
 
 use Symfony\Component\Mailer;
 use Symfony\Component\Mailer\{function send};
+
 final class Notifier
 {
     public function __construct(Mailer\MailerInterface $mailer)

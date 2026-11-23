@@ -70,6 +70,7 @@ final class ListAction
 namespace App\Controller\User;
 
 use App\Controller;
+
 /**
  * @template T
  *

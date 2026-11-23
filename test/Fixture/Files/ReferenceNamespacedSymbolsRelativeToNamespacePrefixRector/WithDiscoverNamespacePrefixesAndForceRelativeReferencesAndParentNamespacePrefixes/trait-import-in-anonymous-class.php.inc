@@ -19,6 +19,7 @@ final class NotifierFactory
 namespace App;
 
 use Symfony\Component\Mailer;
+
 final class NotifierFactory
 {
     public function create(): object

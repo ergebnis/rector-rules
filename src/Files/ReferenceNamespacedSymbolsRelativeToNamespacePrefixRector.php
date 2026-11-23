@@ -551,11 +551,13 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
             $changedInPass = false;
 
             foreach ($pendingNamespacePrefixes as $index => $namespacePrefix) {
-                if ($this->processNamespacePrefix($containerNode, $namespacePrefix, $namespacePrefixes->moreSpecificThan($namespacePrefix))) {
+                if ($this->processNamespacePrefix($containerNode, $file, $namespacePrefix, $namespacePrefixes->moreSpecificThan($namespacePrefix))) {
                     $changed = true;
                     $changedInPass = true;
 
                     unset($pendingNamespacePrefixes[$index]);
+
+                    $file = $this->fileReader->read($containerNode);
                 }
             }
         } while (
@@ -575,11 +577,12 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
      */
     private function processNamespacePrefix(
         Node $containerNode,
+        File $file,
         NamespacePrefix $namespacePrefix,
         NamespacePrefixes $moreSpecificNamespacePrefixes
     ): bool {
         $namespacePrefixPlan = $this->namespacePrefixPlanner->plan(
-            $this->fileReader->read($containerNode),
+            $file,
             $namespacePrefix,
             $moreSpecificNamespacePrefixes,
             $this->forceRelativeReferences,
@@ -615,7 +618,83 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
             $namespacePrefixPlan->requiresNamespacePrefixImport(),
         );
 
+        self::separateAddedLastImportFromNextStatement($containerNode);
+
         return true;
+    }
+
+    /**
+     * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
+     */
+    private static function separateAddedLastImportFromNextStatement(Node $containerNode): void
+    {
+        $statements = \array_values($containerNode->stmts);
+
+        $lastImportIndex = null;
+
+        foreach ($statements as $index => $statement) {
+            if (
+                $statement instanceof Node\Stmt\Use_
+                || $statement instanceof Node\Stmt\GroupUse
+            ) {
+                $lastImportIndex = $index;
+            }
+        }
+
+        if (null === $lastImportIndex) {
+            return;
+        }
+
+        if ($statements[$lastImportIndex]->hasAttribute('startTokenPos')) {
+            return;
+        }
+
+        $previousStatement = $statements[$lastImportIndex - 1] ?? null;
+
+        if (
+            $previousStatement instanceof Node\Stmt\Declare_
+            && $previousStatement->hasAttribute('startTokenPos')
+        ) {
+            \array_splice(
+                $statements,
+                $lastImportIndex,
+                0,
+                [
+                    new Node\Stmt\Nop(),
+                ],
+            );
+
+            $containerNode->stmts = $statements;
+
+            return;
+        }
+
+        if (
+            $previousStatement instanceof Node\Stmt
+            && $previousStatement->hasAttribute('startTokenPos')
+        ) {
+            return;
+        }
+
+        $nextStatement = $statements[$lastImportIndex + 1] ?? null;
+
+        if (
+            !$nextStatement instanceof Node\Stmt
+            || $nextStatement instanceof Node\Stmt\Nop
+        ) {
+            return;
+        }
+
+        \array_splice(
+            $statements,
+            $lastImportIndex + 1,
+            0,
+            [
+                new Node\Stmt\Nop(),
+            ],
+        );
+
+        $containerNode->stmts = $statements;
     }
 
     /**
@@ -634,9 +713,9 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
         foreach ($respellings->toArray() as $respelling) {
             $symbolReference = $respelling->symbolReference();
 
-            $typeNode = $symbolReference->typeNode();
+            $phpDocNode = $symbolReference->phpDocNode();
 
-            if ($typeNode instanceof Ast\Type\IdentifierTypeNode) {
+            if ($phpDocNode instanceof Ast\Node) {
                 $node = $symbolReference->node();
 
                 $identifier = \spl_object_id($node);
@@ -648,7 +727,7 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
                     ];
                 }
 
-                $spellingsOfTypeNodesByNode[$identifier][1][\spl_object_id($typeNode)] = $respelling->spelling()->toString();
+                $spellingsOfTypeNodesByNode[$identifier][1][\spl_object_id($phpDocNode)] = $respelling->spelling()->toString();
 
                 continue;
             }
@@ -694,17 +773,24 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
 
             $phpDocNodeTraverser = new Ast\NodeTraverser([
                 new PhpDocParser\PhpDocParser\PhpDocNodeVisitor\CallablePhpDocNodeVisitor(static function (Ast\Node $phpDocNode) use ($spellingsOfTypeNodes): ?Ast\Node {
-                    if (!$phpDocNode instanceof Ast\Type\IdentifierTypeNode) {
-                        return null;
-                    }
-
                     $identifier = \spl_object_id($phpDocNode);
 
                     if (!\array_key_exists($identifier, $spellingsOfTypeNodes)) {
                         return null;
                     }
 
-                    return new Ast\Type\IdentifierTypeNode($spellingsOfTypeNodes[$identifier]);
+                    if ($phpDocNode instanceof Ast\ConstExpr\ConstFetchNode) {
+                        return new Ast\ConstExpr\ConstFetchNode(
+                            $spellingsOfTypeNodes[$identifier],
+                            $phpDocNode->name,
+                        );
+                    }
+
+                    if ($phpDocNode instanceof Ast\Type\IdentifierTypeNode) {
+                        return new Ast\Type\IdentifierTypeNode($spellingsOfTypeNodes[$identifier]);
+                    }
+
+                    return null;
                 }),
             ]);
 

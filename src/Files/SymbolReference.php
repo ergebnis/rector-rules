@@ -26,22 +26,29 @@ final class SymbolReference
     private Spelling $spelling;
     private ?FullyQualifiedName $fullyQualifiedName;
     private Node $node;
-    private ?PhpDocParser\Ast\Type\IdentifierTypeNode $typeNode;
 
+    /**
+     * @var null|PhpDocParser\Ast\ConstExpr\ConstFetchNode|PhpDocParser\Ast\Type\IdentifierTypeNode
+     */
+    private ?PhpDocParser\Ast\Node $phpDocNode;
+
+    /**
+     * @param null|PhpDocParser\Ast\ConstExpr\ConstFetchNode|PhpDocParser\Ast\Type\IdentifierTypeNode $phpDocNode
+     */
     private function __construct(
         SymbolReferenceLocation $location,
         SymbolKind $symbolKind,
         Spelling $spelling,
         ?FullyQualifiedName $fullyQualifiedName,
         Node $node,
-        ?PhpDocParser\Ast\Type\IdentifierTypeNode $typeNode
+        ?PhpDocParser\Ast\Node $phpDocNode
     ) {
         $this->location = $location;
         $this->symbolKind = $symbolKind;
         $this->spelling = $spelling;
         $this->fullyQualifiedName = $fullyQualifiedName;
         $this->node = $node;
-        $this->typeNode = $typeNode;
+        $this->phpDocNode = $phpDocNode;
     }
 
     public static function inCode(
@@ -60,11 +67,14 @@ final class SymbolReference
         );
     }
 
+    /**
+     * @param PhpDocParser\Ast\ConstExpr\ConstFetchNode|PhpDocParser\Ast\Type\IdentifierTypeNode $phpDocNode
+     */
     public static function inDocBlockType(
         Spelling $spelling,
         ?FullyQualifiedName $fullyQualifiedName,
         Node $node,
-        PhpDocParser\Ast\Type\IdentifierTypeNode $typeNode
+        PhpDocParser\Ast\Node $phpDocNode
     ): self {
         return new self(
             SymbolReferenceLocation::docBlockType(),
@@ -72,7 +82,7 @@ final class SymbolReference
             $spelling,
             $fullyQualifiedName,
             $node,
-            $typeNode,
+            $phpDocNode,
         );
     }
 
@@ -116,8 +126,11 @@ final class SymbolReference
         return $this->node;
     }
 
-    public function typeNode(): ?PhpDocParser\Ast\Type\IdentifierTypeNode
+    /**
+     * @return null|PhpDocParser\Ast\ConstExpr\ConstFetchNode|PhpDocParser\Ast\Type\IdentifierTypeNode
+     */
+    public function phpDocNode(): ?PhpDocParser\Ast\Node
     {
-        return $this->typeNode;
+        return $this->phpDocNode;
     }
 }

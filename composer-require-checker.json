@@ -7,6 +7,7 @@
     "int",
     "null",
     "PHPStan\\Analyser\\Scope",
+    "PHPStan\\PhpDocParser\\Ast\\ConstExpr\\ConstFetchNode",
     "PHPStan\\PhpDocParser\\Ast\\Node",
     "PHPStan\\PhpDocParser\\Ast\\NodeTraverser",
     "PHPStan\\PhpDocParser\\Ast\\PhpDoc\\GenericTagValueNode",

@@ -24,6 +24,7 @@ namespace App;
 
 use Smarty\Exception;
 use Smarty\Smarty;
+
 final class View
 {
     public function render(Smarty $smarty): string

@@ -34,6 +34,7 @@ final class ProductListing
 namespace App\Catalog\Product\Listing;
 
 use App\Catalog;
+
 final class ProductListing
 {
     /**

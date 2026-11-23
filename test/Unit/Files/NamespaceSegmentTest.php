@@ -24,7 +24,7 @@ final class NamespaceSegmentTest extends Framework\TestCase
     /**
      * @dataProvider provideInvalidValue
      */
-    public function testFromStringRejectsInvalidValue(string $value): void
+    public function testFromStringThrowsInvalidArgumentExceptionWhenValueIsInvalid(string $value): void
     {
         $this->expectException(\InvalidArgumentException::class);
 

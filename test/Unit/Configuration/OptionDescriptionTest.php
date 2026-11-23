@@ -28,7 +28,7 @@ final class OptionDescriptionTest extends Framework\TestCase
      * @dataProvider \Ergebnis\DataProvider\StringProvider::blank
      * @dataProvider \Ergebnis\DataProvider\StringProvider::empty
      */
-    public function testFromStringRejectsBlankOrEmptyValue(string $value): void
+    public function testFromStringThrowsInvalidOptionDescriptionWhenValueIsBlankOrEmpty(string $value): void
     {
         $this->expectException(Rules\Configuration\InvalidOptionDescription::class);
 
@@ -38,7 +38,7 @@ final class OptionDescriptionTest extends Framework\TestCase
     /**
      * @dataProvider \Ergebnis\DataProvider\StringProvider::untrimmed
      */
-    public function testFromStringRejectsUntrimmedValue(string $value): void
+    public function testFromStringThrowsInvalidOptionDescriptionWhenValueIsUntrimmed(string $value): void
     {
         $this->expectException(Rules\Configuration\InvalidOptionDescription::class);
 

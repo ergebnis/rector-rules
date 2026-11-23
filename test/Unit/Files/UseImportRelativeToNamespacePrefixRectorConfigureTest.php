@@ -21,7 +21,7 @@ use Rector\Testing;
  */
 final class UseImportRelativeToNamespacePrefixRectorConfigureTest extends Testing\PHPUnit\AbstractLazyTestCase
 {
-    public function testConfigureRejectsUnknownKeys(): void
+    public function testConfigureThrowsInvalidArgumentExceptionWhenOptionNameIsUnknown(): void
     {
         $rector = $this->make(Rules\Files\UseImportRelativeToNamespacePrefixRector::class);
 
@@ -33,7 +33,7 @@ final class UseImportRelativeToNamespacePrefixRectorConfigureTest extends Testin
         ]);
     }
 
-    public function testConfigureRejectsNamespacePrefixesWhenValueIsNotList(): void
+    public function testConfigureThrowsInvalidArgumentExceptionWhenNamespacePrefixesIsNotList(): void
     {
         $rector = $this->make(Rules\Files\UseImportRelativeToNamespacePrefixRector::class);
 
@@ -50,7 +50,7 @@ final class UseImportRelativeToNamespacePrefixRectorConfigureTest extends Testin
      *
      * @param list<mixed> $value
      */
-    public function testConfigureRejectsNamespacePrefixesWhenValueIsNotAListOfStrings(array $value): void
+    public function testConfigureThrowsInvalidArgumentExceptionWhenNamespacePrefixesIsNotAListOfStrings(array $value): void
     {
         $rector = $this->make(Rules\Files\UseImportRelativeToNamespacePrefixRector::class);
 
@@ -83,7 +83,7 @@ final class UseImportRelativeToNamespacePrefixRectorConfigureTest extends Testin
         }
     }
 
-    public function testConfigureRejectsNamespacePrefixesWhenValueIsNotAListOfValidNamespacePrefixes(): void
+    public function testConfigureThrowsInvalidArgumentExceptionWhenNamespacePrefixesIsNotAListOfValidNamespacePrefixes(): void
     {
         $rector = $this->make(Rules\Files\UseImportRelativeToNamespacePrefixRector::class);
 
@@ -97,7 +97,7 @@ final class UseImportRelativeToNamespacePrefixRectorConfigureTest extends Testin
         ]);
     }
 
-    public function testConfigureRejectsNamespacePrefixesWhenValueIsAListWithDuplicateNamespacePrefixes(): void
+    public function testConfigureThrowsInvalidArgumentExceptionWhenNamespacePrefixesIsAListWithDuplicateNamespacePrefixes(): void
     {
         $rector = $this->make(Rules\Files\UseImportRelativeToNamespacePrefixRector::class);
 

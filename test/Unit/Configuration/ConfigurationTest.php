@@ -25,7 +25,7 @@ use PHPUnit\Framework;
  */
 final class ConfigurationTest extends Framework\TestCase
 {
-    public function testFromArrayRejectsNonStringKeys(): void
+    public function testFromArrayThrowsInvalidConfigurationKeyWhenKeyIsNotString(): void
     {
         $this->expectException(Rules\Configuration\InvalidConfigurationKey::class);
 
@@ -47,18 +47,7 @@ final class ConfigurationTest extends Framework\TestCase
         self::assertSame($values, $configuration->toArray());
     }
 
-    public function testGetReturnsValueForExistingKey(): void
-    {
-        $optionName = Rules\Configuration\OptionName::fromString('foo');
-
-        $configuration = Rules\Configuration\Configuration::fromArray([
-            'foo' => 'bar',
-        ]);
-
-        self::assertSame('bar', $configuration->get($optionName));
-    }
-
-    public function testGetThrowsRejectsNonExistingKey(): void
+    public function testGetThrowsUnknownOptionNameWhenOptionNameDoesNotExist(): void
     {
         $optionName = Rules\Configuration\OptionName::fromString('unknown');
 
@@ -69,5 +58,16 @@ final class ConfigurationTest extends Framework\TestCase
         $this->expectException(Rules\Configuration\UnknownOptionName::class);
 
         $configuration->get($optionName);
+    }
+
+    public function testGetReturnsValueForExistingKey(): void
+    {
+        $optionName = Rules\Configuration\OptionName::fromString('foo');
+
+        $configuration = Rules\Configuration\Configuration::fromArray([
+            'foo' => 'bar',
+        ]);
+
+        self::assertSame('bar', $configuration->get($optionName));
     }
 }

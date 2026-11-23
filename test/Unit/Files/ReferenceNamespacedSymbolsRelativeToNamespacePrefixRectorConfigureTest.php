@@ -43,7 +43,7 @@ use Rector\Testing;
  */
 final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorConfigureTest extends Testing\PHPUnit\AbstractLazyTestCase
 {
-    public function testConfigureRejectsUnknownKeys(): void
+    public function testConfigureThrowsUnknownOptionNameWhenOptionNameIsUnknown(): void
     {
         $rector = $this->make(Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class);
 
@@ -54,7 +54,7 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorConfigureTe
         ]);
     }
 
-    public function testConfigureRejectsNonBoolForceRelativeReferences(): void
+    public function testConfigureThrowsInvalidOptionValueWhenForceRelativeReferencesIsNotBool(): void
     {
         $rector = $this->make(Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class);
 
@@ -80,7 +80,7 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorConfigureTe
         ]);
     }
 
-    public function testConfigureRejectsNamespacePrefixesWhenValueIsNotList(): void
+    public function testConfigureThrowsInvalidOptionValueWhenNamespacePrefixesIsNotList(): void
     {
         $rector = $this->make(Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class);
 
@@ -96,7 +96,7 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorConfigureTe
      *
      * @param list<mixed> $value
      */
-    public function testConfigureRejectsNamespacePrefixesWhenValueIsNotAListOfStrings(array $value): void
+    public function testConfigureThrowsInvalidOptionValueWhenNamespacePrefixesIsNotAListOfStrings(array $value): void
     {
         $rector = $this->make(Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class);
 
@@ -131,7 +131,7 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorConfigureTe
     /**
      * @dataProvider provideInvalidNamespacePrefix
      */
-    public function testConfigureRejectsNamespacePrefixesWhenValueIsNotAListOfValidNamespacePrefixes(string $namespacePrefix): void
+    public function testConfigureThrowsInvalidOptionValueWhenNamespacePrefixesIsNotAListOfValidNamespacePrefixes(string $namespacePrefix): void
     {
         $rector = $this->make(Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class);
 
@@ -164,7 +164,7 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorConfigureTe
         }
     }
 
-    public function testConfigureRejectsNamespacePrefixesWhenValueIsAListWithDuplicateNamespacePrefixes(): void
+    public function testConfigureThrowsInvalidOptionValueWhenNamespacePrefixesIsAListWithDuplicateNamespacePrefixes(): void
     {
         $rector = $this->make(Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class);
 
@@ -203,7 +203,7 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorConfigureTe
         $rector->configure([]);
     }
 
-    public function testConfigureRejectsParentNamespacePrefixesWhenValueIsNotList(): void
+    public function testConfigureThrowsInvalidOptionValueWhenParentNamespacePrefixesIsNotList(): void
     {
         $rector = $this->make(Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class);
 
@@ -219,7 +219,7 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorConfigureTe
      *
      * @param list<mixed> $value
      */
-    public function testConfigureRejectsParentNamespacePrefixesWhereValueIsNotAListOfStrings(array $value): void
+    public function testConfigureThrowsInvalidOptionValueWhenParentNamespacePrefixesIsNotAListOfStrings(array $value): void
     {
         $rector = $this->make(Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class);
 
@@ -254,7 +254,7 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorConfigureTe
     /**
      * @dataProvider provideInvalidParentNamespacePrefix
      */
-    public function testConfigureRejectsParentNamespacePrefixesWhenValueIsNotAListOfValidParentNamespacePrefixes(string $parentNamespacePrefix): void
+    public function testConfigureThrowsInvalidOptionValueWhenParentNamespacePrefixesIsNotAListOfValidParentNamespacePrefixes(string $parentNamespacePrefix): void
     {
         $rector = $this->make(Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class);
 
@@ -286,7 +286,7 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorConfigureTe
         }
     }
 
-    public function testConfigureRejectsParentNamespacePrefixesWhenValueIsAListWithDuplicateParentNamespacePrefixes(): void
+    public function testConfigureThrowsInvalidOptionValueWhenParentNamespacePrefixesIsAListWithDuplicateParentNamespacePrefixes(): void
     {
         $rector = $this->make(Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class);
 
@@ -300,7 +300,7 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorConfigureTe
         ]);
     }
 
-    public function testConfigureRejectsParentNamespacePrefixesWhenValueIsAListWithOverlappingParentNamespacePrefixes(): void
+    public function testConfigureThrowsInvalidOptionValueWhenParentNamespacePrefixesIsAListWithOverlappingParentNamespacePrefixes(): void
     {
         $rector = $this->make(Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class);
 
@@ -314,7 +314,7 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorConfigureTe
         ]);
     }
 
-    public function testConfigureRejectsParentNamespacePrefixesWhenValueIsAListWithOverlappingParentNamespacePrefixesInReverseOrder(): void
+    public function testConfigureThrowsInvalidOptionValueWhenParentNamespacePrefixesIsAListWithOverlappingParentNamespacePrefixesInReverseOrder(): void
     {
         $rector = $this->make(Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class);
 
@@ -391,7 +391,7 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorConfigureTe
         ]);
     }
 
-    public function testConfigureRejectsNonBoolDiscoverNamespacePrefixes(): void
+    public function testConfigureThrowsInvalidOptionValueWhenDiscoverNamespacePrefixesIsNotBool(): void
     {
         $rector = $this->make(Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector::class);
 

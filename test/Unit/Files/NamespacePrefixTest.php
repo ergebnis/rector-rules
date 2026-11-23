@@ -19,9 +19,9 @@ use PHPUnit\Framework;
 /**
  * @covers \Ergebnis\Rector\Rules\Files\NamespacePrefix
  *
+ * @uses \Ergebnis\Rector\Rules\Files\FullyQualifiedName
  * @uses \Ergebnis\Rector\Rules\Files\NamespaceSegment
  * @uses \Ergebnis\Rector\Rules\Files\NamespaceSegments
- * @uses \Ergebnis\Rector\Rules\Files\Reference
  */
 final class NamespacePrefixTest extends Framework\TestCase
 {

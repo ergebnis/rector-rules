@@ -15,7 +15,6 @@ namespace Ergebnis\Rector\Rules\Files;
 
 use Ergebnis\Rector\Rules;
 use PhpParser\Node;
-use PhpParser\NodeFinder;
 use PHPStan\PhpDocParser\Ast;
 use Rector\BetterPhpDocParser;
 use Rector\Comments;
@@ -37,39 +36,15 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
     /**
      * @see https://www.php.net/manual/en/reserved.other-reserved-words.php
      */
-    private const RESERVED_NAMES = [
-        'array',
-        'bool',
-        'callable',
-        'false',
-        'float',
-        'int',
-        'iterable',
-        'mixed',
-        'never',
-        'null',
-        'object',
-        'parent',
-        'self',
-        'static',
-        'string',
-        'true',
-        'void',
-    ];
     private BetterPhpDocParser\PhpDocInfo\PhpDocInfoFactory $phpDocInfoFactory;
     private Comments\NodeDocBlock\DocBlockUpdater $docBlockUpdater;
+    private FileReader $fileReader;
+    private NamespacePrefixDiscoverer $namespacePrefixDiscoverer;
+    private NamespacePrefixPlanner $namespacePrefixPlanner;
     private bool $discoverNamespacePrefixes = false;
     private bool $forceRelativeReferences = false;
-
-    /**
-     * @var list<NamespacePrefix>
-     */
-    private array $namespacePrefixes = [];
-
-    /**
-     * @var list<NamespacePrefix>
-     */
-    private array $parentNamespacePrefixes = [];
+    private NamespacePrefixes $namespacePrefixes;
+    private NamespacePrefixes $parentNamespacePrefixes;
 
     public function __construct(
         BetterPhpDocParser\PhpDocInfo\PhpDocInfoFactory $phpDocInfoFactory,
@@ -77,6 +52,17 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
     ) {
         $this->phpDocInfoFactory = $phpDocInfoFactory;
         $this->docBlockUpdater = $docBlockUpdater;
+
+        $nameResolver = new NameResolver();
+
+        $this->fileReader = new FileReader(
+            $phpDocInfoFactory,
+            $nameResolver,
+        );
+        $this->namespacePrefixDiscoverer = new NamespacePrefixDiscoverer();
+        $this->namespacePrefixPlanner = new NamespacePrefixPlanner($nameResolver);
+        $this->namespacePrefixes = NamespacePrefixes::create();
+        $this->parentNamespacePrefixes = NamespacePrefixes::create();
     }
 
     public function getNodeTypes(): array
@@ -181,8 +167,8 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
 
         $this->discoverNamespacePrefixes = $discoverNamespacePrefixes;
         $this->forceRelativeReferences = $forceRelativeReferences;
-        $this->namespacePrefixes = $namespacePrefixes;
-        $this->parentNamespacePrefixes = $parentNamespacePrefixes;
+        $this->namespacePrefixes = NamespacePrefixes::create(...$namespacePrefixes);
+        $this->parentNamespacePrefixes = NamespacePrefixes::create(...$parentNamespacePrefixes);
     }
 
     public function configurationOptions(): Rules\Configuration\Options
@@ -532,55 +518,43 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
             $containerNode = $node;
         }
 
+        $file = $this->fileReader->read($containerNode);
+
         $parentNamespacePrefixes = $this->parentNamespacePrefixes;
 
         if ($this->discoverNamespacePrefixes) {
-            $discoveredParents = self::discoverParentNamespacePrefixesFromFile(
-                $containerNode,
+            $parentNamespacePrefixes = $this->parentNamespacePrefixes->merge($this->namespacePrefixDiscoverer->discoverParentNamespacePrefixes(
+                $file,
                 $this->parentNamespacePrefixes,
                 $this->namespacePrefixes,
-            );
-
-            $parentNamespacePrefixes = \array_merge(
-                $this->parentNamespacePrefixes,
-                $discoveredParents,
-            );
+            ));
         }
 
-        $discoveredNamespacePrefixes = self::discoverNamespacePrefixesFromParentNamespacePrefixes(
-            $containerNode,
+        $discoveredNamespacePrefixes = $this->namespacePrefixDiscoverer->discoverNamespacePrefixes(
+            $file,
             $parentNamespacePrefixes,
             $this->namespacePrefixes,
         );
 
-        $namespacePrefixes = \array_merge(
-            $this->namespacePrefixes,
-            $discoveredNamespacePrefixes,
-        );
+        $namespacePrefixes = $this->namespacePrefixes->merge($discoveredNamespacePrefixes);
 
-        if (\count($namespacePrefixes) === 0) {
+        if ($namespacePrefixes->isEmpty()) {
             return null;
         }
 
         $changed = false;
 
-        $pendingNamespacePrefixes = $namespacePrefixes;
+        $pendingNamespacePrefixes = $namespacePrefixes->toArray();
 
         do {
             $changedInPass = false;
 
-            $classReferences = self::fullyQualifiedReferences(\array_values($containerNode->stmts));
+            $file = $this->fileReader->read($containerNode);
+
+            $fullyQualifiedClassLikeNames = $file->symbolReferences()->fullyQualifiedClassLikeNamesInCode();
 
             foreach ($pendingNamespacePrefixes as $index => $namespacePrefix) {
-                $moreSpecificNamespacePrefixes = [];
-
-                foreach ($namespacePrefixes as $otherNamespacePrefix) {
-                    if ($namespacePrefix->isNamespacePrefixOf($otherNamespacePrefix)) {
-                        $moreSpecificNamespacePrefixes[] = $otherNamespacePrefix;
-                    }
-                }
-
-                if ($this->processNamespacePrefix($containerNode, $namespacePrefix, $moreSpecificNamespacePrefixes, $classReferences)) {
+                if ($this->processNamespacePrefix($containerNode, $namespacePrefix, $namespacePrefixes->moreSpecificThan($namespacePrefix), $fullyQualifiedClassLikeNames)) {
                     $changed = true;
                     $changedInPass = true;
 
@@ -601,212 +575,49 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
 
     /**
      * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
-     * @param list<NamespacePrefix>                        $moreSpecificNamespacePrefixes
-     * @param array<string, true>                          $classReferences
      */
     private function processNamespacePrefix(
         Node $containerNode,
         NamespacePrefix $namespacePrefix,
-        array $moreSpecificNamespacePrefixes,
-        array $classReferences
+        NamespacePrefixes $moreSpecificNamespacePrefixes,
+        FullyQualifiedNames $fullyQualifiedClassLikeNames
     ): bool {
-        if (\in_array(\strtolower($namespacePrefix->lastNamespaceSegment()->toString()), self::RESERVED_NAMES, true)) {
+        $namespacePrefixPlan = $this->namespacePrefixPlanner->plan(
+            $this->fileReader->read($containerNode),
+            $namespacePrefix,
+            $moreSpecificNamespacePrefixes,
+            $fullyQualifiedClassLikeNames,
+            $this->forceRelativeReferences,
+        );
+
+        if (!$namespacePrefixPlan instanceof NamespacePrefixPlan) {
             return false;
         }
 
-        /** @var array<string, Reference> $aliasesToReferences */
-        $aliasesToReferences = [];
+        $this->respell(
+            $containerNode,
+            $namespacePrefixPlan->respellings(),
+        );
 
-        $hasNamespacePrefixImport = false;
-        $hasNamespacePrefixImportWithAlias = false;
+        $replacedImport = $namespacePrefixPlan->replacedImport();
 
-        foreach ($containerNode->stmts as $statement) {
-            if ($statement instanceof Node\Stmt\Use_) {
-                if (Node\Stmt\Use_::TYPE_NORMAL === $statement->type) {
-                    foreach ($statement->uses as $use) {
-                        $alias = $use->getAlias()->toString();
+        if ($replacedImport instanceof Import) {
+            $useItem = $replacedImport->useItem();
 
-                        $reference = Reference::fromString($use->name->toString());
-
-                        $aliasesToReferences[$alias] = $reference;
-
-                        if ($reference->is($namespacePrefix)) {
-                            if (\strtolower($namespacePrefix->lastNamespaceSegment()->toString()) === \strtolower($alias)) {
-                                $hasNamespacePrefixImport = true;
-                            } else {
-                                $hasNamespacePrefixImportWithAlias = true;
-                            }
-                        }
-                    }
-                }
-            } elseif ($statement instanceof Node\Stmt\GroupUse) {
-                $prefix = $statement->prefix->toString();
-
-                foreach (self::classImportItems($statement) as $use) {
-                    $alias = $use->getAlias()->toString();
-
-                    $reference = Reference::fromString(\sprintf(
-                        '%s\\%s',
-                        $prefix,
-                        $use->name->toString(),
-                    ));
-
-                    $aliasesToReferences[$alias] = $reference;
-
-                    if ($reference->is($namespacePrefix)) {
-                        if (\strtolower($namespacePrefix->lastNamespaceSegment()->toString()) === \strtolower($alias)) {
-                            $hasNamespacePrefixImport = true;
-                        } else {
-                            $hasNamespacePrefixImportWithAlias = true;
-                        }
-                    }
-                }
+            if ($useItem instanceof Node\UseItem) {
+                self::removeImport(
+                    $containerNode,
+                    $useItem,
+                );
             }
-        }
-
-        if (
-            $hasNamespacePrefixImportWithAlias
-            && !$hasNamespacePrefixImport
-        ) {
-            return false;
-        }
-
-        $hasMatchingNamespacePrefixImports = self::hasMatchingNamespacePrefixImports(
-            $containerNode,
-            $namespacePrefix,
-            $moreSpecificNamespacePrefixes,
-        );
-
-        $parentNamespacePrefixImport = self::hasParentNamespacePrefixImport(
-            $containerNode,
-            $namespacePrefix,
-        );
-
-        if (
-            !$hasMatchingNamespacePrefixImports
-            && !$parentNamespacePrefixImport
-            && !$hasNamespacePrefixImport
-            && !self::hasSourceWrittenFullyQualifiedReferencesMatchingPrefix($containerNode, $namespacePrefix, $moreSpecificNamespacePrefixes)
-            && !($this->forceRelativeReferences && self::hasPartiallyQualifiedReferencesMatchingNamespacePrefix($containerNode, $namespacePrefix, $moreSpecificNamespacePrefixes))
-        ) {
-            return false;
-        }
-
-        $namespacePrefixOfContainingFile = null;
-        $namespaceOfContainingFile = null;
-
-        if (!$this->forceRelativeReferences) {
-            $namespacePrefixOfContainingFile = self::namespacePrefixOfContainingFile(
-                $containerNode,
-                $namespacePrefix,
-            );
-
-            $namespaceOfContainingFile = self::namespaceOfContainingFileDeclaredInNamespacePrefix(
-                $containerNode,
-                $namespacePrefix,
-            );
-        }
-
-        $unavailableFirstNamespaceSegments = self::unavailableFirstNamespaceSegments(
-            $aliasesToReferences,
-            $namespacePrefix,
-            $moreSpecificNamespacePrefixes,
-        );
-
-        $requiresNamespacePrefixImport = false;
-
-        $replaceableImportOfParentNamespace = null;
-
-        if (!$namespacePrefixOfContainingFile instanceof NamespacePrefix) {
-            $replaceableImportOfParentNamespace = $this->replaceableImportOfParentNamespace(
-                $containerNode,
-                $namespacePrefix,
-                $moreSpecificNamespacePrefixes,
-            );
-        }
-
-        if (
-            !$namespacePrefixOfContainingFile instanceof NamespacePrefix
-            && !$replaceableImportOfParentNamespace instanceof Node\UseItem
-            && self::lastNamespaceSegmentOfNamespacePrefixCollidesWithExistingImport($containerNode, $namespacePrefix)
-        ) {
-            return false;
-        }
-
-        if (
-            !$namespacePrefixOfContainingFile instanceof NamespacePrefix
-            && self::lastNamespaceSegmentOfNamespacePrefixCollidesWithDeclaredSymbol($containerNode, $namespacePrefix)
-        ) {
-            return false;
-        }
-
-        if (
-            !$namespacePrefixOfContainingFile instanceof NamespacePrefix
-            && self::lastNamespaceSegmentOfNamespacePrefixCollidesWithRelativeReference($containerNode, $namespacePrefix)
-        ) {
-            return false;
-        }
-
-        if (
-            $namespacePrefixOfContainingFile instanceof NamespacePrefix
-            && self::referenceRelativeToNamespacePrefixOfContainingFileCollidesWithExistingImport(
-                $containerNode,
-                $aliasesToReferences,
-                $namespacePrefix,
-                $moreSpecificNamespacePrefixes,
-                $namespacePrefixOfContainingFile,
-            )
-        ) {
-            return false;
-        }
-
-        $statementsRewritten = $this->rewriteNamesInStatements(
-            $containerNode,
-            $namespacePrefix,
-            $moreSpecificNamespacePrefixes,
-            $namespacePrefixOfContainingFile,
-            $namespaceOfContainingFile,
-            $unavailableFirstNamespaceSegments,
-            $requiresNamespacePrefixImport,
-        );
-
-        $docBlocksRewritten = $this->rewriteNamesInDocBlocks(
-            $containerNode,
-            $aliasesToReferences,
-            $namespacePrefix,
-            $moreSpecificNamespacePrefixes,
-            $namespacePrefixOfContainingFile,
-            $namespaceOfContainingFile,
-            $unavailableFirstNamespaceSegments,
-            $classReferences,
-            $requiresNamespacePrefixImport,
-        );
-
-        if (!$namespaceOfContainingFile instanceof NamespacePrefix) {
-            $requiresNamespacePrefixImport = !$namespacePrefixOfContainingFile instanceof NamespacePrefix;
-        }
-
-        if (
-            !$hasMatchingNamespacePrefixImports
-            && !$statementsRewritten
-            && !$docBlocksRewritten
-        ) {
-            return false;
-        }
-
-        if ($replaceableImportOfParentNamespace instanceof Node\UseItem) {
-            self::removeImport(
-                $containerNode,
-                $replaceableImportOfParentNamespace,
-            );
         }
 
         self::removeMatchingImportsAndAddNamespacePrefixImport(
             $containerNode,
             $namespacePrefix,
-            $hasNamespacePrefixImport,
+            $namespacePrefixPlan->hasNamespacePrefixImport(),
             $moreSpecificNamespacePrefixes,
-            $requiresNamespacePrefixImport,
+            $namespacePrefixPlan->requiresNamespacePrefixImport(),
         );
 
         return true;
@@ -814,550 +625,78 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
 
     /**
      * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
-     * @param list<NamespacePrefix>                        $moreSpecificNamespacePrefixes
      */
-    private static function hasMatchingNamespacePrefixImports(
+    private function respell(
         Node $containerNode,
-        NamespacePrefix $namespacePrefix,
-        array $moreSpecificNamespacePrefixes
-    ): bool {
-        foreach ($containerNode->stmts as $statement) {
-            if ($statement instanceof Node\Stmt\Use_) {
-                if (
-                    Node\Stmt\Use_::TYPE_FUNCTION === $statement->type
-                    || Node\Stmt\Use_::TYPE_CONSTANT === $statement->type
-                ) {
-                    continue;
+        Respellings $respellings
+    ): void {
+        /** @var array<int, string> $spellingsOfNames */
+        $spellingsOfNames = [];
+
+        /** @var array<int, array{0: Node, 1: array<int, string>}> $spellingsOfTypeNodesByNode */
+        $spellingsOfTypeNodesByNode = [];
+
+        foreach ($respellings->toArray() as $respelling) {
+            $symbolReference = $respelling->symbolReference();
+
+            $typeNode = $symbolReference->typeNode();
+
+            if ($typeNode instanceof Ast\Type\IdentifierTypeNode) {
+                $node = $symbolReference->node();
+
+                $identifier = \spl_object_id($node);
+
+                if (!\array_key_exists($identifier, $spellingsOfTypeNodesByNode)) {
+                    $spellingsOfTypeNodesByNode[$identifier] = [
+                        $node,
+                        [],
+                    ];
                 }
 
-                foreach ($statement->uses as $use) {
-                    $reference = Reference::fromString($use->name->toString());
+                $spellingsOfTypeNodesByNode[$identifier][1][\spl_object_id($typeNode)] = $respelling->spelling()->toString();
 
-                    if (
-                        !$reference->is($namespacePrefix)
-                        && $reference->isDeclaredIn($namespacePrefix)
-                        && !$reference->isOrIsDeclaredInOneOf(...$moreSpecificNamespacePrefixes)
-                    ) {
-                        return true;
-                    }
-                }
-            } elseif ($statement instanceof Node\Stmt\GroupUse) {
-                $prefix = $statement->prefix->toString();
-
-                foreach (self::classImportItems($statement) as $use) {
-                    $reference = Reference::fromString(\sprintf(
-                        '%s\\%s',
-                        $prefix,
-                        $use->name->toString(),
-                    ));
-
-                    if (
-                        !$reference->is($namespacePrefix)
-                        && $reference->isDeclaredIn($namespacePrefix)
-                        && !$reference->isOrIsDeclaredInOneOf(...$moreSpecificNamespacePrefixes)
-                    ) {
-                        return true;
-                    }
-                }
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
-     */
-    private static function hasParentNamespacePrefixImport(
-        Node $containerNode,
-        NamespacePrefix $namespacePrefix
-    ): bool {
-        foreach ($containerNode->stmts as $statement) {
-            if ($statement instanceof Node\Stmt\Use_) {
-                if (Node\Stmt\Use_::TYPE_NORMAL !== $statement->type) {
-                    continue;
-                }
-
-                foreach ($statement->uses as $use) {
-                    $namespacePrefixFromUse = NamespacePrefix::fromString($use->name->toString());
-
-                    if ($namespacePrefixFromUse->isNamespacePrefixOf($namespacePrefix)) {
-                        return true;
-                    }
-                }
-            } elseif ($statement instanceof Node\Stmt\GroupUse) {
-                $prefix = $statement->prefix->toString();
-
-                foreach (self::classImportItems($statement) as $use) {
-                    $namespacePrefixFromUse = NamespacePrefix::fromString(\sprintf(
-                        '%s\\%s',
-                        $prefix,
-                        $use->name->toString(),
-                    ));
-
-                    if ($namespacePrefixFromUse->isNamespacePrefixOf($namespacePrefix)) {
-                        return true;
-                    }
-                }
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
-     * @param list<NamespacePrefix>                        $moreSpecificNamespacePrefixes
-     */
-    private static function hasSourceWrittenFullyQualifiedReferencesMatchingPrefix(
-        Node $containerNode,
-        NamespacePrefix $namespacePrefix,
-        array $moreSpecificNamespacePrefixes
-    ): bool {
-        $nodeFinder = new NodeFinder();
-
-        $functionAndConstantNodeIdentifiers = self::unqualifiedFunctionAndConstantNodeIdentifiers($containerNode->stmts);
-
-        $match = $nodeFinder->findFirst(
-            $containerNode->stmts,
-            static function (Node $node) use ($namespacePrefix, $moreSpecificNamespacePrefixes, $functionAndConstantNodeIdentifiers): bool {
-                if (!$node instanceof Node\Name\FullyQualified) {
-                    return false;
-                }
-
-                if (\in_array(\spl_object_id($node), $functionAndConstantNodeIdentifiers, true)) {
-                    return false;
-                }
-
-                $originalName = $node->getAttribute('originalName');
-
-                if (
-                    $originalName instanceof Node\Name
-                    && !$originalName instanceof Node\Name\FullyQualified
-                ) {
-                    return false;
-                }
-
-                $reference = Reference::fromString($node->toString());
-
-                return $reference->isOrIsDeclaredInOneOf($namespacePrefix)
-                    && !$reference->isOrIsDeclaredInOneOf(...$moreSpecificNamespacePrefixes);
-            },
-        );
-
-        if (null !== $match) {
-            return true;
-        }
-
-        $docBlockPrefix = \sprintf(
-            '\\%s\\',
-            $namespacePrefix->toString(),
-        );
-
-        $matchInDocBlock = $nodeFinder->findFirst(
-            $containerNode->stmts,
-            static function (Node $node) use ($docBlockPrefix): bool {
-                $docComment = $node->getDocComment();
-
-                if (null === $docComment) {
-                    return false;
-                }
-
-                return \strpos($docComment->getText(), $docBlockPrefix) !== false;
-            },
-        );
-
-        return null !== $matchInDocBlock;
-    }
-
-    /**
-     * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
-     * @param list<NamespacePrefix>                        $moreSpecificNamespacePrefixes
-     */
-    private static function hasPartiallyQualifiedReferencesMatchingNamespacePrefix(
-        Node $containerNode,
-        NamespacePrefix $namespacePrefix,
-        array $moreSpecificNamespacePrefixes
-    ): bool {
-        $nodeFinder = new NodeFinder();
-
-        $functionAndConstantNodeIdentifiers = self::unqualifiedFunctionAndConstantNodeIdentifiers($containerNode->stmts);
-
-        $match = $nodeFinder->findFirst(
-            $containerNode->stmts,
-            static function (Node $node) use ($namespacePrefix, $moreSpecificNamespacePrefixes, $functionAndConstantNodeIdentifiers): bool {
-                if (!$node instanceof Node\Name\FullyQualified) {
-                    return false;
-                }
-
-                if (\in_array(\spl_object_id($node), $functionAndConstantNodeIdentifiers, true)) {
-                    return false;
-                }
-
-                $originalName = $node->getAttribute('originalName');
-
-                if (!$originalName instanceof Node\Name) {
-                    return false;
-                }
-
-                if ($originalName instanceof Node\Name\FullyQualified) {
-                    return false;
-                }
-
-                if (\strpos($originalName->toString(), '\\') === false) {
-                    return false;
-                }
-
-                $reference = Reference::fromString($node->toString());
-
-                return $reference->isOrIsDeclaredInOneOf($namespacePrefix)
-                    && !$reference->isOrIsDeclaredInOneOf(...$moreSpecificNamespacePrefixes);
-            },
-        );
-
-        if (null !== $match) {
-            return true;
-        }
-
-        if (!$containerNode instanceof Node\Stmt\Namespace_) {
-            return false;
-        }
-
-        if (null === $containerNode->name) {
-            return false;
-        }
-
-        $fileNamespace = $containerNode->name->toString();
-
-        $docBlockPartialPrefix = $namespacePrefix->toString();
-
-        if (\strpos($docBlockPartialPrefix, $fileNamespace . '\\') === 0) {
-            $docBlockPartialPrefix = \substr($docBlockPartialPrefix, \strlen($fileNamespace) + 1);
-        }
-
-        $matchInDocBlock = $nodeFinder->findFirst(
-            $containerNode->stmts,
-            static function (Node $node) use ($fileNamespace, $namespacePrefix, $moreSpecificNamespacePrefixes): bool {
-                $docComment = $node->getDocComment();
-
-                if (null === $docComment) {
-                    return false;
-                }
-
-                $text = $docComment->getText();
-
-                if (\preg_match_all('/(?:^|[^\\\\a-zA-Z0-9_])([A-Z][a-zA-Z0-9_]*(?:\\\\[A-Z][a-zA-Z0-9_]*)+)/', $text, $matches) === 0) {
-                    return false;
-                }
-
-                foreach ($matches[1] as $partialName) {
-                    $fullyQualified = $fileNamespace . '\\' . $partialName;
-
-                    $reference = Reference::fromString($fullyQualified);
-
-                    if (
-                        $reference->isOrIsDeclaredInOneOf($namespacePrefix)
-                        && !$reference->isOrIsDeclaredInOneOf(...$moreSpecificNamespacePrefixes)
-                    ) {
-                        return true;
-                    }
-                }
-
-                return false;
-            },
-        );
-
-        return null !== $matchInDocBlock;
-    }
-
-    /**
-     * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
-     * @param list<NamespacePrefix>                        $moreSpecificNamespacePrefixes
-     * @param list<string>                                 $unavailableFirstNamespaceSegments
-     */
-    private function rewriteNamesInStatements(
-        Node $containerNode,
-        NamespacePrefix $namespacePrefix,
-        array $moreSpecificNamespacePrefixes,
-        ?NamespacePrefix $namespacePrefixOfContainingFile,
-        ?NamespacePrefix $namespaceOfContainingFile,
-        array $unavailableFirstNamespaceSegments,
-        bool &$requiresNamespacePrefixImport
-    ): bool {
-        $hasChanged = false;
-
-        $functionAndConstantNodeIdentifiers = self::functionAndConstantNodeIdentifiers($containerNode->stmts);
-        $unqualifiedFunctionAndConstantNodeIdentifiers = self::unqualifiedFunctionAndConstantNodeIdentifiers($containerNode->stmts);
-
-        $this->traverseNodesWithCallable($containerNode->stmts, static function (Node $node) use ($namespacePrefix, $moreSpecificNamespacePrefixes, $namespacePrefixOfContainingFile, $namespaceOfContainingFile, $unavailableFirstNamespaceSegments, $functionAndConstantNodeIdentifiers, $unqualifiedFunctionAndConstantNodeIdentifiers, &$hasChanged, &$requiresNamespacePrefixImport): ?Node {
-            if (!$node instanceof Node\Name\FullyQualified) {
-                return null;
+                continue;
             }
 
-            if (\in_array(\spl_object_id($node), $unqualifiedFunctionAndConstantNodeIdentifiers, true)) {
-                return null;
-            }
+            $spellingsOfNames[\spl_object_id($symbolReference->node())] = $respelling->spelling()->toString();
+        }
 
-            $isFunctionOrConstant = \in_array(\spl_object_id($node), $functionAndConstantNodeIdentifiers, true);
-
-            $reference = Reference::fromString($node->toString());
-
-            if (
-                !$reference->is($namespacePrefix)
-                && !$reference->isDeclaredIn($namespacePrefix)
-            ) {
-                return null;
-            }
-
-            if (
-                $isFunctionOrConstant
-                && $reference->is($namespacePrefix)
-            ) {
-                return null;
-            }
-
-            if ($reference->isOrIsDeclaredInOneOf(...$moreSpecificNamespacePrefixes)) {
-                return null;
-            }
-
-            if ($namespacePrefixOfContainingFile instanceof NamespacePrefix) {
-                if ($reference->is($namespacePrefixOfContainingFile)) {
+        if ([] !== $spellingsOfNames) {
+            $this->traverseNodesWithCallable($containerNode->stmts, static function (Node $node) use ($spellingsOfNames): ?Node {
+                if (!$node instanceof Node\Name) {
                     return null;
                 }
 
-                $rewrittenName = $reference->relativeTo($namespacePrefixOfContainingFile)->toString();
+                $identifier = \spl_object_id($node);
 
-                if (
-                    $isFunctionOrConstant
-                    && \strpos($rewrittenName, '\\') === false
-                ) {
+                if (!\array_key_exists($identifier, $spellingsOfNames)) {
                     return null;
                 }
 
-                $originalName = $node->getAttribute('originalName');
+                return new Node\Name($spellingsOfNames[$identifier]);
+            });
+        }
 
-                if (
-                    $originalName instanceof Node\Name
-                    && $originalName->toString() === $rewrittenName
-                ) {
-                    return null;
-                }
-
-                $hasChanged = true;
-
-                return new Node\Name($rewrittenName);
-            }
-
-            $rewrittenName = self::nameRelativeToNamespacePrefixOrNamespaceOfContainingFile(
-                $reference,
-                $namespacePrefix,
-                $namespaceOfContainingFile,
-                $unavailableFirstNamespaceSegments,
-                $requiresNamespacePrefixImport,
-                $isFunctionOrConstant,
-            );
-
-            $originalName = $node->getAttribute('originalName');
-
-            if (
-                $originalName instanceof Node\Name
-                && $originalName->toString() === $rewrittenName
-            ) {
-                return null;
-            }
-
-            $hasChanged = true;
-
-            return new Node\Name($rewrittenName);
-        });
-
-        return $hasChanged;
-    }
-
-    /**
-     * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
-     * @param array<string, Reference>                     $aliasesToReferences
-     * @param list<NamespacePrefix>                        $moreSpecificNamespacePrefixes
-     * @param list<string>                                 $unavailableFirstNamespaceSegments
-     * @param array<string, true>                          $classReferences
-     */
-    private function rewriteNamesInDocBlocks(
-        Node $containerNode,
-        array $aliasesToReferences,
-        NamespacePrefix $namespacePrefix,
-        array $moreSpecificNamespacePrefixes,
-        ?NamespacePrefix $namespacePrefixOfContainingFile,
-        ?NamespacePrefix $namespaceOfContainingFile,
-        array $unavailableFirstNamespaceSegments,
-        array $classReferences,
-        bool &$requiresNamespacePrefixImport
-    ): bool {
-        $anyDocBlockChanged = false;
-
-        $this->traverseNodesWithCallable($containerNode->stmts, function (Node $node) use (&$anyDocBlockChanged, &$requiresNamespacePrefixImport, $aliasesToReferences, $classReferences, $containerNode, $namespacePrefix, $moreSpecificNamespacePrefixes, $namespaceOfContainingFile, $namespacePrefixOfContainingFile, $unavailableFirstNamespaceSegments): ?Node {
-            if ($node instanceof Node\Stmt\Use_) {
-                return null;
-            }
-
+        foreach ($spellingsOfTypeNodesByNode as [$node, $spellingsOfTypeNodes]) {
             $phpDocInfo = $this->phpDocInfoFactory->createFromNode($node);
 
             if (!$phpDocInfo instanceof BetterPhpDocParser\PhpDocInfo\PhpDocInfo) {
-                return null;
+                continue;
             }
 
-            $hasChanged = false;
-
             $phpDocNodeTraverser = new Ast\NodeTraverser([
-                new PhpDocParser\PhpDocParser\PhpDocNodeVisitor\CallablePhpDocNodeVisitor(static function (Ast\Node $phpDocNode) use ($aliasesToReferences, $classReferences, $containerNode, $namespacePrefix, $moreSpecificNamespacePrefixes, $namespaceOfContainingFile, $namespacePrefixOfContainingFile, $unavailableFirstNamespaceSegments, &$hasChanged, &$requiresNamespacePrefixImport): ?Ast\Type\IdentifierTypeNode {
+                new PhpDocParser\PhpDocParser\PhpDocNodeVisitor\CallablePhpDocNodeVisitor(static function (Ast\Node $phpDocNode) use ($spellingsOfTypeNodes): ?Ast\Node {
                     if (!$phpDocNode instanceof Ast\Type\IdentifierTypeNode) {
                         return null;
                     }
 
-                    if (
-                        $phpDocNode instanceof BetterPhpDocParser\ValueObject\Type\FullyQualifiedIdentifierTypeNode
-                        || \strpos($phpDocNode->name, '\\') === 0
-                    ) {
-                        $reference = Reference::fromString(\ltrim($phpDocNode->name, '\\'));
+                    $identifier = \spl_object_id($phpDocNode);
 
-                        if (
-                            !$reference->is($namespacePrefix)
-                            && !$reference->isDeclaredIn($namespacePrefix)
-                        ) {
-                            return null;
-                        }
-
-                        if ($reference->isOrIsDeclaredInOneOf(...$moreSpecificNamespacePrefixes)) {
-                            return null;
-                        }
-
-                        $hasChanged = true;
-
-                        if ($namespacePrefixOfContainingFile instanceof NamespacePrefix) {
-                            if ($reference->is($namespacePrefixOfContainingFile)) {
-                                return null;
-                            }
-
-                            return new Ast\Type\IdentifierTypeNode($reference->relativeTo($namespacePrefixOfContainingFile)->toString());
-                        }
-
-                        return new Ast\Type\IdentifierTypeNode(self::nameRelativeToNamespacePrefixOrNamespaceOfContainingFile(
-                            $reference,
-                            $namespacePrefix,
-                            $namespaceOfContainingFile,
-                            $unavailableFirstNamespaceSegments,
-                            $requiresNamespacePrefixImport,
-                        ));
-                    }
-
-                    $nameParts = \explode(
-                        '\\',
-                        $phpDocNode->name,
-                    );
-
-                    $firstName = $nameParts[0];
-
-                    if (!\array_key_exists($firstName, $aliasesToReferences)) {
-                        if (
-                            !$containerNode instanceof Node\Stmt\Namespace_
-                            || null === $containerNode->name
-                        ) {
-                            return null;
-                        }
-
-                        $fullyQualifiedName = $containerNode->name->toString() . '\\' . $phpDocNode->name;
-
-                        if (
-                            \count($nameParts) < 2
-                            && !\array_key_exists($fullyQualifiedName, $classReferences)
-                        ) {
-                            return null;
-                        }
-
-                        $reference = Reference::fromString($fullyQualifiedName);
-
-                        if (
-                            !$reference->is($namespacePrefix)
-                            && !$reference->isDeclaredIn($namespacePrefix)
-                        ) {
-                            return null;
-                        }
-
-                        if ($reference->isOrIsDeclaredInOneOf(...$moreSpecificNamespacePrefixes)) {
-                            return null;
-                        }
-
-                        if ($namespacePrefixOfContainingFile instanceof NamespacePrefix) {
-                            if ($reference->is($namespacePrefixOfContainingFile)) {
-                                return null;
-                            }
-
-                            $newName = $reference->relativeTo($namespacePrefixOfContainingFile)->toString();
-                        } else {
-                            $newName = self::nameRelativeToNamespacePrefixOrNamespaceOfContainingFile(
-                                $reference,
-                                $namespacePrefix,
-                                $namespaceOfContainingFile,
-                                $unavailableFirstNamespaceSegments,
-                                $requiresNamespacePrefixImport,
-                            );
-                        }
-
-                        if ($phpDocNode->name === $newName) {
-                            return null;
-                        }
-
-                        $hasChanged = true;
-
-                        return new Ast\Type\IdentifierTypeNode($newName);
-                    }
-
-                    $importReference = $aliasesToReferences[$firstName];
-
-                    $remainingParts = \array_slice(
-                        $nameParts,
-                        1,
-                    );
-
-                    if (\count($remainingParts) > 0) {
-                        $reference = $importReference->append(...$remainingParts);
-                    } else {
-                        $reference = $importReference;
-                    }
-
-                    if (
-                        !$reference->is($namespacePrefix)
-                        && !$reference->isDeclaredIn($namespacePrefix)
-                    ) {
+                    if (!\array_key_exists($identifier, $spellingsOfTypeNodes)) {
                         return null;
                     }
 
-                    if ($reference->isOrIsDeclaredInOneOf(...$moreSpecificNamespacePrefixes)) {
-                        return null;
-                    }
-
-                    if ($namespacePrefixOfContainingFile instanceof NamespacePrefix) {
-                        if ($reference->is($namespacePrefixOfContainingFile)) {
-                            return null;
-                        }
-
-                        $newName = $reference->relativeTo($namespacePrefixOfContainingFile)->toString();
-                    } else {
-                        $newName = self::nameRelativeToNamespacePrefixOrNamespaceOfContainingFile(
-                            $reference,
-                            $namespacePrefix,
-                            $namespaceOfContainingFile,
-                            $unavailableFirstNamespaceSegments,
-                            $requiresNamespacePrefixImport,
-                        );
-                    }
-
-                    if ($phpDocNode->name === $newName) {
-                        return null;
-                    }
-
-                    $hasChanged = true;
-
-                    return new Ast\Type\IdentifierTypeNode($newName);
+                    return new Ast\Type\IdentifierTypeNode($spellingsOfTypeNodes[$identifier]);
                 }),
             ]);
 
@@ -1365,306 +704,8 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
                 $phpDocInfo->getPhpDocNode(),
             ]);
 
-            if ($hasChanged) {
-                $anyDocBlockChanged = true;
-
-                $this->docBlockUpdater->updateRefactoredNodeWithPhpDocInfo($node);
-            }
-
-            return null;
-        });
-
-        return $anyDocBlockChanged;
-    }
-
-    /**
-     * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
-     */
-    private static function lastNamespaceSegmentOfNamespacePrefixCollidesWithExistingImport(
-        Node $containerNode,
-        NamespacePrefix $namespacePrefix
-    ): bool {
-        $lastNamespaceSegment = $namespacePrefix->lastNamespaceSegment();
-
-        foreach ($containerNode->stmts as $statement) {
-            if ($statement instanceof Node\Stmt\Use_) {
-                if (Node\Stmt\Use_::TYPE_NORMAL !== $statement->type) {
-                    continue;
-                }
-
-                foreach ($statement->uses as $useStatement) {
-                    $reference = Reference::fromString($useStatement->name->toString());
-
-                    if (
-                        $reference->is($namespacePrefix)
-                        || $reference->isDeclaredIn($namespacePrefix)
-                    ) {
-                        continue;
-                    }
-
-                    if (\strtolower($useStatement->getAlias()->toString()) === \strtolower($lastNamespaceSegment->toString())) {
-                        return true;
-                    }
-                }
-            } elseif ($statement instanceof Node\Stmt\GroupUse) {
-                $prefix = $statement->prefix->toString();
-
-                foreach (self::classImportItems($statement) as $useStatement) {
-                    $reference = Reference::fromString(\sprintf(
-                        '%s\\%s',
-                        $prefix,
-                        $useStatement->name->toString(),
-                    ));
-
-                    if (
-                        $reference->is($namespacePrefix)
-                        || $reference->isDeclaredIn($namespacePrefix)
-                    ) {
-                        continue;
-                    }
-
-                    if (\strtolower($useStatement->getAlias()->toString()) === \strtolower($lastNamespaceSegment->toString())) {
-                        return true;
-                    }
-                }
-            }
+            $this->docBlockUpdater->updateRefactoredNodeWithPhpDocInfo($node);
         }
-
-        return false;
-    }
-
-    /**
-     * Returns the import of a namespace containing the namespace prefix whose alias matches the last namespace segment of
-     * the namespace prefix, for example, Smarty for the namespace prefix Smarty\Smarty, when every name relative to that
-     * alias references the namespace prefix or a symbol declared in it, since the import of the namespace prefix can then
-     * replace that import.
-     *
-     * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
-     * @param list<NamespacePrefix>                        $moreSpecificNamespacePrefixes
-     */
-    private function replaceableImportOfParentNamespace(
-        Node $containerNode,
-        NamespacePrefix $namespacePrefix,
-        array $moreSpecificNamespacePrefixes
-    ): ?Node\UseItem {
-        $lastNamespaceSegment = $namespacePrefix->lastNamespaceSegment()->toString();
-
-        $replaceableImport = null;
-        $importedReference = null;
-
-        foreach ($containerNode->stmts as $statement) {
-            if ($statement instanceof Node\Stmt\Use_) {
-                if (Node\Stmt\Use_::TYPE_NORMAL !== $statement->type) {
-                    continue;
-                }
-
-                $useStatements = $statement->uses;
-            } elseif ($statement instanceof Node\Stmt\GroupUse) {
-                $useStatements = self::classImportItems($statement);
-            } else {
-                continue;
-            }
-
-            foreach ($useStatements as $useStatement) {
-                if (\strtolower($useStatement->getAlias()->toString()) !== \strtolower($lastNamespaceSegment)) {
-                    continue;
-                }
-
-                $name = $useStatement->name->toString();
-
-                if ($statement instanceof Node\Stmt\GroupUse) {
-                    $name = \sprintf(
-                        '%s\\%s',
-                        $statement->prefix->toString(),
-                        $name,
-                    );
-                }
-
-                if (!NamespacePrefix::fromString($name)->isNamespacePrefixOf($namespacePrefix)) {
-                    return null;
-                }
-
-                $replaceableImport = $useStatement;
-                $importedReference = Reference::fromString($name);
-            }
-        }
-
-        if (
-            !$replaceableImport instanceof Node\UseItem
-            || !$importedReference instanceof Reference
-        ) {
-            return null;
-        }
-
-        $isReplaceable = static function (Reference $reference, bool $isFunctionOrConstant) use ($namespacePrefix, $moreSpecificNamespacePrefixes): bool {
-            if (
-                !$reference->is($namespacePrefix)
-                && !$reference->isDeclaredIn($namespacePrefix)
-            ) {
-                return false;
-            }
-
-            if (
-                $isFunctionOrConstant
-                && $reference->is($namespacePrefix)
-            ) {
-                return false;
-            }
-
-            return !$reference->isOrIsDeclaredInOneOf(...$moreSpecificNamespacePrefixes);
-        };
-
-        $nodeFinder = new NodeFinder();
-
-        $functionAndConstantNodeIdentifiers = self::functionAndConstantNodeIdentifiers($containerNode->stmts);
-        $unqualifiedFunctionAndConstantNodeIdentifiers = self::unqualifiedFunctionAndConstantNodeIdentifiers(\array_values($containerNode->stmts));
-
-        $nameNotReplaceable = $nodeFinder->findFirst(
-            $containerNode->stmts,
-            static function (Node $node) use ($functionAndConstantNodeIdentifiers, $isReplaceable, $lastNamespaceSegment, $unqualifiedFunctionAndConstantNodeIdentifiers): bool {
-                if (!$node instanceof Node\Name\FullyQualified) {
-                    return false;
-                }
-
-                if (\in_array(\spl_object_id($node), $unqualifiedFunctionAndConstantNodeIdentifiers, true)) {
-                    return false;
-                }
-
-                $originalName = $node->getAttribute('originalName');
-
-                if (!$originalName instanceof Node\Name) {
-                    return false;
-                }
-
-                if ($originalName instanceof Node\Name\FullyQualified) {
-                    return false;
-                }
-
-                if (\strtolower($originalName->getFirst()) !== \strtolower($lastNamespaceSegment)) {
-                    return false;
-                }
-
-                $isFunctionOrConstant = \in_array(
-                    \spl_object_id($node),
-                    $functionAndConstantNodeIdentifiers,
-                    true,
-                );
-
-                return !$isReplaceable(
-                    Reference::fromString($node->toString()),
-                    $isFunctionOrConstant,
-                );
-            },
-        );
-
-        if (null !== $nameNotReplaceable) {
-            return null;
-        }
-
-        $nameInDocBlockNotReplaceable = $nodeFinder->findFirst(
-            $containerNode->stmts,
-            function (Node $node) use ($importedReference, $isReplaceable, $lastNamespaceSegment): bool {
-                if ($node instanceof Node\Stmt\Use_) {
-                    return false;
-                }
-
-                $docComment = $node->getDocComment();
-
-                if (null === $docComment) {
-                    return false;
-                }
-
-                $pattern = \sprintf(
-                    '/(?<![\\\\\w$])(%s)((?:\\\\[a-zA-Z_][a-zA-Z0-9_]*)+)/i',
-                    \preg_quote($lastNamespaceSegment, '/'),
-                );
-
-                if (\preg_match_all($pattern, $docComment->getText(), $matches, \PREG_SET_ORDER) > 0) {
-                    foreach ($matches as $match) {
-                        if ($match[1] !== $lastNamespaceSegment) {
-                            return true;
-                        }
-
-                        $remainingParts = \explode(
-                            '\\',
-                            \ltrim($match[2], '\\'),
-                        );
-
-                        if (!$isReplaceable($importedReference->append(...$remainingParts), false)) {
-                            return true;
-                        }
-                    }
-                }
-
-                $phpDocInfo = $this->phpDocInfoFactory->createFromNode($node);
-
-                if (!$phpDocInfo instanceof BetterPhpDocParser\PhpDocInfo\PhpDocInfo) {
-                    return false;
-                }
-
-                /** @var list<Ast\Type\IdentifierTypeNode> $identifierTypeNodes */
-                $identifierTypeNodes = [];
-
-                $phpDocNodeTraverser = new Ast\NodeTraverser([
-                    new PhpDocParser\PhpDocParser\PhpDocNodeVisitor\CallablePhpDocNodeVisitor(static function (Ast\Node $phpDocNode) use (&$identifierTypeNodes): ?Ast\Node {
-                        if ($phpDocNode instanceof Ast\Type\IdentifierTypeNode) {
-                            $identifierTypeNodes[] = $phpDocNode;
-                        }
-
-                        return null;
-                    }),
-                ]);
-
-                $phpDocNodeTraverser->traverse([
-                    $phpDocInfo->getPhpDocNode(),
-                ]);
-
-                foreach ($identifierTypeNodes as $identifierTypeNode) {
-                    if (
-                        $identifierTypeNode instanceof BetterPhpDocParser\ValueObject\Type\FullyQualifiedIdentifierTypeNode
-                        || \strpos($identifierTypeNode->name, '\\') === 0
-                    ) {
-                        continue;
-                    }
-
-                    $nameParts = \explode(
-                        '\\',
-                        $identifierTypeNode->name,
-                    );
-
-                    if (\strtolower($nameParts[0]) !== \strtolower($lastNamespaceSegment)) {
-                        continue;
-                    }
-
-                    if ($nameParts[0] !== $lastNamespaceSegment) {
-                        return true;
-                    }
-
-                    $remainingParts = \array_slice(
-                        $nameParts,
-                        1,
-                    );
-
-                    $reference = $importedReference;
-
-                    if (\count($remainingParts) > 0) {
-                        $reference = $importedReference->append(...$remainingParts);
-                    }
-
-                    if (!$isReplaceable($reference, false)) {
-                        return true;
-                    }
-                }
-
-                return false;
-            },
-        );
-
-        if (null !== $nameInDocBlockNotReplaceable) {
-            return null;
-        }
-
-        return $replaceableImport;
     }
 
     /**
@@ -1707,804 +748,6 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
     }
 
     /**
-     * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
-     */
-    private static function lastNamespaceSegmentOfNamespacePrefixCollidesWithDeclaredSymbol(
-        Node $containerNode,
-        NamespacePrefix $namespacePrefix
-    ): bool {
-        $lastNamespaceSegmentOfNamespacePrefix = $namespacePrefix->lastNamespaceSegment();
-
-        foreach ($containerNode->stmts as $statement) {
-            if (
-                $statement instanceof Node\Stmt\Class_
-                || $statement instanceof Node\Stmt\Interface_
-                || $statement instanceof Node\Stmt\Trait_
-                || $statement instanceof Node\Stmt\Enum_
-            ) {
-                if (null === $statement->name) {
-                    continue;
-                }
-
-                if (\strtolower($statement->name->toString()) !== \strtolower($lastNamespaceSegmentOfNamespacePrefix->toString())) {
-                    continue;
-                }
-
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Returns whether the file already references a symbol with a partially qualified name whose first namespace segment
-     * matches the last namespace segment of the namespace prefix, but which is not declared in the namespace prefix, for
-     * example, Exception\SchemaUriCouldNotBeRead declared in the namespace of the file, since an import of the namespace
-     * prefix would change what that name resolves to.
-     *
-     * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
-     */
-    private static function lastNamespaceSegmentOfNamespacePrefixCollidesWithRelativeReference(
-        Node $containerNode,
-        NamespacePrefix $namespacePrefix
-    ): bool {
-        $lastNamespaceSegment = \strtolower($namespacePrefix->lastNamespaceSegment()->toString());
-
-        $nodeFinder = new NodeFinder();
-
-        $functionAndConstantNodeIdentifiers = self::unqualifiedFunctionAndConstantNodeIdentifiers(\array_values($containerNode->stmts));
-
-        $match = $nodeFinder->findFirst(
-            $containerNode->stmts,
-            static function (Node $node) use ($functionAndConstantNodeIdentifiers, $lastNamespaceSegment, $namespacePrefix): bool {
-                if (!$node instanceof Node\Name\FullyQualified) {
-                    return false;
-                }
-
-                if (\in_array(\spl_object_id($node), $functionAndConstantNodeIdentifiers, true)) {
-                    return false;
-                }
-
-                $originalName = $node->getAttribute('originalName');
-
-                if (!$originalName instanceof Node\Name) {
-                    return false;
-                }
-
-                if ($originalName instanceof Node\Name\FullyQualified) {
-                    return false;
-                }
-
-                $originalNamespaceSegments = \explode(
-                    '\\',
-                    $originalName->toString(),
-                );
-
-                if (\count($originalNamespaceSegments) < 2) {
-                    return false;
-                }
-
-                if (\strtolower($originalNamespaceSegments[0]) !== $lastNamespaceSegment) {
-                    return false;
-                }
-
-                return !Reference::fromString($node->toString())->isOrIsDeclaredInOneOf($namespacePrefix);
-            },
-        );
-
-        if (null !== $match) {
-            return true;
-        }
-
-        foreach ($containerNode->stmts as $statement) {
-            if ($statement instanceof Node\Stmt\Use_) {
-                if (Node\Stmt\Use_::TYPE_NORMAL !== $statement->type) {
-                    continue;
-                }
-
-                $useStatements = $statement->uses;
-            } elseif ($statement instanceof Node\Stmt\GroupUse) {
-                $useStatements = self::classImportItems($statement);
-            } else {
-                continue;
-            }
-
-            foreach ($useStatements as $useStatement) {
-                if (\strtolower($useStatement->getAlias()->toString()) === $lastNamespaceSegment) {
-                    return false;
-                }
-            }
-        }
-
-        $pattern = \sprintf(
-            '/(?<![\\\\\w])%s\\\\\w/i',
-            \preg_quote($namespacePrefix->lastNamespaceSegment()->toString(), '/'),
-        );
-
-        $matchInDocBlock = $nodeFinder->findFirst(
-            $containerNode->stmts,
-            static function (Node $node) use ($pattern): bool {
-                $docComment = $node->getDocComment();
-
-                if (null === $docComment) {
-                    return false;
-                }
-
-                return 1 === \preg_match($pattern, $docComment->getText());
-            },
-        );
-
-        return null !== $matchInDocBlock;
-    }
-
-    /**
-     * Returns whether a symbol declared in the namespace prefix would be referenced relative to the namespace of the
-     * containing file with a name whose first namespace segment matches the alias of an import that remains, for
-     * example, Exception\CanNotResolve while the file imports JsonSchema\Exception, since that name would then resolve
-     * against the import.
-     *
-     * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
-     * @param array<string, Reference>                     $aliasesToReferences
-     * @param list<NamespacePrefix>                        $moreSpecificNamespacePrefixes
-     */
-    private static function referenceRelativeToNamespacePrefixOfContainingFileCollidesWithExistingImport(
-        Node $containerNode,
-        array $aliasesToReferences,
-        NamespacePrefix $namespacePrefix,
-        array $moreSpecificNamespacePrefixes,
-        NamespacePrefix $namespacePrefixOfContainingFile
-    ): bool {
-        $remainingAliases = [];
-
-        foreach ($aliasesToReferences as $alias => $reference) {
-            if (
-                $reference->isOrIsDeclaredInOneOf($namespacePrefix)
-                && !$reference->isOrIsDeclaredInOneOf(...$moreSpecificNamespacePrefixes)
-            ) {
-                continue;
-            }
-
-            $remainingAliases[] = \strtolower($alias);
-        }
-
-        if ([] === $remainingAliases) {
-            return false;
-        }
-
-        $references = \array_values($aliasesToReferences);
-
-        foreach (\array_keys(self::fullyQualifiedReferences(\array_values($containerNode->stmts))) as $fullyQualifiedReference) {
-            $references[] = Reference::fromString($fullyQualifiedReference);
-        }
-
-        foreach ($references as $reference) {
-            if (!$reference->isDeclaredIn($namespacePrefixOfContainingFile)) {
-                continue;
-            }
-
-            if (
-                !$reference->isOrIsDeclaredInOneOf($namespacePrefix)
-                || $reference->isOrIsDeclaredInOneOf(...$moreSpecificNamespacePrefixes)
-            ) {
-                continue;
-            }
-
-            $namespaceSegments = \explode(
-                '\\',
-                $reference->relativeTo($namespacePrefixOfContainingFile)->toString(),
-            );
-
-            if (\count($namespaceSegments) < 2) {
-                continue;
-            }
-
-            if (\in_array(\strtolower($namespaceSegments[0]), $remainingAliases, true)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
-     */
-    private static function namespacePrefixOfContainingFile(
-        Node $containerNode,
-        NamespacePrefix $namespacePrefix
-    ): ?NamespacePrefix {
-        if (!$containerNode instanceof Node\Stmt\Namespace_) {
-            return null;
-        }
-
-        if (null === $containerNode->name) {
-            return null;
-        }
-
-        $fileNamespace = $containerNode->name->toString();
-
-        if ($namespacePrefix->toString() === $fileNamespace) {
-            return NamespacePrefix::fromString($fileNamespace);
-        }
-
-        if (\strpos($namespacePrefix->toString(), $fileNamespace . '\\') === 0) {
-            return NamespacePrefix::fromString($fileNamespace);
-        }
-
-        return null;
-    }
-
-    /**
-     * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
-     */
-    private static function namespaceOfContainingFileDeclaredInNamespacePrefix(
-        Node $containerNode,
-        NamespacePrefix $namespacePrefix
-    ): ?NamespacePrefix {
-        if (!$containerNode instanceof Node\Stmt\Namespace_) {
-            return null;
-        }
-
-        if (null === $containerNode->name) {
-            return null;
-        }
-
-        $namespaceOfContainingFile = NamespacePrefix::fromString($containerNode->name->toString());
-
-        if (!$namespacePrefix->isNamespacePrefixOf($namespaceOfContainingFile)) {
-            return null;
-        }
-
-        return $namespaceOfContainingFile;
-    }
-
-    /**
-     * Returns the lower-cased aliases of imports that remain after rewriting, including the alias of the namespace prefix
-     * import itself, since a name relative to the namespace of the containing file whose first namespace segment matches
-     * one of them would resolve against that import instead.
-     *
-     * @param array<string, Reference> $aliasesToReferences
-     * @param list<NamespacePrefix>    $moreSpecificNamespacePrefixes
-     *
-     * @return list<string>
-     */
-    private static function unavailableFirstNamespaceSegments(
-        array $aliasesToReferences,
-        NamespacePrefix $namespacePrefix,
-        array $moreSpecificNamespacePrefixes
-    ): array {
-        $unavailableFirstNamespaceSegments = [
-            \strtolower($namespacePrefix->lastNamespaceSegment()->toString()),
-        ];
-
-        foreach ($aliasesToReferences as $alias => $reference) {
-            if (
-                $reference->isDeclaredIn($namespacePrefix)
-                && !$reference->isOrIsDeclaredInOneOf(...$moreSpecificNamespacePrefixes)
-            ) {
-                continue;
-            }
-
-            $unavailableFirstNamespaceSegments[] = \strtolower($alias);
-        }
-
-        return $unavailableFirstNamespaceSegments;
-    }
-
-    /**
-     * @param list<string> $unavailableFirstNamespaceSegments
-     */
-    private static function nameRelativeToNamespacePrefixOrNamespaceOfContainingFile(
-        Reference $reference,
-        NamespacePrefix $namespacePrefix,
-        ?NamespacePrefix $namespaceOfContainingFile,
-        array $unavailableFirstNamespaceSegments,
-        bool &$requiresNamespacePrefixImport,
-        bool $requiresQualifiedName = false
-    ): string {
-        if (
-            $namespaceOfContainingFile instanceof NamespacePrefix
-            && $reference->isDeclaredIn($namespaceOfContainingFile)
-        ) {
-            $name = $reference->relativeTo($namespaceOfContainingFile)->toString();
-
-            $namespaceSegments = \explode(
-                '\\',
-                $name,
-            );
-
-            $firstNamespaceSegment = $namespaceSegments[0];
-
-            if (
-                !\in_array(\strtolower($firstNamespaceSegment), $unavailableFirstNamespaceSegments, true)
-                && (
-                    !$requiresQualifiedName
-                    || \count($namespaceSegments) > 1
-                )
-            ) {
-                return $name;
-            }
-        }
-
-        $requiresNamespacePrefixImport = true;
-
-        if ($reference->is($namespacePrefix)) {
-            return $namespacePrefix->lastNamespaceSegment()->toString();
-        }
-
-        return \sprintf(
-            '%s\\%s',
-            $namespacePrefix->lastNamespaceSegment()->toString(),
-            $reference->relativeTo($namespacePrefix)->toString(),
-        );
-    }
-
-    /**
-     * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
-     * @param list<NamespacePrefix>                        $existingParentNamespacePrefixes
-     * @param list<NamespacePrefix>                        $existingNamespacePrefixes
-     *
-     * @return list<NamespacePrefix>
-     */
-    private static function discoverParentNamespacePrefixesFromFile(
-        Node $containerNode,
-        array $existingParentNamespacePrefixes,
-        array $existingNamespacePrefixes
-    ): array {
-        /** @var array<string, NamespacePrefix> $discovered */
-        $discovered = [];
-
-        $collectFirstSegment = static function (string $reference) use (&$discovered): void {
-            $parts = \explode('\\', $reference);
-
-            if (\count($parts) < 2) {
-                return;
-            }
-
-            $firstSegment = $parts[0];
-
-            if (\array_key_exists($firstSegment, $discovered)) {
-                return;
-            }
-
-            try {
-                $discovered[$firstSegment] = NamespacePrefix::fromString($firstSegment);
-            } catch (\InvalidArgumentException $exception) {
-                return;
-            }
-        };
-
-        if (
-            $containerNode instanceof Node\Stmt\Namespace_
-            && null !== $containerNode->name
-        ) {
-            $collectFirstSegment($containerNode->name->toString());
-        }
-
-        foreach ($containerNode->stmts as $statement) {
-            if ($statement instanceof Node\Stmt\Use_) {
-                if (Node\Stmt\Use_::TYPE_NORMAL !== $statement->type) {
-                    continue;
-                }
-
-                foreach ($statement->uses as $use) {
-                    $collectFirstSegment($use->name->toString());
-                }
-            } elseif ($statement instanceof Node\Stmt\GroupUse) {
-                $prefix = $statement->prefix->toString();
-
-                foreach (self::classImportItems($statement) as $use) {
-                    $collectFirstSegment(\sprintf(
-                        '%s\\%s',
-                        $prefix,
-                        $use->name->toString(),
-                    ));
-                }
-            }
-        }
-
-        $nodeFinder = new NodeFinder();
-
-        $functionAndConstantNodeIdentifiers = self::functionAndConstantNodeIdentifiers($containerNode->stmts);
-        $unqualifiedFunctionAndConstantNodeIdentifiers = self::unqualifiedFunctionAndConstantNodeIdentifiers($containerNode->stmts);
-
-        $nodeFinder->find(
-            $containerNode->stmts,
-            static function (Node $node) use ($collectFirstSegment, $functionAndConstantNodeIdentifiers, $unqualifiedFunctionAndConstantNodeIdentifiers): bool {
-                if (!$node instanceof Node\Name\FullyQualified) {
-                    return false;
-                }
-
-                if (\in_array(\spl_object_id($node), $unqualifiedFunctionAndConstantNodeIdentifiers, true)) {
-                    return false;
-                }
-
-                if (\in_array(\spl_object_id($node), $functionAndConstantNodeIdentifiers, true)) {
-                    $namespace = $node->slice(
-                        0,
-                        -1,
-                    );
-
-                    if (!$namespace instanceof Node\Name) {
-                        return false;
-                    }
-
-                    $collectFirstSegment($namespace->toString());
-
-                    return false;
-                }
-
-                $collectFirstSegment($node->toString());
-
-                return false;
-            },
-        );
-
-        $nodeFinder->find(
-            $containerNode->stmts,
-            static function (Node $node) use (&$discovered): bool {
-                $docComment = $node->getDocComment();
-
-                if (null === $docComment) {
-                    return false;
-                }
-
-                $text = $docComment->getText();
-
-                $pattern = '/\\\\([a-zA-Z_][a-zA-Z0-9_]*)\\\\[a-zA-Z_]/';
-
-                if (\preg_match_all($pattern, $text, $matches) > 0) {
-                    foreach ($matches[1] as $segmentString) {
-                        if (\array_key_exists($segmentString, $discovered)) {
-                            continue;
-                        }
-
-                        try {
-                            $discovered[$segmentString] = NamespacePrefix::fromString($segmentString);
-                        } catch (\InvalidArgumentException $exception) {
-                            continue;
-                        }
-                    }
-                }
-
-                return false;
-            },
-        );
-
-        foreach ($discovered as $key => $discoveredPrefix) {
-            foreach ($existingParentNamespacePrefixes as $existingParent) {
-                if (
-                    $discoveredPrefix->isNamespacePrefixOf($existingParent)
-                    || $existingParent->isNamespacePrefixOf($discoveredPrefix)
-                    || $discoveredPrefix->toString() === $existingParent->toString()
-                ) {
-                    unset($discovered[$key]);
-
-                    break;
-                }
-            }
-        }
-
-        foreach ($discovered as $key => $discoveredPrefix) {
-            foreach ($existingNamespacePrefixes as $existingPrefix) {
-                if (
-                    $discoveredPrefix->isNamespacePrefixOf($existingPrefix)
-                    || $existingPrefix->isNamespacePrefixOf($discoveredPrefix)
-                    || $discoveredPrefix->toString() === $existingPrefix->toString()
-                ) {
-                    unset($discovered[$key]);
-
-                    break;
-                }
-            }
-        }
-
-        return \array_values($discovered);
-    }
-
-    /**
-     * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
-     * @param list<NamespacePrefix>                        $parentNamespacePrefixes
-     * @param list<NamespacePrefix>                        $namespacePrefixes
-     *
-     * @return list<NamespacePrefix>
-     */
-    private static function discoverNamespacePrefixesFromParentNamespacePrefixes(
-        Node $containerNode,
-        array $parentNamespacePrefixes,
-        array $namespacePrefixes
-    ): array {
-        if (\count($parentNamespacePrefixes) === 0) {
-            return [];
-        }
-
-        /** @var array<string, NamespacePrefix> $discoveredNamespacePrefixes */
-        $discoveredNamespacePrefixes = [];
-
-        $existingKeys = [];
-
-        foreach ($namespacePrefixes as $existingPrefix) {
-            $existingKeys[$existingPrefix->toString()] = true;
-        }
-
-        /** @var array<string, string> $aliasesToImportedNames */
-        $aliasesToImportedNames = [];
-
-        foreach ($containerNode->stmts as $statement) {
-            if ($statement instanceof Node\Stmt\Use_) {
-                if (Node\Stmt\Use_::TYPE_NORMAL !== $statement->type) {
-                    continue;
-                }
-
-                foreach ($statement->uses as $use) {
-                    $reference = $use->name->toString();
-
-                    $aliasesToImportedNames[$use->getAlias()->toString()] = $reference;
-
-                    self::discoverChildPrefix(
-                        $reference,
-                        $parentNamespacePrefixes,
-                        $existingKeys,
-                        $discoveredNamespacePrefixes,
-                    );
-                }
-            } elseif ($statement instanceof Node\Stmt\GroupUse) {
-                $prefix = $statement->prefix->toString();
-
-                foreach (self::classImportItems($statement) as $use) {
-                    $reference = \sprintf(
-                        '%s\\%s',
-                        $prefix,
-                        $use->name->toString(),
-                    );
-
-                    $aliasesToImportedNames[$use->getAlias()->toString()] = $reference;
-
-                    self::discoverChildPrefix(
-                        $reference,
-                        $parentNamespacePrefixes,
-                        $existingKeys,
-                        $discoveredNamespacePrefixes,
-                    );
-                }
-            }
-        }
-
-        $nodeFinder = new NodeFinder();
-
-        $functionAndConstantNodeIdentifiers = self::functionAndConstantNodeIdentifiers($containerNode->stmts);
-        $unqualifiedFunctionAndConstantNodeIdentifiers = self::unqualifiedFunctionAndConstantNodeIdentifiers($containerNode->stmts);
-
-        $nodeFinder->find(
-            $containerNode->stmts,
-            static function (Node $node) use ($parentNamespacePrefixes, &$existingKeys, &$discoveredNamespacePrefixes, $functionAndConstantNodeIdentifiers, $unqualifiedFunctionAndConstantNodeIdentifiers): bool {
-                if (!$node instanceof Node\Name\FullyQualified) {
-                    return false;
-                }
-
-                if (\in_array(\spl_object_id($node), $unqualifiedFunctionAndConstantNodeIdentifiers, true)) {
-                    return false;
-                }
-
-                $reference = $node->toString();
-
-                if (\in_array(\spl_object_id($node), $functionAndConstantNodeIdentifiers, true)) {
-                    $namespace = $node->slice(
-                        0,
-                        -1,
-                    );
-
-                    if (!$namespace instanceof Node\Name) {
-                        return false;
-                    }
-
-                    $reference = $namespace->toString();
-                }
-
-                self::discoverChildPrefix(
-                    $reference,
-                    $parentNamespacePrefixes,
-                    $existingKeys,
-                    $discoveredNamespacePrefixes,
-                );
-
-                return false;
-            },
-        );
-
-        $nodeFinder->find(
-            $containerNode->stmts,
-            static function (Node $node) use ($aliasesToImportedNames, $parentNamespacePrefixes, &$existingKeys, &$discoveredNamespacePrefixes): bool {
-                $docComment = $node->getDocComment();
-
-                if (null === $docComment) {
-                    return false;
-                }
-
-                $text = $docComment->getText();
-
-                foreach ($aliasesToImportedNames as $alias => $importedName) {
-                    $pattern = \sprintf(
-                        '/(?<![\\\\\w])%s((?:\\\\[a-zA-Z_][a-zA-Z0-9_]*)+)/',
-                        \preg_quote($alias, '/'),
-                    );
-
-                    if (\preg_match_all($pattern, $text, $matches) > 0) {
-                        foreach ($matches[1] as $relativeName) {
-                            self::discoverChildPrefix(
-                                $importedName . $relativeName,
-                                $parentNamespacePrefixes,
-                                $existingKeys,
-                                $discoveredNamespacePrefixes,
-                            );
-                        }
-                    }
-                }
-
-                foreach ($parentNamespacePrefixes as $parentNamespacePrefix) {
-                    $pattern = \sprintf(
-                        '/\\\\%s\\\\([a-zA-Z_][a-zA-Z0-9_]*)/',
-                        \preg_quote($parentNamespacePrefix->toString(), '/'),
-                    );
-
-                    if (\preg_match_all($pattern, $text, $matches) > 0) {
-                        foreach ($matches[1] as $segmentString) {
-                            $segment = NamespaceSegment::fromString($segmentString);
-                            $childPrefix = $parentNamespacePrefix->append($segment);
-                            $childKey = $childPrefix->toString();
-
-                            if (!\array_key_exists($childKey, $discoveredNamespacePrefixes) && !\array_key_exists($childKey, $existingKeys)) {
-                                $discoveredNamespacePrefixes[$childKey] = $childPrefix;
-                            }
-                        }
-                    }
-                }
-
-                return false;
-            },
-        );
-
-        return \array_values($discoveredNamespacePrefixes);
-    }
-
-    /**
-     * @param list<NamespacePrefix>          $parentNamespacePrefixes
-     * @param array<string, true>            $existingKeys
-     * @param array<string, NamespacePrefix> $discovered
-     */
-    private static function discoverChildPrefix(
-        string $reference,
-        array $parentNamespacePrefixes,
-        array $existingKeys,
-        array &$discovered
-    ): void {
-        foreach ($parentNamespacePrefixes as $parentNamespacePrefix) {
-            $parentString = $parentNamespacePrefix->toString();
-
-            if (\strpos($reference, $parentString . '\\') !== 0) {
-                continue;
-            }
-
-            $remaining = \substr($reference, \strlen($parentString) + 1);
-            $parts = \explode('\\', $remaining);
-
-            $segment = NamespaceSegment::fromString($parts[0]);
-            $childPrefix = $parentNamespacePrefix->append($segment);
-            $childKey = $childPrefix->toString();
-
-            if (!\array_key_exists($childKey, $discovered) && !\array_key_exists($childKey, $existingKeys)) {
-                $discovered[$childKey] = $childPrefix;
-            }
-        }
-    }
-
-    /**
-     * @param list<Node\Stmt> $statements
-     *
-     * @return array<string, true>
-     */
-    private static function fullyQualifiedReferences(array $statements): array
-    {
-        $nodeFinder = new NodeFinder();
-
-        $functionAndConstantNodeIdentifiers = self::functionAndConstantNodeIdentifiers($statements);
-
-        $nodes = $nodeFinder->find($statements, static function (Node $node) use ($functionAndConstantNodeIdentifiers): bool {
-            if (!$node instanceof Node\Name\FullyQualified) {
-                return false;
-            }
-
-            return !\in_array(\spl_object_id($node), $functionAndConstantNodeIdentifiers, true);
-        });
-
-        $references = [];
-
-        foreach ($nodes as $node) {
-            /** @var Node\Name\FullyQualified $node */
-            $references[$node->toString()] = true;
-        }
-
-        return $references;
-    }
-
-    /**
-     * @param array<array-key, Node\Stmt> $statements
-     *
-     * @return list<int>
-     */
-    private static function functionAndConstantNodeIdentifiers(array $statements): array
-    {
-        $nodeFinder = new NodeFinder();
-
-        $nodes = $nodeFinder->find($statements, static function (Node $node): bool {
-            if (
-                $node instanceof Node\Expr\ConstFetch
-                && $node->name instanceof Node\Name\FullyQualified
-            ) {
-                return true;
-            }
-
-            if (
-                $node instanceof Node\Expr\FuncCall
-                && $node->name instanceof Node\Name\FullyQualified
-            ) {
-                return true;
-            }
-
-            return false;
-        });
-
-        return \array_values(\array_unique(\array_map(static function (Node $node): int {
-            /** @var Node\Expr\ConstFetch|Node\Expr\FuncCall $node */
-            return \spl_object_id($node->name);
-        }, $nodes)));
-    }
-
-    /**
-     * Returns the object identifiers of names of function calls and constant fetches that are unqualified in the source. PHP
-     * resolves such a name through the import table for functions or constants, or relative to the current namespace with a
-     * fallback to the global namespace, so it can not be rewritten relative to a namespace prefix.
-     *
-     * @param array<array-key, Node\Stmt> $statements
-     *
-     * @return list<int>
-     */
-    private static function unqualifiedFunctionAndConstantNodeIdentifiers(array $statements): array
-    {
-        $nodeFinder = new NodeFinder();
-
-        $nodes = $nodeFinder->find($statements, static function (Node $node): bool {
-            return $node instanceof Node\Expr\ConstFetch
-                || $node instanceof Node\Expr\FuncCall;
-        });
-
-        $identifiers = [];
-
-        foreach ($nodes as $node) {
-            /** @var Node\Expr\ConstFetch|Node\Expr\FuncCall $node */
-            if (!$node->name instanceof Node\Name\FullyQualified) {
-                continue;
-            }
-
-            $originalName = $node->name->getAttribute('originalName');
-
-            if (
-                $originalName instanceof Node\Name
-                && !$originalName instanceof Node\Name\FullyQualified
-                && $originalName->isUnqualified()
-            ) {
-                $identifiers[] = \spl_object_id($node->name);
-            }
-        }
-
-        return \array_values(\array_unique($identifiers));
-    }
-
-    /**
-     * Returns the items of a group import that import classes. php-parser records the kind of import on each item of a
-     * group import written without the function or const keyword, and on the group import itself otherwise.
-     *
      * @return list<Node\UseItem>
      */
     private static function classImportItems(Node\Stmt\GroupUse $groupUse): array
@@ -2524,13 +767,12 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
 
     /**
      * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
-     * @param list<NamespacePrefix>                        $moreSpecificNamespacePrefixes
      */
     private static function removeMatchingImportsAndAddNamespacePrefixImport(
         Node $containerNode,
         NamespacePrefix $namespacePrefix,
         bool $hasNamespacePrefixImport,
-        array $moreSpecificNamespacePrefixes,
+        NamespacePrefixes $moreSpecificNamespacePrefixes,
         bool $requiresNamespacePrefixImport
     ): void {
         /** @var ?int $firstMatchIndex */
@@ -2551,9 +793,9 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
                 $remainingUses = [];
 
                 foreach ($stmt->uses as $use) {
-                    $reference = Reference::fromString($use->name->toString());
+                    $fullyQualifiedName = FullyQualifiedName::fromString($use->name->toString());
 
-                    if ($reference->is($namespacePrefix)) {
+                    if ($fullyQualifiedName->is($namespacePrefix)) {
                         if (null === $firstMatchIndex) {
                             $firstMatchIndex = $index;
                         }
@@ -2566,8 +808,8 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
                     }
 
                     if (
-                        $reference->isDeclaredIn($namespacePrefix)
-                        && !$reference->isOrIsDeclaredInOneOf(...$moreSpecificNamespacePrefixes)
+                        $fullyQualifiedName->isDeclaredIn($namespacePrefix)
+                        && !$fullyQualifiedName->isOrIsDeclaredInOneOf($moreSpecificNamespacePrefixes)
                     ) {
                         if (null === $firstMatchIndex) {
                             $firstMatchIndex = $index;
@@ -2602,13 +844,13 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
                         continue;
                     }
 
-                    $reference = Reference::fromString(\sprintf(
+                    $fullyQualifiedName = FullyQualifiedName::fromString(\sprintf(
                         '%s\\%s',
                         $prefix,
                         $use->name->toString(),
                     ));
 
-                    if ($reference->is($namespacePrefix)) {
+                    if ($fullyQualifiedName->is($namespacePrefix)) {
                         if (null === $firstMatchIndex) {
                             $firstMatchIndex = $index;
                         }
@@ -2621,8 +863,8 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
                     }
 
                     if (
-                        $reference->isDeclaredIn($namespacePrefix)
-                        && !$reference->isOrIsDeclaredInOneOf(...$moreSpecificNamespacePrefixes)
+                        $fullyQualifiedName->isDeclaredIn($namespacePrefix)
+                        && !$fullyQualifiedName->isOrIsDeclaredInOneOf($moreSpecificNamespacePrefixes)
                     ) {
                         if (null === $firstMatchIndex) {
                             $firstMatchIndex = $index;

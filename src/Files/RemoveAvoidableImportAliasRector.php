@@ -659,12 +659,12 @@ final class RemoveAvoidableImportAliasRector extends Rector\AbstractRector
 
             $phpDocNodeTraverser = new Ast\NodeTraverser([
                 new PhpDocParser\PhpDocParser\PhpDocNodeVisitor\CallablePhpDocNodeVisitor(static function (Ast\Node $phpDocNode) use (&$firstSegments): ?Ast\Node {
-                    $reference = self::referenceFromTag($phpDocNode);
+                    $fullyQualifiedName = self::referenceFromTag($phpDocNode);
 
-                    if (null !== $reference) {
+                    if (null !== $fullyQualifiedName) {
                         $nameSegments = \explode(
                             '\\',
-                            $reference,
+                            $fullyQualifiedName,
                         );
 
                         $firstSegments[] = \strtolower($nameSegments[0]);
@@ -760,13 +760,13 @@ final class RemoveAvoidableImportAliasRector extends Rector\AbstractRector
 
             $phpDocNodeTraverser = new Ast\NodeTraverser([
                 new PhpDocParser\PhpDocParser\PhpDocNodeVisitor\CallablePhpDocNodeVisitor(static function (Ast\Node $phpDocNode) use ($alias, $name, &$hasChanged): ?Ast\Node {
-                    $reference = self::referenceFromTag($phpDocNode);
+                    $fullyQualifiedName = self::referenceFromTag($phpDocNode);
 
-                    if (null !== $reference) {
+                    if (null !== $fullyQualifiedName) {
                         /** @var Ast\PhpDoc\PhpDocTagNode $phpDocNode */
                         $nameSegments = \explode(
                             '\\',
-                            $reference,
+                            $fullyQualifiedName,
                         );
 
                         if (\strtolower($nameSegments[0]) !== \strtolower($alias)) {
@@ -785,7 +785,7 @@ final class RemoveAvoidableImportAliasRector extends Rector\AbstractRector
                             new Ast\PhpDoc\GenericTagValueNode(\implode(
                                 '\\',
                                 $nameSegments,
-                            ) . \substr($value->value, \strlen($reference))),
+                            ) . \substr($value->value, \strlen($fullyQualifiedName))),
                         );
                     }
 

@@ -1385,7 +1385,7 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
                         continue;
                     }
 
-                    if ($useStatement->getAlias()->toString() === $lastNamespaceSegment->toString()) {
+                    if (\strtolower($useStatement->getAlias()->toString()) === \strtolower($lastNamespaceSegment->toString())) {
                         return true;
                     }
                 }
@@ -1410,7 +1410,7 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
                         continue;
                     }
 
-                    if ($useStatement->getAlias()->toString() === $lastNamespaceSegment->toString()) {
+                    if (\strtolower($useStatement->getAlias()->toString()) === \strtolower($lastNamespaceSegment->toString())) {
                         return true;
                     }
                 }
@@ -1440,7 +1440,7 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
                     continue;
                 }
 
-                if ($statement->name->toString() !== $lastNamespaceSegmentOfNamespacePrefix->toString()) {
+                if (\strtolower($statement->name->toString()) !== \strtolower($lastNamespaceSegmentOfNamespacePrefix->toString())) {
                     continue;
                 }
 

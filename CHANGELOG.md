@@ -14,6 +14,7 @@ For a full diff see [`1.20.0...main`][1.20.0...main].
 
 ### Fixed
 
+- Adjusted `Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector` to skip a namespace prefix whose last segment collides with the alias of an import or the name of a declared class, interface, trait, or enum in a different case ([#493]), by [@localheinz]
 - Adjusted `Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector` to keep the comments of a group import it replaces with an import of a namespace prefix ([#494]), by [@localheinz]
 
 ## [`1.20.0`][1.20.0]
@@ -591,6 +592,7 @@ For a full diff see [`fd198f0...0.1.0`][fd198f0...0.1.0].
 [#485]: https://github.com/ergebnis/rector-rules/pull/485
 [#486]: https://github.com/ergebnis/rector-rules/pull/486
 [#489]: https://github.com/ergebnis/rector-rules/pull/489
+[#493]: https://github.com/ergebnis/rector-rules/pull/493
 [#494]: https://github.com/ergebnis/rector-rules/pull/494
 
 [@localheinz]: https://github.com/localheinz

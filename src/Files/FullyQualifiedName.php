@@ -16,7 +16,7 @@ namespace Ergebnis\Rector\Rules\Files;
 /**
  * @internal
  */
-final class Reference
+final class FullyQualifiedName
 {
     private string $value;
 
@@ -45,14 +45,19 @@ final class Reference
         return \strpos($this->value, $namespacePrefix->toString() . '\\') === 0;
     }
 
-    public function isOrIsDeclaredInOneOf(NamespacePrefix ...$namespacePrefixes): bool
+    public function isOrIsDeclaredIn(NamespacePrefix $namespacePrefix): bool
     {
-        foreach ($namespacePrefixes as $namespacePrefix) {
-            if ($this->is($namespacePrefix)) {
-                return true;
-            }
+        if ($this->is($namespacePrefix)) {
+            return true;
+        }
 
-            if ($this->isDeclaredIn($namespacePrefix)) {
+        return $this->isDeclaredIn($namespacePrefix);
+    }
+
+    public function isOrIsDeclaredInOneOf(NamespacePrefixes $namespacePrefixes): bool
+    {
+        foreach ($namespacePrefixes->toArray() as $namespacePrefix) {
+            if ($this->isOrIsDeclaredIn($namespacePrefix)) {
                 return true;
             }
         }

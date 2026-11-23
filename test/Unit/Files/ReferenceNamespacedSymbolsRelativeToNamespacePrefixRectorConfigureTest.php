@@ -27,9 +27,19 @@ use Rector\Testing;
  * @uses \Ergebnis\Rector\Rules\Configuration\Options
  * @uses \Ergebnis\Rector\Rules\Configuration\OptionValue
  * @uses \Ergebnis\Rector\Rules\Configuration\UnknownOptionName
+ * @uses \Ergebnis\Rector\Rules\Files\ClassLikeName
+ * @uses \Ergebnis\Rector\Rules\Files\ClassLikeNames
+ * @uses \Ergebnis\Rector\Rules\Files\FileReader
+ * @uses \Ergebnis\Rector\Rules\Files\LocalName
+ * @uses \Ergebnis\Rector\Rules\Files\NameResolver
  * @uses \Ergebnis\Rector\Rules\Files\NamespacePrefix
+ * @uses \Ergebnis\Rector\Rules\Files\NamespacePrefixDiscoverer
+ * @uses \Ergebnis\Rector\Rules\Files\NamespacePrefixes
+ * @uses \Ergebnis\Rector\Rules\Files\NamespacePrefixPlanner
  * @uses \Ergebnis\Rector\Rules\Files\NamespaceSegment
  * @uses \Ergebnis\Rector\Rules\Files\NamespaceSegments
+ * @uses \Ergebnis\Rector\Rules\Files\Spelling
+ * @uses \Ergebnis\Rector\Rules\Files\SymbolReferences
  */
 final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRectorConfigureTest extends Testing\PHPUnit\AbstractLazyTestCase
 {

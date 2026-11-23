@@ -20,6 +20,7 @@ For a full diff see [`1.20.0...main`][1.20.0...main].
 - Adjusted `Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector` to keep the comments of a group import it replaces with an import of a namespace prefix ([#494]), by [@localheinz]
 - Adjusted `Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector` to reference symbols relative to the namespace of a file in a child namespace of a namespace prefix when the file declares a class, interface, trait, or enum, or imports a name, like the last segment of the namespace prefix ([#497]), by [@localheinz]
 - Adjusted `Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector` to reference unqualified names in DocBlocks relative to the namespace prefix when the `forceRelativeReferences` option is enabled, also when the code does not reference them, while leaving PHPDoc keywords, template names, and type aliases alone ([#499]), by [@localheinz]
+- Adjusted `Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector` to keep the fully qualified names of the names it rewrites, so that rules running after it resolve them correctly ([#500]), by [@localheinz]
 
 ## [`1.20.0`][1.20.0]
 
@@ -602,5 +603,6 @@ For a full diff see [`fd198f0...0.1.0`][fd198f0...0.1.0].
 [#494]: https://github.com/ergebnis/rector-rules/pull/494
 [#497]: https://github.com/ergebnis/rector-rules/pull/497
 [#499]: https://github.com/ergebnis/rector-rules/pull/499
+[#500]: https://github.com/ergebnis/rector-rules/pull/500
 
 [@localheinz]: https://github.com/localheinz

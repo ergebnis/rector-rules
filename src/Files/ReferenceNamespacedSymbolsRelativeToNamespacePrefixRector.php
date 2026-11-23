@@ -19,6 +19,7 @@ use PHPStan\PhpDocParser\Ast;
 use Rector\BetterPhpDocParser;
 use Rector\Comments;
 use Rector\Contract;
+use Rector\NodeTypeResolver;
 use Rector\PhpDocParser;
 use Rector\PhpParser;
 use Rector\Rector;
@@ -624,8 +625,8 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
         Node $containerNode,
         Respellings $respellings
     ): void {
-        /** @var array<int, string> $spellingsOfNames */
-        $spellingsOfNames = [];
+        /** @var array<int, Respelling> $respellingsOfNames */
+        $respellingsOfNames = [];
 
         /** @var array<int, array{0: Node, 1: array<int, string>}> $spellingsOfTypeNodesByNode */
         $spellingsOfTypeNodesByNode = [];
@@ -652,22 +653,35 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
                 continue;
             }
 
-            $spellingsOfNames[\spl_object_id($symbolReference->node())] = $respelling->spelling()->toString();
+            $respellingsOfNames[\spl_object_id($symbolReference->node())] = $respelling;
         }
 
-        if ([] !== $spellingsOfNames) {
-            $this->traverseNodesWithCallable($containerNode->stmts, static function (Node $node) use ($spellingsOfNames): ?Node {
+        if ([] !== $respellingsOfNames) {
+            $this->traverseNodesWithCallable($containerNode->stmts, static function (Node $node) use ($respellingsOfNames): ?Node {
                 if (!$node instanceof Node\Name) {
                     return null;
                 }
 
                 $identifier = \spl_object_id($node);
 
-                if (!\array_key_exists($identifier, $spellingsOfNames)) {
+                if (!\array_key_exists($identifier, $respellingsOfNames)) {
                     return null;
                 }
 
-                return new Node\Name($spellingsOfNames[$identifier]);
+                $respelling = $respellingsOfNames[$identifier];
+
+                $name = new Node\Name($respelling->spelling()->toString());
+
+                $fullyQualifiedName = $respelling->symbolReference()->fullyQualifiedName();
+
+                if ($fullyQualifiedName instanceof FullyQualifiedName) {
+                    $name->setAttribute(
+                        NodeTypeResolver\Node\AttributeKey::NAMESPACED_NAME,
+                        $fullyQualifiedName->toString(),
+                    );
+                }
+
+                return $name;
             });
         }
 

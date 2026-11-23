@@ -25,6 +25,35 @@ use Rector\PhpParser;
  */
 final class FileReader
 {
+    private const KEYWORDS_IN_DOC_BLOCK_TYPES = [
+        'array',
+        'bool',
+        'boolean',
+        'callable',
+        'double',
+        'false',
+        'float',
+        'int',
+        'integer',
+        'iterable',
+        'list',
+        'max',
+        'min',
+        'mixed',
+        'never',
+        'noreturn',
+        'null',
+        'numeric',
+        'object',
+        'parent',
+        'resource',
+        'scalar',
+        'self',
+        'static',
+        'string',
+        'true',
+        'void',
+    ];
     private const PATTERN_QUALIFIED_NAME_IN_TEXT = '/(?<![\\\\\w$])(\\\\?[a-zA-Z_][a-zA-Z0-9_]*(?:\\\\[a-zA-Z_][a-zA-Z0-9_]*)+)/';
     private BetterPhpDocParser\PhpDocInfo\PhpDocInfoFactory $phpDocInfoFactory;
     private NameResolver $nameResolver;
@@ -291,6 +320,8 @@ final class FileReader
             return null !== $node->getDocComment();
         });
 
+        $localTypeNamesOfNodes = $this->localTypeNamesOfNodes($statements);
+
         $symbolReferences = [];
 
         foreach ($nodesWithDocBlock as $node) {
@@ -343,10 +374,27 @@ final class FileReader
             /** @var array<string, int> $spellingsInTypes */
             $spellingsInTypes = [];
 
+            $localTypeNames = [];
+
+            if (\array_key_exists(\spl_object_id($node), $localTypeNamesOfNodes)) {
+                $localTypeNames = $localTypeNamesOfNodes[\spl_object_id($node)];
+            }
+
             foreach ($typeNodes as $typeNode) {
                 $name = $typeNode->name;
 
                 $spelling = Spelling::fromString($name);
+
+                if (
+                    $spelling->isUnqualified()
+                    && !$imports->ofSymbolKind(SymbolKind::classLike())->forLocalName(LocalName::fromString($name)) instanceof Import
+                    && (
+                        self::isKeywordInDocBlockType($name)
+                        || \array_key_exists($name, $localTypeNames)
+                    )
+                ) {
+                    continue;
+                }
 
                 $symbolReferences[] = SymbolReference::inDocBlockType(
                     $spelling,
@@ -397,5 +445,115 @@ final class FileReader
         }
 
         return $symbolReferences;
+    }
+
+    private static function isKeywordInDocBlockType(string $name): bool
+    {
+        if (\strpos($name, '-') !== false) {
+            return true;
+        }
+
+        if (\strpos($name, '$') === 0) {
+            return true;
+        }
+
+        return \in_array(
+            \strtolower($name),
+            self::KEYWORDS_IN_DOC_BLOCK_TYPES,
+            true,
+        );
+    }
+
+    /**
+     * @param list<Node\Stmt> $statements
+     *
+     * @return array<int, array<string, true>>
+     */
+    private function localTypeNamesOfNodes(array $statements): array
+    {
+        $nodeFinder = new NodeFinder();
+
+        $scopes = $nodeFinder->find($statements, static function (Node $node): bool {
+            return $node instanceof Node\Stmt\ClassLike
+                || $node instanceof Node\FunctionLike;
+        });
+
+        $localTypeNamesOfNodes = [];
+
+        foreach ($scopes as $scope) {
+            $localTypeNames = $this->localTypeNames($scope);
+
+            if ([] === $localTypeNames) {
+                continue;
+            }
+
+            foreach ($nodeFinder->find([$scope], static function (Node $node): bool {
+                return true;
+            }) as $node) {
+                $identifier = \spl_object_id($node);
+
+                if (!\array_key_exists($identifier, $localTypeNamesOfNodes)) {
+                    $localTypeNamesOfNodes[$identifier] = [];
+                }
+
+                $localTypeNamesOfNodes[$identifier] += $localTypeNames;
+            }
+        }
+
+        return $localTypeNamesOfNodes;
+    }
+
+    /**
+     * @return array<string, true>
+     */
+    private function localTypeNames(Node $node): array
+    {
+        if (null === $node->getDocComment()) {
+            return [];
+        }
+
+        $phpDocInfo = $this->phpDocInfoFactory->createFromNode($node);
+
+        if (!$phpDocInfo instanceof BetterPhpDocParser\PhpDocInfo\PhpDocInfo) {
+            return [];
+        }
+
+        $localTypeNames = [];
+
+        foreach ($phpDocInfo->getPhpDocNode()->getTags() as $tag) {
+            $value = $tag->value;
+
+            if ($value instanceof Ast\PhpDoc\TemplateTagValueNode) {
+                $localTypeNames[$value->name] = true;
+
+                continue;
+            }
+
+            if ($value instanceof Ast\PhpDoc\TypeAliasTagValueNode) {
+                $localTypeNames[$value->alias] = true;
+
+                continue;
+            }
+
+            if ($value instanceof Ast\PhpDoc\TypeAliasImportTagValueNode) {
+                if (null === $value->importedAs) {
+                    $localTypeNames[$value->importedAlias] = true;
+
+                    continue;
+                }
+
+                $localTypeNames[$value->importedAs] = true;
+
+                continue;
+            }
+
+            if ($value instanceof Ast\PhpDoc\MethodTagValueNode) {
+                foreach ($value->templateTypes as $templateType) {
+                    $localTypeNames[$templateType->name] = true;
+                }
+            }
+        }
+
+        return $localTypeNames;
     }
 }

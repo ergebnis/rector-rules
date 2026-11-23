@@ -48,7 +48,6 @@ final class NamespacePrefixPlanner
         File $file,
         NamespacePrefix $namespacePrefix,
         NamespacePrefixes $moreSpecificNamespacePrefixes,
-        FullyQualifiedNames $fullyQualifiedClassLikeNames,
         bool $forceRelativeReferences
     ): ?NamespacePrefixPlan {
         $lastNamespaceSegment = $namespacePrefix->lastNamespaceSegment()->toString();
@@ -144,7 +143,6 @@ final class NamespacePrefixPlanner
                 $file,
                 $namespacePrefix,
                 $moreSpecificNamespacePrefixes,
-                $fullyQualifiedClassLikeNames,
                 $namespaceIsOrContainsNamespacePrefix,
                 $namespaceIsInsideNamespacePrefix,
                 $unavailableFirstNamespaceSegments,
@@ -351,7 +349,6 @@ final class NamespacePrefixPlanner
         File $file,
         NamespacePrefix $namespacePrefix,
         NamespacePrefixes $moreSpecificNamespacePrefixes,
-        FullyQualifiedNames $fullyQualifiedClassLikeNames,
         bool $namespaceIsOrContainsNamespacePrefix,
         bool $namespaceIsInsideNamespacePrefix,
         array $unavailableFirstNamespaceSegments,
@@ -393,17 +390,11 @@ final class NamespacePrefixPlanner
                 ->ofSymbolKind(SymbolKind::classLike())
                 ->forLocalName(LocalName::fromString($spelling->leadingSegment()));
 
-            if (!$import instanceof Import) {
-                if ($file->namespace()->isGlobal()) {
-                    return null;
-                }
-
-                if (
-                    $spelling->isUnqualified()
-                    && !$fullyQualifiedClassLikeNames->contains($fullyQualifiedName)
-                ) {
-                    return null;
-                }
+            if (
+                !$import instanceof Import
+                && $file->namespace()->isGlobal()
+            ) {
+                return null;
             }
         }
 

@@ -18,7 +18,6 @@ use Ergebnis\Rector\Rules;
 /**
  * @covers \Ergebnis\Rector\Rules\Files\File
  * @covers \Ergebnis\Rector\Rules\Files\FileReader
- * @covers \Ergebnis\Rector\Rules\Files\FullyQualifiedNames
  * @covers \Ergebnis\Rector\Rules\Files\SymbolReferences
  *
  * @uses \Ergebnis\Rector\Rules\Files\ClassLikeName
@@ -167,34 +166,56 @@ final class FileReaderTest extends AbstractFileTestCase
         self::assertSame($expected, self::describeSymbolReferences($file));
     }
 
-    public function testFullyQualifiedClassReferencesInCodeReturnsNamesOfClassLikeSymbolsInCode(): void
+    public function testReadReturnsFileWithoutSymbolReferencesForKeywordsAndLocalTypeNamesInDocBlocks(): void
     {
         $file = $this->read(<<<'PHP'
             <?php
 
             namespace App;
 
-            use Smarty;
+            use App\Http\Resource;
 
-            final class View extends \Base\View
+            /**
+             * @template T
+             *
+             * @phpstan-type Row array{id: int}
+             * @phpstan-import-type Filter from Query as QueryFilter
+             */
+            final class Collection
             {
-                public function render(Smarty\Smarty $smarty): void
+                /**
+                 * @template TKey of array-key
+                 *
+                 * @param list<Item> $items
+                 * @param TKey $key
+                 * @param T $value
+                 * @param int<0, max> $count
+                 * @param Row $row
+                 * @param QueryFilter $filter
+                 *
+                 * @return $this|self|null|Resource
+                 */
+                public function add($items, $key, $value, $count, $row, $filter)
                 {
-                    \Smarty\render($smarty);
+                }
+
+                /**
+                 * @param TKey $key
+                 */
+                public function remove($key)
+                {
                 }
             }
             PHP);
 
         $expected = [
-            'Base\View',
-            'Smarty\Smarty',
+            'doc-block-type class-like Query -> App\Query',
+            'doc-block-type class-like Item -> App\Item',
+            'doc-block-type class-like Resource -> App\Http\Resource',
+            'doc-block-type class-like TKey -> App\TKey',
         ];
 
-        $fullyQualifiedNames = $file->symbolReferences()->fullyQualifiedClassLikeNamesInCode();
-
-        self::assertSame($expected, \array_map(static function (Rules\Files\FullyQualifiedName $fullyQualifiedName): string {
-            return $fullyQualifiedName->toString();
-        }, $fullyQualifiedNames->toArray()));
+        self::assertSame($expected, self::describeSymbolReferences($file));
     }
 
     /**

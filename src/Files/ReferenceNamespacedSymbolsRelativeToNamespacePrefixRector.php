@@ -549,12 +549,8 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
         do {
             $changedInPass = false;
 
-            $file = $this->fileReader->read($containerNode);
-
-            $fullyQualifiedClassLikeNames = $file->symbolReferences()->fullyQualifiedClassLikeNamesInCode();
-
             foreach ($pendingNamespacePrefixes as $index => $namespacePrefix) {
-                if ($this->processNamespacePrefix($containerNode, $namespacePrefix, $namespacePrefixes->moreSpecificThan($namespacePrefix), $fullyQualifiedClassLikeNames)) {
+                if ($this->processNamespacePrefix($containerNode, $namespacePrefix, $namespacePrefixes->moreSpecificThan($namespacePrefix))) {
                     $changed = true;
                     $changedInPass = true;
 
@@ -579,14 +575,12 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
     private function processNamespacePrefix(
         Node $containerNode,
         NamespacePrefix $namespacePrefix,
-        NamespacePrefixes $moreSpecificNamespacePrefixes,
-        FullyQualifiedNames $fullyQualifiedClassLikeNames
+        NamespacePrefixes $moreSpecificNamespacePrefixes
     ): bool {
         $namespacePrefixPlan = $this->namespacePrefixPlanner->plan(
             $this->fileReader->read($containerNode),
             $namespacePrefix,
             $moreSpecificNamespacePrefixes,
-            $fullyQualifiedClassLikeNames,
             $this->forceRelativeReferences,
         );
 

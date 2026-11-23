@@ -27,7 +27,6 @@ use Ergebnis\Rector\Rules;
  * @uses \Ergebnis\Rector\Rules\Files\FileNamespace
  * @uses \Ergebnis\Rector\Rules\Files\FileReader
  * @uses \Ergebnis\Rector\Rules\Files\FullyQualifiedName
- * @uses \Ergebnis\Rector\Rules\Files\FullyQualifiedNames
  * @uses \Ergebnis\Rector\Rules\Files\Import
  * @uses \Ergebnis\Rector\Rules\Files\Imports
  * @uses \Ergebnis\Rector\Rules\Files\LocalName
@@ -221,7 +220,6 @@ final class NamespacePrefixPlannerTest extends AbstractFileTestCase
             $file,
             Rules\Files\NamespacePrefix::fromString($namespacePrefix),
             Rules\Files\NamespacePrefixes::create(),
-            $file->symbolReferences()->fullyQualifiedClassLikeNamesInCode(),
             $forceRelativeReferences,
         );
     }

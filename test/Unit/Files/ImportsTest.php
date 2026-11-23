@@ -22,7 +22,6 @@ use PHPUnit\Framework;
  * @uses \Ergebnis\Rector\Rules\Files\ClassLikeName
  * @uses \Ergebnis\Rector\Rules\Files\ClassLikeNames
  * @uses \Ergebnis\Rector\Rules\Files\FullyQualifiedName
- * @uses \Ergebnis\Rector\Rules\Files\FullyQualifiedNames
  * @uses \Ergebnis\Rector\Rules\Files\Import
  * @uses \Ergebnis\Rector\Rules\Files\LocalName
  * @uses \Ergebnis\Rector\Rules\Files\Spelling

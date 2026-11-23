@@ -30,7 +30,6 @@ use Rector\Testing;
  * @uses \Ergebnis\Rector\Rules\Files\ClassLikeName
  * @uses \Ergebnis\Rector\Rules\Files\ClassLikeNames
  * @uses \Ergebnis\Rector\Rules\Files\FileReader
- * @uses \Ergebnis\Rector\Rules\Files\FullyQualifiedNames
  * @uses \Ergebnis\Rector\Rules\Files\LocalName
  * @uses \Ergebnis\Rector\Rules\Files\NameResolver
  * @uses \Ergebnis\Rector\Rules\Files\NamespacePrefix

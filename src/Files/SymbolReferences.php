@@ -13,8 +13,6 @@ declare(strict_types=1);
 
 namespace Ergebnis\Rector\Rules\Files;
 
-use PhpParser\Node;
-
 /**
  * @internal
  */
@@ -33,35 +31,6 @@ final class SymbolReferences
     public static function create(SymbolReference ...$values): self
     {
         return new self(...$values);
-    }
-
-    public function fullyQualifiedClassLikeNamesInCode(): FullyQualifiedNames
-    {
-        $fullyQualifiedNames = [];
-
-        foreach ($this->values as $value) {
-            if (!$value->location()->isCode()) {
-                continue;
-            }
-
-            if (!$value->symbolKind()->isClassLike()) {
-                continue;
-            }
-
-            if (!$value->node() instanceof Node\Name\FullyQualified) {
-                continue;
-            }
-
-            $fullyQualifiedName = $value->fullyQualifiedName();
-
-            if (!$fullyQualifiedName instanceof FullyQualifiedName) {
-                continue;
-            }
-
-            $fullyQualifiedNames[] = $fullyQualifiedName;
-        }
-
-        return FullyQualifiedNames::create(...$fullyQualifiedNames);
     }
 
     /**

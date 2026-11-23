@@ -23,6 +23,7 @@ For a full diff see [`1.20.0...main`][1.20.0...main].
 - Adjusted `Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector` to reference unqualified names in DocBlocks relative to the namespace prefix when the `forceRelativeReferences` option is enabled, also when the code does not reference them, while leaving PHPDoc keywords, template names, and type aliases alone ([#499]), by [@localheinz]
 - Adjusted `Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector` to keep the fully qualified names of the names it rewrites, so that rules running after it resolve them correctly ([#500]), by [@localheinz]
 - Adjusted `Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector` to reference class names in constant references in DocBlocks, such as `@var Stmt\Use_::TYPE_*`, relative to the namespace prefix, instead of skipping the file ([#502]), by [@localheinz]
+- Adjusted `Rules\Files\ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector` to separate an import it adds from the next statement with a blank line ([#505]), by [@localheinz]
 
 ## [`1.20.0`][1.20.0]
 
@@ -608,5 +609,6 @@ For a full diff see [`fd198f0...0.1.0`][fd198f0...0.1.0].
 [#500]: https://github.com/ergebnis/rector-rules/pull/500
 [#502]: https://github.com/ergebnis/rector-rules/pull/502
 [#503]: https://github.com/ergebnis/rector-rules/pull/503
+[#505]: https://github.com/ergebnis/rector-rules/pull/505
 
 [@localheinz]: https://github.com/localheinz

@@ -618,7 +618,83 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
             $namespacePrefixPlan->requiresNamespacePrefixImport(),
         );
 
+        self::separateAddedLastImportFromNextStatement($containerNode);
+
         return true;
+    }
+
+    /**
+     * @param Node\Stmt\Namespace_|PhpParser\Node\FileNode $containerNode
+     */
+    private static function separateAddedLastImportFromNextStatement(Node $containerNode): void
+    {
+        $statements = \array_values($containerNode->stmts);
+
+        $lastImportIndex = null;
+
+        foreach ($statements as $index => $statement) {
+            if (
+                $statement instanceof Node\Stmt\Use_
+                || $statement instanceof Node\Stmt\GroupUse
+            ) {
+                $lastImportIndex = $index;
+            }
+        }
+
+        if (null === $lastImportIndex) {
+            return;
+        }
+
+        if ($statements[$lastImportIndex]->hasAttribute('startTokenPos')) {
+            return;
+        }
+
+        $previousStatement = $statements[$lastImportIndex - 1] ?? null;
+
+        if (
+            $previousStatement instanceof Node\Stmt\Declare_
+            && $previousStatement->hasAttribute('startTokenPos')
+        ) {
+            \array_splice(
+                $statements,
+                $lastImportIndex,
+                0,
+                [
+                    new Node\Stmt\Nop(),
+                ],
+            );
+
+            $containerNode->stmts = $statements;
+
+            return;
+        }
+
+        if (
+            $previousStatement instanceof Node\Stmt
+            && $previousStatement->hasAttribute('startTokenPos')
+        ) {
+            return;
+        }
+
+        $nextStatement = $statements[$lastImportIndex + 1] ?? null;
+
+        if (
+            !$nextStatement instanceof Node\Stmt
+            || $nextStatement instanceof Node\Stmt\Nop
+        ) {
+            return;
+        }
+
+        \array_splice(
+            $statements,
+            $lastImportIndex + 1,
+            0,
+            [
+                new Node\Stmt\Nop(),
+            ],
+        );
+
+        $containerNode->stmts = $statements;
     }
 
     /**

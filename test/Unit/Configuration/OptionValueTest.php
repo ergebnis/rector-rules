@@ -47,7 +47,7 @@ final class OptionValueTest extends Framework\TestCase
         self::assertSame($value, $resolvedValue);
     }
 
-    public function testBooleanDefaultingToResolveRejectsNonBool(): void
+    public function testBooleanDefaultingToResolveThrowsInvalidOptionValueWhenValueIsNotBool(): void
     {
         $optionValue = Rules\Configuration\OptionValue::booleanDefaultingTo(false);
 
@@ -65,20 +65,20 @@ final class OptionValueTest extends Framework\TestCase
         self::assertSame([], $value->allowedValues());
     }
 
-    public function testStringResolveReturnsString(): void
-    {
-        $value = Rules\Configuration\OptionValue::string('default');
-
-        self::assertSame('any-string', $value->resolve('any-string'));
-    }
-
-    public function testStringResolveRejectsNonString(): void
+    public function testStringResolveThrowsInvalidOptionValueWhenValueIsNotString(): void
     {
         $value = Rules\Configuration\OptionValue::string('default');
 
         $this->expectException(Rules\Configuration\InvalidOptionValue::class);
 
         $value->resolve(123);
+    }
+
+    public function testStringResolveReturnsString(): void
+    {
+        $value = Rules\Configuration\OptionValue::string('default');
+
+        self::assertSame('any-string', $value->resolve('any-string'));
     }
 
     public function testOneOfReturnsValueWithAllowedValues(): void
@@ -98,20 +98,7 @@ final class OptionValueTest extends Framework\TestCase
         self::assertSame($allowedValues, $value->allowedValues());
     }
 
-    public function testOneOfResolveReturnsAllowedValue(): void
-    {
-        $value = Rules\Configuration\OptionValue::oneOf(
-            [
-                'bar',
-                'baz',
-            ],
-            'bar',
-        );
-
-        self::assertSame('baz', $value->resolve('baz'));
-    }
-
-    public function testOneOfResolveRejectsNonString(): void
+    public function testOneOfResolveThrowsInvalidOptionValueWhenValueIsNotString(): void
     {
         $value = Rules\Configuration\OptionValue::oneOf(
             [
@@ -126,7 +113,7 @@ final class OptionValueTest extends Framework\TestCase
         $value->resolve(123);
     }
 
-    public function testOneOfResolveRejectsDisallowedValue(): void
+    public function testOneOfResolveThrowsInvalidOptionValueWhenValueIsNotAllowed(): void
     {
         $value = Rules\Configuration\OptionValue::oneOf(
             [
@@ -139,6 +126,19 @@ final class OptionValueTest extends Framework\TestCase
         $this->expectException(Rules\Configuration\InvalidOptionValue::class);
 
         $value->resolve('qux');
+    }
+
+    public function testOneOfResolveReturnsAllowedValue(): void
+    {
+        $value = Rules\Configuration\OptionValue::oneOf(
+            [
+                'bar',
+                'baz',
+            ],
+            'bar',
+        );
+
+        self::assertSame('baz', $value->resolve('baz'));
     }
 
     public function testListOfStringsReturnsValueWithArrayType(): void
@@ -164,6 +164,33 @@ final class OptionValueTest extends Framework\TestCase
         self::assertSame($default, $value->default());
     }
 
+    public function testListOfStringsResolveThrowsInvalidOptionValueWhenValueIsNotArray(): void
+    {
+        $value = Rules\Configuration\OptionValue::listOfStringsDefaultingTo();
+
+        $this->expectException(Rules\Configuration\InvalidOptionValue::class);
+
+        $value->resolve('not-an-array');
+    }
+
+    public function testListOfStringsResolveThrowsInvalidOptionValueWhenValueIsAssociativeArray(): void
+    {
+        $value = Rules\Configuration\OptionValue::listOfStringsDefaultingTo();
+
+        $this->expectException(Rules\Configuration\InvalidOptionValue::class);
+
+        $value->resolve(['key' => 'value']);
+    }
+
+    public function testListOfStringsResolveThrowsInvalidOptionValueWhenValueIsListWithNonStringItem(): void
+    {
+        $value = Rules\Configuration\OptionValue::listOfStringsDefaultingTo();
+
+        $this->expectException(Rules\Configuration\InvalidOptionValue::class);
+
+        $value->resolve([123]);
+    }
+
     public function testListOfStringsResolveReturnsList(): void
     {
         $value = Rules\Configuration\OptionValue::listOfStringsDefaultingTo();
@@ -176,32 +203,5 @@ final class OptionValueTest extends Framework\TestCase
         $value = Rules\Configuration\OptionValue::listOfStringsDefaultingTo();
 
         self::assertSame([], $value->resolve([]));
-    }
-
-    public function testListOfStringsResolveRejectsNonArray(): void
-    {
-        $value = Rules\Configuration\OptionValue::listOfStringsDefaultingTo();
-
-        $this->expectException(Rules\Configuration\InvalidOptionValue::class);
-
-        $value->resolve('not-an-array');
-    }
-
-    public function testListOfStringsResolveRejectsAssociativeArray(): void
-    {
-        $value = Rules\Configuration\OptionValue::listOfStringsDefaultingTo();
-
-        $this->expectException(Rules\Configuration\InvalidOptionValue::class);
-
-        $value->resolve(['key' => 'value']);
-    }
-
-    public function testListOfStringsResolveRejectsListWithNonStringItem(): void
-    {
-        $value = Rules\Configuration\OptionValue::listOfStringsDefaultingTo();
-
-        $this->expectException(Rules\Configuration\InvalidOptionValue::class);
-
-        $value->resolve([123]);
     }
 }

@@ -30,7 +30,7 @@ use PHPUnit\Framework;
  */
 final class OptionsTest extends Framework\TestCase
 {
-    public function testCreateRejectsOptionsWithDuplicateOptionNames(): void
+    public function testCreateThrowsDuplicateOptionNameWhenOptionNamesAreNotUnique(): void
     {
         $this->expectException(Rules\Configuration\DuplicateOptionName::class);
 
@@ -68,7 +68,7 @@ final class OptionsTest extends Framework\TestCase
         self::assertSame($values, $options->toArray());
     }
 
-    public function testResolveFromRejectsUnknownOptionNames(): void
+    public function testResolveFromThrowsUnknownOptionNameWhenOptionNameIsUnknown(): void
     {
         $options = Rules\Configuration\Options::create(
             Rules\Configuration\Option::create(
@@ -90,7 +90,7 @@ final class OptionsTest extends Framework\TestCase
         ]);
     }
 
-    public function testResolveFromRejectsInvalidOptionValues(): void
+    public function testResolveFromThrowsInvalidOptionValueWhenOptionValueIsInvalid(): void
     {
         $options = Rules\Configuration\Options::create(
             Rules\Configuration\Option::create(

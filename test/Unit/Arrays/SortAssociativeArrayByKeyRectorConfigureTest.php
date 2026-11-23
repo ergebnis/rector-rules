@@ -30,7 +30,7 @@ use Rector\Testing;
  */
 final class SortAssociativeArrayByKeyRectorConfigureTest extends Testing\PHPUnit\AbstractLazyTestCase
 {
-    public function testConfigureRejectsUnknownKeys(): void
+    public function testConfigureThrowsUnknownOptionNameWhenOptionNameIsUnknown(): void
     {
         $rector = $this->make(Rules\Arrays\SortAssociativeArrayByKeyRector::class);
 
@@ -41,7 +41,7 @@ final class SortAssociativeArrayByKeyRectorConfigureTest extends Testing\PHPUnit
         ]);
     }
 
-    public function testConfigureRejectsNonStringComparisonFunction(): void
+    public function testConfigureThrowsInvalidOptionValueWhenComparisonFunctionIsNotString(): void
     {
         $rector = $this->make(Rules\Arrays\SortAssociativeArrayByKeyRector::class);
 
@@ -52,7 +52,7 @@ final class SortAssociativeArrayByKeyRectorConfigureTest extends Testing\PHPUnit
         ]);
     }
 
-    public function testConfigureRejectsInvalidComparisonFunction(): void
+    public function testConfigureThrowsInvalidOptionValueWhenComparisonFunctionIsInvalid(): void
     {
         $rector = $this->make(Rules\Arrays\SortAssociativeArrayByKeyRector::class);
 
@@ -63,7 +63,7 @@ final class SortAssociativeArrayByKeyRectorConfigureTest extends Testing\PHPUnit
         ]);
     }
 
-    public function testConfigureRejectsNonStringDirection(): void
+    public function testConfigureThrowsInvalidOptionValueWhenDirectionIsNotString(): void
     {
         $rector = $this->make(Rules\Arrays\SortAssociativeArrayByKeyRector::class);
 
@@ -74,7 +74,7 @@ final class SortAssociativeArrayByKeyRectorConfigureTest extends Testing\PHPUnit
         ]);
     }
 
-    public function testConfigureRejectsInvalidDirection(): void
+    public function testConfigureThrowsInvalidOptionValueWhenDirectionIsInvalid(): void
     {
         $rector = $this->make(Rules\Arrays\SortAssociativeArrayByKeyRector::class);
 

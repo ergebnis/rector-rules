@@ -28,7 +28,17 @@ final class OptionNameTest extends Framework\TestCase
      * @dataProvider \Ergebnis\DataProvider\StringProvider::blank
      * @dataProvider \Ergebnis\DataProvider\StringProvider::empty
      */
-    public function testFromStringRejectsBlankOrEmptyValue(string $value): void
+    public function testFromStringThrowsInvalidOptionNameWhenValueIsBlankOrEmpty(string $value): void
+    {
+        $this->expectException(Rules\Configuration\InvalidOptionName::class);
+
+        Rules\Configuration\OptionName::fromString($value);
+    }
+
+    /**
+     * @dataProvider \Ergebnis\DataProvider\StringProvider::untrimmed
+     */
+    public function testFromStringThrowsInvalidOptionNameWhenValueIsUntrimmed(string $value): void
     {
         $this->expectException(Rules\Configuration\InvalidOptionName::class);
 
@@ -43,15 +53,5 @@ final class OptionNameTest extends Framework\TestCase
         $name = Rules\Configuration\OptionName::fromString($value);
 
         self::assertSame($value, $name->toString());
-    }
-
-    /**
-     * @dataProvider \Ergebnis\DataProvider\StringProvider::untrimmed
-     */
-    public function testFromStringRejectsUntrimmedValue(string $value): void
-    {
-        $this->expectException(Rules\Configuration\InvalidOptionName::class);
-
-        Rules\Configuration\OptionName::fromString($value);
     }
 }

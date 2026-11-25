@@ -17,6 +17,7 @@ use Ergebnis\Rector\Rules;
 use PhpParser\Node;
 use PHPStan\PhpDocParser\Ast;
 use Rector\BetterPhpDocParser;
+use Rector\ChangesReporting;
 use Rector\Comments;
 use Rector\Contract;
 use Rector\NodeTypeResolver;
@@ -569,7 +570,16 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
             return null;
         }
 
-        return $node;
+        /**
+         * Returning the node makes Rector analyze the file again against its old imports,
+         * while respelled names still reference the same symbols, so keep the scope.
+         */
+        $this->getFile()->addRectorClassWithLine(new ChangesReporting\ValueObject\RectorWithLineChange(
+            self::class,
+            $node->getStartLine(),
+        ));
+
+        return null;
     }
 
     /**

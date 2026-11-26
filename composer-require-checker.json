@@ -28,6 +28,7 @@
     "Rector\\BetterPhpDocParser\\PhpDocInfo\\PhpDocInfo",
     "Rector\\BetterPhpDocParser\\PhpDocInfo\\PhpDocInfoFactory",
     "Rector\\BetterPhpDocParser\\ValueObject\\Type\\FullyQualifiedIdentifierTypeNode",
+    "Rector\\ChangesReporting\\ValueObject\\RectorWithLineChange",
     "Rector\\Comments\\NodeDocBlock\\DocBlockUpdater",
     "Rector\\Contract\\Rector\\ConfigurableRectorInterface",
     "Rector\\PhpDocParser\\PhpDocParser\\PhpDocNodeVisitor\\CallablePhpDocNodeVisitor",

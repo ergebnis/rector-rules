@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Ergebnis\Rector\Rules\Test\Unit\Files;
 
 use Ergebnis\Rector\Rules;
+use PhpParser\Comment;
 use PhpParser\Node;
 use PHPStan\PhpDocParser;
 use PHPUnit\Framework;
@@ -52,6 +53,36 @@ final class SymbolReferenceTest extends Framework\TestCase
         self::assertSame($fullyQualifiedName, $symbolReference->fullyQualifiedName());
         self::assertSame($name, $symbolReference->node());
         self::assertNull($symbolReference->phpDocNode());
+        self::assertNull($symbolReference->nodeWithAttributeComment());
+        self::assertNull($symbolReference->attributeComment());
+    }
+
+    public function testInAttributeCommentReturnsSymbolReference(): void
+    {
+        $symbolKind = Rules\Files\SymbolKind::classLike();
+        $spelling = Rules\Files\Spelling::fromString('Attribute\MaximumDuration');
+        $fullyQualifiedName = Rules\Files\FullyQualifiedName::fromString('Example\Attribute\MaximumDuration');
+        $name = new Node\Name($spelling->toString());
+        $nodeWithAttributeComment = new Node\Stmt\Nop();
+        $attributeComment = new Comment('#[Attribute\MaximumDuration(200)]');
+
+        $symbolReference = Rules\Files\SymbolReference::inAttributeComment(
+            $symbolKind,
+            $spelling,
+            $fullyQualifiedName,
+            $name,
+            $nodeWithAttributeComment,
+            $attributeComment,
+        );
+
+        self::assertTrue($symbolReference->location()->isCode());
+        self::assertSame($symbolKind, $symbolReference->symbolKind());
+        self::assertSame($spelling, $symbolReference->spelling());
+        self::assertSame($fullyQualifiedName, $symbolReference->fullyQualifiedName());
+        self::assertSame($name, $symbolReference->node());
+        self::assertNull($symbolReference->phpDocNode());
+        self::assertSame($nodeWithAttributeComment, $symbolReference->nodeWithAttributeComment());
+        self::assertSame($attributeComment, $symbolReference->attributeComment());
     }
 
     public function testInDocBlockTextReturnsSymbolReference(): void

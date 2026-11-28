@@ -13,8 +13,12 @@ declare(strict_types=1);
 
 namespace Ergebnis\Rector\Rules\Files;
 
+use PhpParser\Comment;
+use PhpParser\Error;
 use PhpParser\Node;
 use PhpParser\NodeFinder;
+use PhpParser\ParserFactory;
+use PhpParser\PhpVersion;
 use PHPStan\PhpDocParser\Ast;
 use Rector\BetterPhpDocParser;
 use Rector\PhpDocParser;
@@ -91,6 +95,11 @@ final class FileReader
                 $imports,
             ),
             $this->symbolReferencesInDocBlocks(
+                $statements,
+                $namespace,
+                $imports,
+            ),
+            $this->symbolReferencesInAttributeComments(
                 $statements,
                 $namespace,
                 $imports,
@@ -276,6 +285,103 @@ final class FileReader
         }
 
         return $symbolReferences;
+    }
+
+    /**
+     * PHP 7.4 parses an attribute as a comment, so read the names in a comment that starts with #[ from the comment
+     * parsed as PHP 8.0 code.
+     *
+     * @param list<Node\Stmt> $statements
+     *
+     * @return list<SymbolReference>
+     */
+    private function symbolReferencesInAttributeComments(
+        array $statements,
+        FileNamespace $namespace,
+        Imports $imports
+    ): array {
+        $nodeFinder = new NodeFinder();
+
+        $nodesWithAttributeComment = $nodeFinder->find($statements, static function (Node $node): bool {
+            foreach ($node->getComments() as $comment) {
+                if (self::isAttributeComment($comment)) {
+                    return true;
+                }
+            }
+
+            return false;
+        });
+
+        if ([] === $nodesWithAttributeComment) {
+            return [];
+        }
+
+        $parser = (new ParserFactory())->createForVersion(PhpVersion::fromComponents(8, 0));
+
+        $code = "<?php\n";
+
+        $symbolReferences = [];
+
+        /** @var array<int, true> $startFilePositionsOfAttributeComments */
+        $startFilePositionsOfAttributeComments = [];
+
+        foreach ($nodesWithAttributeComment as $nodeWithAttributeComment) {
+            foreach ($nodeWithAttributeComment->getComments() as $comment) {
+                if (!self::isAttributeComment($comment)) {
+                    continue;
+                }
+
+                if (\array_key_exists($comment->getStartFilePos(), $startFilePositionsOfAttributeComments)) {
+                    continue;
+                }
+
+                $startFilePositionsOfAttributeComments[$comment->getStartFilePos()] = true;
+
+                try {
+                    $statementsInAttributeComment = $parser->parse($code . $comment->getText() . "\nfunction f() {}\n");
+                } catch (Error $exception) {
+                    continue;
+                }
+
+                if (null === $statementsInAttributeComment) {
+                    continue;
+                }
+
+                $symbolReferencesInAttributeComment = $this->symbolReferencesInCode(
+                    \array_values($statementsInAttributeComment),
+                    $namespace,
+                    $imports,
+                );
+
+                foreach ($symbolReferencesInAttributeComment as $symbolReference) {
+                    $name = $symbolReference->node();
+
+                    if (!$name instanceof Node\Name) {
+                        continue;
+                    }
+
+                    $name->setAttribute('startFilePos', $name->getStartFilePos() - \strlen($code));
+                    $name->setAttribute('endFilePos', $name->getEndFilePos() - \strlen($code));
+
+                    $symbolReferences[] = SymbolReference::inAttributeComment(
+                        $symbolReference->symbolKind(),
+                        $symbolReference->spelling(),
+                        $symbolReference->fullyQualifiedName(),
+                        $name,
+                        $nodeWithAttributeComment,
+                        $comment,
+                    );
+                }
+            }
+        }
+
+        return $symbolReferences;
+    }
+
+    private static function isAttributeComment(Comment $comment): bool
+    {
+        return !$comment instanceof Comment\Doc
+            && 0 === \strpos($comment->getText(), '#[');
     }
 
     private static function spelling(Node\Name $name): string

@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace Ergebnis\Rector\Rules\Files;
 
 use Ergebnis\Rector\Rules;
+use PhpParser\Comment;
 use PhpParser\Node;
 use PHPStan\PhpDocParser\Ast;
 use Rector\BetterPhpDocParser;
@@ -720,8 +721,38 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
         /** @var array<int, array{0: Node, 1: array<int, string>}> $spellingsOfTypeNodesByNode */
         $spellingsOfTypeNodesByNode = [];
 
+        /** @var array<int, array{0: Node, 1: Comment, 2: array<int, array{0: int, 1: string}>}> $spellingsOfNamesByAttributeComment */
+        $spellingsOfNamesByAttributeComment = [];
+
         foreach ($respellings->toArray() as $respelling) {
             $symbolReference = $respelling->symbolReference();
+
+            $attributeComment = $symbolReference->attributeComment();
+            $nodeWithAttributeComment = $symbolReference->nodeWithAttributeComment();
+
+            if (
+                $attributeComment instanceof Comment
+                && $nodeWithAttributeComment instanceof Node
+            ) {
+                $identifier = \spl_object_id($attributeComment);
+
+                if (!\array_key_exists($identifier, $spellingsOfNamesByAttributeComment)) {
+                    $spellingsOfNamesByAttributeComment[$identifier] = [
+                        $nodeWithAttributeComment,
+                        $attributeComment,
+                        [],
+                    ];
+                }
+
+                $name = $symbolReference->node();
+
+                $spellingsOfNamesByAttributeComment[$identifier][2][$name->getStartFilePos()] = [
+                    $name->getEndFilePos(),
+                    $respelling->spelling()->toString(),
+                ];
+
+                continue;
+            }
 
             $phpDocNode = $symbolReference->phpDocNode();
 
@@ -809,6 +840,46 @@ final class ReferenceNamespacedSymbolsRelativeToNamespacePrefixRector extends Re
             ]);
 
             $this->docBlockUpdater->updateRefactoredNodeWithPhpDocInfo($node);
+        }
+
+        foreach ($spellingsOfNamesByAttributeComment as [$node, $attributeComment, $spellingsOfNames]) {
+            \krsort($spellingsOfNames);
+
+            $text = $attributeComment->getText();
+
+            foreach ($spellingsOfNames as $startFilePosition => [$endFilePosition, $spelling]) {
+                $text = \substr_replace(
+                    $text,
+                    $spelling,
+                    $startFilePosition,
+                    $endFilePosition - $startFilePosition + 1,
+                );
+            }
+
+            $comments = [];
+
+            foreach ($node->getComments() as $comment) {
+                if ($comment !== $attributeComment) {
+                    $comments[] = $comment;
+
+                    continue;
+                }
+
+                $comments[] = new Comment(
+                    $text,
+                    $comment->getStartLine(),
+                    $comment->getStartFilePos(),
+                    $comment->getStartTokenPos(),
+                    $comment->getEndLine(),
+                    $comment->getStartFilePos() + \strlen($text) - 1,
+                    $comment->getEndTokenPos(),
+                );
+            }
+
+            $node->setAttribute(
+                NodeTypeResolver\Node\AttributeKey::COMMENTS,
+                $comments,
+            );
         }
     }
 

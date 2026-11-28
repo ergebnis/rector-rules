@@ -288,8 +288,7 @@ final class FileReader
     }
 
     /**
-     * PHP 7.4 parses an attribute as a comment, so read the names in a comment that starts with #[ from the comment
-     * parsed as PHP 8.0 code.
+     * PHP 7.4 parses an attribute as a comment.
      *
      * @param list<Node\Stmt> $statements
      *

@@ -58,10 +58,6 @@ final class SymbolReference
         $this->attributeComment = $attributeComment;
     }
 
-    /**
-     * PHP 7.4 parses an attribute as a comment. The name is then a node of the comment parsed as PHP 8.0 code, with
-     * file positions relative to the text of the comment, and respelling it rewrites the text of the comment.
-     */
     public static function inAttributeComment(
         SymbolKind $symbolKind,
         Spelling $spelling,
